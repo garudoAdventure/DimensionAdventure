@@ -7,6 +7,10 @@
 PlayerIdle::PlayerIdle() {
 }
 
+void PlayerIdle::init() {
+	player->getModel()->loadAnim(11);
+}
+
 void PlayerIdle::update() {
 	player->getVel().x = 0.0f;
 	player->getVel().z = 0.0f;

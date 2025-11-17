@@ -5,6 +5,9 @@
 PlayerClimb::PlayerClimb(GameObj* climbableObj) : _climbableObj(climbableObj) {
 }
 
+void PlayerClimb::init() {
+}
+
 void PlayerClimb::update() {
 	player->getVel().x = 0.0f;
 	player->getVel().y = 0.0f;

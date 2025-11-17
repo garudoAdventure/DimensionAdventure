@@ -4,7 +4,9 @@
 #include "PlayerTeleport.h"
 
 PlayerJump::PlayerJump() {
+}
 
+void PlayerJump::init() {
 }
 
 void PlayerJump::update() {

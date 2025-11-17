@@ -9,14 +9,15 @@ class Shader {
   public:
 		void begin();
 		void setSamplerWrapState(bool isWrap);
+		void setWorldMatrix(XMMATRIX& world);
 		void setWorldMatrix(Float3 pos, Float3 rotate = { 0.0f, 0.0f, 0.0f }, Float3 scale = { 1.0f, 1.0f, 1.0f });
 		void set2DMatrix();
 		void set3DMatrix(XMMATRIX view);
 		void setMatrix();
 		void setMatrix(Transpose& mat);
-		void setTransform(Float3 pos, Float3 radian, Float3 scale = { 1.0f, 1.0f, 1.0f });
 		void setView(Float3 e, Float3 f);
 		void setProjection(XMMATRIX projMatrix);
+		void setLight(const Light light);
 		XMMATRIX getOrthoMatrix();
 		XMMATRIX getPerspectiveMatrix();
 
@@ -26,7 +27,8 @@ class Shader {
 		ID3D11VertexShader* _vertexShader = nullptr;
 		ID3D11PixelShader* _pixelShader = nullptr;
 		ID3D11InputLayout* _inputLayout = nullptr;
-		ID3D11Buffer* _constantBuffer = nullptr;
+		ID3D11Buffer* _matrixBuffer = nullptr;
+		ID3D11Buffer* _lightBuffer = nullptr;
 		ID3D11SamplerState* _samplerWrapState = nullptr;
 		ID3D11SamplerState* _samplerClampState = nullptr;
 		XMMATRIX _orthoMatrix;

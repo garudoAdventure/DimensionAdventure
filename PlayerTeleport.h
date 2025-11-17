@@ -5,11 +5,11 @@
 class PlayerTeleport : public PlayerState {
 	public:
 		PlayerTeleport();
+		void init() override;
 		void update() override;
 		void draw() override;
 
 	private:
-		bool _isInit = false;
 		Float3 _teleportPos = { 0.0f, 0.0f, 0.0f };
 		bool _isTeleport = false;
 		int _prepareTeleportCount = 0;

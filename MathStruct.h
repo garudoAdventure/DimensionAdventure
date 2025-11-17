@@ -98,12 +98,19 @@ struct Vertex {
   XMFLOAT4 color;
   XMFLOAT3 normal;
   XMFLOAT2 texCoord;
+  INT boneIdx[4] = { 0, 0, 0, 0 };
+  FLOAT boneWeight[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 };
 
 struct Transpose {
   XMMATRIX world;
   XMMATRIX view;
   XMMATRIX projection;
+};
+
+struct Light {
+  BOOL enable;
+  XMFLOAT3 direction;
 };
 
 template<class T>

@@ -113,6 +113,10 @@ void CubeRenderer::drawCube(Cube cube, Float4 color, int texID) {
   SHADER.setMatrix();
   TEXTURE.setTexture(texID);
 
+  Light light;
+  light.enable = false;
+  SHADER.setLight(light);
+
   UINT stride = sizeof(Vertex);
   UINT offset = 0;
   DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);

@@ -4,6 +4,9 @@
 PlayerHurt::PlayerHurt() {
 }
 
+void PlayerHurt::init() {
+}
+
 void PlayerHurt::update() {
 	player->getVel().x = 0.0f;
 	player->getVel().z = 0.0f;

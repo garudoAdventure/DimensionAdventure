@@ -8,6 +8,10 @@ Player::Player(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 	_pos = { -12.0f, -5.0f, 0.0f };
 	_size = { 2.0f, 4.0f, 2.0f };
 	_color = { 1.0f, 1.0f, 1.0f, 0.8f };
+
+	_model = new Model("./assets/model/character.fbx");
+	_size = _model->getSize();
+
 	_playerController = new PlayerController2D();
 	setState(new PlayerIdle());
 }
@@ -39,10 +43,19 @@ void Player::update() {
 		}
 		convertLayer();
 	}
+	_model->update();
 }
 
 void Player::draw() {
-	currentState->draw();
+	Float3 radian = { 0.0f, 0.0f, 0.0f };
+	if (_dir.x > 0) {
+		radian.z = -PI / 2;
+	}
+	if (_dir.x < 0) {
+		radian.z = PI / 2;
+	}
+	_model->draw(_pos, radian);
+	//currentState->draw();
 }
 
 void Player::setState(PlayerState* state) {
@@ -54,6 +67,7 @@ void Player::changeState() {
 		delete currentState;
 		currentState = newState;
 		currentState->player = this;
+		currentState->init();
 	}
 }
 

@@ -6,6 +6,7 @@
 #include "PlayerController.h"
 #include "IGameEventHandler.h"
 #include "Enemy.h"
+#include "Model.h"
 
 #define MOVE_VEL		(0.2f)
 #define JUMP_FORCE  (0.7f)
@@ -27,6 +28,9 @@ class Player : public GameObj {
 		void attackEnemy(Enemy* enemy);
 		void convertDimension();
 
+		Model* getModel() {
+			return _model;
+		}
 		int getHp() const {
 			return _hp;
 		}
@@ -78,6 +82,7 @@ class Player : public GameObj {
 		}
 
   private:
+		Model* _model;
 		Float3 _oldPos = { 0.2f, 0.8f, 0.0f };
 		Float3 _vel = { 0.0f, 0.0f, 0.0f };
 		Float3 _dir = { 1.0f, 0.0f, 0.0f };
@@ -96,7 +101,7 @@ class Player : public GameObj {
 		bool _isInvincible = false;
 		bool _isAttackMode = false;
 		bool hasBangle = true;
-		int _crystalNum = 2;
+		int _crystalNum = 3;
 
 		void changeState();
 		void convertLayer();

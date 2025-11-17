@@ -5,6 +5,7 @@
 class PlayerHurt : public PlayerState {
 	public:
 		PlayerHurt();
+		void init() override;
 		void update() override;
 		void draw() override;
 

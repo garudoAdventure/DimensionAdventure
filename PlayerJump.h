@@ -5,6 +5,7 @@
 class PlayerJump : public PlayerState {
 	public:
 		PlayerJump();
+		void init() override;
 		void update() override;
 		void draw() override;
 };

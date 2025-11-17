@@ -32,14 +32,15 @@ class LayerScreen {
 			XMVECTOR focus = XMVectorSet(0.0f, 0.0f, 22.5f, 0.0f);
 			XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 			XMMATRIX view = XMMatrixLookAtLH(eye, focus, up);
+			SHADER.begin();
 			SHADER.set3DMatrix(view);
 			for (int i = layerNum; i >= -1; i--) {
 				int idx = (i + layerIdx + layerNum) % layerNum;
 				float alpha = 1.0f;
-				if (i == -1) alpha = 1 - alphaBack;
-				if (i == 0) alpha = alphaFront;
+				if (i == -1)					 alpha = 1 - alphaBack;
+				if (i == 0)						 alpha = alphaFront;
 				if (i == layerNum - 1) alpha = alphaBack;
-				if (i == layerNum) alpha = 1 - alphaFront;
+				if (i == layerNum)		 alpha = 1 - alphaFront;
 				TEXTURE.setTexture(layerTex[idx].getTex());
 				SPRITE.drawTextureSprite({
 					0.0f, _posY + offsetY * i, _posZ + offsetZ * i
@@ -87,6 +88,25 @@ class LayerScreen {
 				currentLayer = layerIdx;
 				_startTransformOut = true;
 			}
+			//float add = 0.5f;
+			//if (Keyboard_IsKeyDown(KK_RIGHT)) {
+			//	_eye.x += add;
+			//}
+			//if (Keyboard_IsKeyDown(KK_LEFT)) {
+			//	_eye.x -= add;
+			//}
+			//if (Keyboard_IsKeyDown(KK_UP)) {
+			//	_eye.y += add;
+			//}
+			//if (Keyboard_IsKeyDown(KK_DOWN)) {
+			//	_eye.y -= add;
+			//}
+			//if (Keyboard_IsKeyDown(KK_W)) {
+			//	_eye.z += add;
+			//}
+			//if (Keyboard_IsKeyDown(KK_S)) {
+			//	_eye.z -= add;
+			//}
 			return true;
 		}
 

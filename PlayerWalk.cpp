@@ -6,7 +6,13 @@
 PlayerWalk::PlayerWalk() {
 }
 
+void PlayerWalk::init() {
+	player->getModel()->loadAnim(10);
+}
+
 void PlayerWalk::update() {
+	player->getVel().x = 0.0f;
+	player->getVel().z = 0.0f;
 	if (player->getPlayerController()->isMove()) {
 		player->getPlayerController()->move(player->getVel());
 	}

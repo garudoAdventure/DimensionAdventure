@@ -51,6 +51,10 @@ void Sprite::drawTextureSprite(Float3 pos, Float2 size, float alpha) {
   DX3D.setDepthEnable(true);
   SHADER.begin();
 
+  Light light;
+  light.enable = false;
+  SHADER.setLight(light);
+
   UINT stride = sizeof(Vertex);
   UINT offset = 0;
   DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
@@ -89,6 +93,10 @@ void Sprite::drawSprite3D(Float3 pos, Float2 size, int texID) {
   SHADER.begin();
   SHADER.setMatrix();
   TEXTURE.setTexture(texID);
+
+  Light light;
+  light.enable = false;
+  SHADER.setLight(light);
 
   UINT stride = sizeof(Vertex);
   UINT offset = 0;
@@ -134,6 +142,10 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, Float4 color) {
   SHADER.set2DMatrix();
   TEXTURE.setTexture(-1);
 
+  Light light;
+  light.enable = false;
+  SHADER.setLight(light);
+
   UINT stride = sizeof(Vertex);
   UINT offset = 0;
   DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
@@ -177,6 +189,10 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID) {
   SHADER.begin();
   SHADER.set2DMatrix();
   TEXTURE.setTexture(texID);
+
+  Light light;
+  light.enable = false;
+  SHADER.setLight(light);
 
   UINT stride = sizeof(Vertex);
   UINT offset = 0;
@@ -233,6 +249,10 @@ void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian
   SHADER.begin();
   SHADER.set2DMatrix();
   TEXTURE.setTexture(texID);
+
+  Light light;
+  light.enable = false;
+  SHADER.setLight(light);
 
   UINT stride = sizeof(Vertex);
   UINT offset = 0;
@@ -302,6 +322,10 @@ void Sprite::drawSprite2DUV(Float2 pos, Float2 size, int texID, float scale) {
   SHADER.begin();
   SHADER.set2DMatrix();
   TEXTURE.setTexture(texID);
+
+  Light light;
+  light.enable = false;
+  SHADER.setLight(light);
 
   UINT stride = sizeof(Vertex);
   UINT offset = 0;

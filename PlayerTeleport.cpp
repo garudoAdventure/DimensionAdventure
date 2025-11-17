@@ -3,14 +3,13 @@
 #include "MathTool.h"
 
 PlayerTeleport::PlayerTeleport() {
+}
 
+void PlayerTeleport::init() {
+	_teleportDistance.x = player->getDir().x > 0 ? _maxDistance : _minDistance;
 }
 
 void PlayerTeleport::update() {
-	if (!_isInit) {
-		_teleportDistance.x = player->getDir().x > 0 ? _maxDistance : _minDistance;
-		_isInit = true;
-	}
 	if (_isTeleport) {
 		_teleportCount++;
 		if (_teleportCount == 10) {
