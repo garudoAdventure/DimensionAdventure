@@ -1,25 +1,34 @@
 #pragma once
 
 #include "GameObj.h"
+#include "Model.h"
+#include "Shader.h"
 
 class Block : public GameObj {
 	public:
-		Block(Float3 pos, Float3 size, int texID = -1) {
+		Block(Float3 pos, Float3 size, Model* model) : _model(model) {
 			_pos = pos;
-			_size = size * 2;
-			_color = { 0.2f, 0.2f, 1.0f, 0.8f };
-			if (texID != -1) {
-				_color = { 1.0f, 1.0f, 1.0f, 1.0f };
-			}
-			_texID = texID;
+			_size = model->getSize();
+			_color = { 1.0f, 1.0f, 1.0f, 0.3f };
 		}
 		virtual void update() {
 		}
+		void draw() override {
+			Light light;
+			light.enable = false;
+			SHADER.setLight(light);
+			_model->draw(
+				_pos, { 0.0f, 0.0f, 0.0f }
+			);
+		}
+	
+	private:
+		Model* _model;
 };
 
 class MovingBlock : public Block {
 	public:
-		MovingBlock(Float3 pos, Float3 vel, Float3 size, int texID = -1) : Block(pos, size, texID) {
+		MovingBlock(Float3 pos, Float3 vel, Float3 size, Model* model) : Block(pos, size, model) {
 			_vel = vel;
 		}
 		void update() override {

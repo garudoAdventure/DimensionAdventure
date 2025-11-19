@@ -95,3 +95,7 @@ void GameMain::transformDimension() {
 void GameMain::transformLayer() {
   gameEventQueue.emplace_back(new TransformLayerEvent(&layerScreen, player));
 }
+
+Float3& GameMain::getCameraPos() {
+  return camera->getPos();
+}

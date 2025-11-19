@@ -5,7 +5,7 @@
 
 class ShowDialogEvent : public IGameEvent {
 	public:
-		ShowDialogEvent(Dialog* dialog) : _dialog(dialog) {
+		ShowDialogEvent(IDialog* dialog) : _dialog(dialog) {
 		}
 		~ShowDialogEvent() {
 			delete _dialog;
@@ -21,5 +21,5 @@ class ShowDialogEvent : public IGameEvent {
 		}
 
 	private:
-		Dialog* _dialog;
+		IDialog* _dialog;
 };

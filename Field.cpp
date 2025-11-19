@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "Block.h"
 #include "CSVParser.h"
+#include "ModelManager.h"
 
 Field::Field(const char* file) {
 	_layer[0] = new Layer("./assets/bg1.png");
@@ -25,11 +26,11 @@ Field::Field(const char* file) {
 		};
 		switch (block.type) {
 			case 1:
-				_layer[layerIdx]->getBlockManager()->add(new Block(pos, block.size, floorTexID[layerIdx]));
+				_layer[layerIdx]->getBlockManager()->add(new Block(pos, block.size, MODEL.loadModel("./assets/model/floor.fbx")));
 				break;
 			case 2:
 			case 3:
-				_layer[layerIdx]->getBlockManager()->add(new Block(pos, block.size));
+				_layer[layerIdx]->getBlockManager()->add(new Block(pos, block.size, MODEL.loadModel("./assets/model/stoneBlock.fbx")));
 				break;
 			}
 	}

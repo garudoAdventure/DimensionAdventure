@@ -4,9 +4,10 @@
 #include "Player.h"
 
 #define CAMERA_2D_MIN_X	(0.0f)
-#define CAMERA_2D_MAX_X	(73.0f)
+#define CAMERA_2D_MAX_X	(132.0f)
 #define CAMERA_3D_MIN_X	(-42.0f)
 #define CAMERA_3D_MAX_X	(52.0f)
+#define CAMERA_Z_DISTANCE (30.0f)
 
 class CameraController;
 
@@ -19,13 +20,14 @@ class Camera {
 		void transformDimension(Player* player);
 		void set2DPos(Float2 pos);
 		Float2 get2DPos();
+		Float3& getPos();
 		bool is2D() {
 			return _is2DMode;
 		}
 
   private:
-		Float3 _eye = { 0.0f, 0.0f, -30.0f };
-		Float3 _newEye = { 0.0f, 0.0f, -30.0f };
+		Float3 _eye = { 0.0f, 0.0f, -CAMERA_Z_DISTANCE };
+		Float3 _newEye = { 0.0f, 0.0f, -CAMERA_Z_DISTANCE };
 		Float3 _focus = { 0.0f, 0.0f, 0.0f };
 		Float3 _newFocus = { 0.0f, 0.0f, 0.0f };
 		CameraController* cameraController;

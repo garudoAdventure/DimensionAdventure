@@ -2,13 +2,13 @@
 #include "Texture.h"
 #include "Shader.h"
 
-Model::Model(const char* fileName) {
-	_aiScene = aiImportFile(fileName,
-		aiProcess_Triangulate
+Model::Model(const std::string fileName) {
+	_aiScene = aiImportFile(fileName.c_str(),
+		aiProcess_Triangulate |
 		//aiProcess_JoinIdenticalVertices |
 		//aiProcess_LimitBoneWeights |
 		//aiProcess_ImproveCacheLocality |
-		//aiProcess_FlipUVs |
+		aiProcess_FlipUVs
 		//aiProcessPreset_TargetRealtime_MaxQuality |
 		//aiProcess_ConvertToLeftHanded
 	);
@@ -19,7 +19,6 @@ Model::Model(const char* fileName) {
 		aiAnimation* aiAnim = _aiScene->mAnimations[i];
 		_animations.emplace_back(aiAnim);
 	}
-	loadAnim(0);
 
 	_meshes.reserve(_aiScene->mNumMeshes);
 	Float3 maxVertex = { -999.0f, -999.0f, -999.0f };
@@ -31,10 +30,10 @@ Model::Model(const char* fileName) {
 
 		Float3 meshMinVertex = mesh->getMinVertex();
 		Float3 meshMaxVertex = mesh->getMaxVertex();
-		if (meshMinVertex.x <= minVertex.x && meshMinVertex.y <= minVertex.y && meshMinVertex.z <= minVertex.z) {
+		if ((int)meshMinVertex.x <= (int)minVertex.x && (int)meshMinVertex.y <= (int)minVertex.y && (int)meshMinVertex.z <= (int)minVertex.z) {
 			minVertex = meshMinVertex;
 		}
-		if (meshMaxVertex.x >= maxVertex.x && meshMaxVertex.y >= maxVertex.y && meshMaxVertex.z >= maxVertex.z) {
+		if ((int)meshMaxVertex.x >= (int)maxVertex.x && (int)meshMaxVertex.y >= (int)maxVertex.y && (int)meshMaxVertex.z >= (int)maxVertex.z) {
 			maxVertex = meshMaxVertex;
 		}
 	}
@@ -119,18 +118,14 @@ void Model::updateNode(int frame, aiNode* node, aiMatrix4x4 parentTransform) {
 
 void Model::draw(Float3 pos, Float3 radian) {
 	SHADER.begin();
-
-	Light light;
-	light.enable = true;
-	XMVECTOR direction{ 0.5f, 0.5f, 1.0f };
-	direction = XMVector3Normalize(direction);
-	XMStoreFloat3(&light.direction, direction);
-	SHADER.setLight(light);
-
+	DX3D.setDepthEnable(true);
 	TEXTURE.setTexture(-1);
 	for (int i = 0; i < _meshes.size(); i++) {
 		Mesh* mesh = _meshes[i];
 		aiString texName;
+		aiMesh* aiMesh = _aiScene->mMeshes[i];
+		aiMaterial* aimaterial = _aiScene->mMaterials[aiMesh->mMaterialIndex];
+		aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
 		if (texName != aiString("")) {
 			TEXTURE.setTexture(0);
 			DX3D.getDeviceContext()->PSSetShaderResources(0, 1, &_texture[texName.data]);

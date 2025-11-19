@@ -163,8 +163,8 @@ void Mesh::draw(Float3 pos, Float3 radian) {
 		(float)mat.a3, (float)mat.b3, (float)mat.c3, (float)mat.d3,
 		(float)mat.a4, (float)mat.b4, (float)mat.c4, (float)mat.d4
 	);
-	world *= XMMatrixScaling(2.0f, 2.0f, 2.0f);
-	world *= XMMatrixRotationRollPitchYaw(-PI / 2 + radian.x, 0.0f + radian.y, PI + radian.z);
+	world *= XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	world *= XMMatrixRotationRollPitchYaw(radian.x, radian.y, radian.z);
 	world *= XMMatrixTranslation(pos.x, pos.y, pos.z);
 
 	SHADER.setWorldMatrix(world);

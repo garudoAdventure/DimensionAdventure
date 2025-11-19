@@ -21,6 +21,7 @@ class GameMain : public GameState, public IGameEventHandler {
 		void setNewField(int fieldID, Float3 doorPos, Float3 playerInitPos) override;
 		void transformDimension() override;
 		void transformLayer() override;
+		Float3& getCameraPos() override;
 
 	private:
 		Camera* camera;

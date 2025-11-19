@@ -10,6 +10,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Sprite.h"
+#include "ModelManager.h"
 #include "CubeRenderer.h"
 #include "Keyboard.h"
 #include "Game.h"
@@ -136,6 +137,7 @@ void Initialize(HWND hWnd) {
   Texture::CreateInstance();
   CubeRenderer::CreateInstance();
   Sprite::CreateInstance();
+  ModelManager::CreateInstance();
   game = new Game();
 }
 
@@ -153,6 +155,7 @@ void Draw() {
 
 void Finalize() {
   delete game;
+  ModelManager::DeleteInstance();
   Sprite::DeleteInstance();
   CubeRenderer::DeleteInstance();
   Shader::DeleteInstance();

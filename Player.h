@@ -89,7 +89,7 @@ class Player : public GameObj {
 		PlayerState* currentState = nullptr;
 		PlayerState* newState = nullptr;
 		PlayerController* _playerController = nullptr;
-		IGameEventHandler* _gameEvent;
+		IGameEventHandler* _gameEvent = nullptr;
 		int _hp = 5;
 		int _energy = 5;
 		int _recoverEnergyCount = 0;

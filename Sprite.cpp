@@ -62,7 +62,7 @@ void Sprite::drawTextureSprite(Float3 pos, Float2 size, float alpha) {
   DX3D.getDeviceContext()->Draw(4, 0);
 }
 
-void Sprite::drawSprite3D(Float3 pos, Float2 size, int texID) {
+void Sprite::drawSpriteIn3D(Float3 pos, Float2 size, int texID) {
   Vertex vertexData[4];
 
   const Float2 resize = {

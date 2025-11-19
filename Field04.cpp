@@ -1,6 +1,7 @@
 #include "Field.h"
 #include "Door.h"
 #include "Block.h"
+#include "ModelManager.h"
 
 Field04::Field04(IGameEventHandler* gameEvent) : Field("./map/map4.csv") {
 	for (int i = 0; i < 3; i++) {
@@ -17,6 +18,6 @@ Field04::Field04(IGameEventHandler* gameEvent) : Field("./map/map4.csv") {
 	//	);
 	//	_layer[i]->getDoorManager()->add(door);
 	//}
-	_layer[0]->getBlockManager()->add(new MovingBlock(MathTool::getCoordPos({ 12.0f, 0.0f, 4.0f }), { 0.1f, 0.0f, 0.0f }, { 3.0f, 1.0f, 3.0f }));
-	_layer[0]->getBlockManager()->add(new MovingBlock(MathTool::getCoordPos({ 46.0f, 0.0f, 4.0f }), { -0.1f, 0.0f, 0.0f }, { 3.0f, 1.0f, 3.0f }));
+	_layer[0]->getBlockManager()->add(new MovingBlock(MathTool::getCoordPos({ 12.0f, 0.0f, 4.0f }), { 0.1f, 0.0f, 0.0f }, { 3.0f, 1.0f, 3.0f }, MODEL.loadModel("./assets/block.fbx")));
+	_layer[0]->getBlockManager()->add(new MovingBlock(MathTool::getCoordPos({ 46.0f, 0.0f, 4.0f }), { -0.1f, 0.0f, 0.0f }, { 3.0f, 1.0f, 3.0f }, MODEL.loadModel("./assets/block.fbx")));
 }

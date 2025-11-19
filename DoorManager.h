@@ -26,7 +26,7 @@ class DoorManager : public ObjManager {
 		void collide(Player* player, bool is2D) override {
 			for (Door* door : doors) {
 				if (MathTool::checkCollision(player->getBox(), door->getBox(), is2D)) {
-					door->entry();
+					door->trigger(player);
 				}
 			}
 		}

@@ -18,7 +18,7 @@ struct AnimData {
 
 class Model {
   public:
-		Model(const char* fileName);
+		Model(const std::string fileName);
 		~Model();
 		void update();
 		void draw(Float3 pos, Float3 radian);

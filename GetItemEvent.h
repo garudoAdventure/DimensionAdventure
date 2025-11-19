@@ -37,7 +37,7 @@ class GetItemEvent : public IGameEvent {
 
 	private:
 		Item* _item;
-		Dialog* _dialog;
+		IDialog* _dialog;
 		Float3 _playerPos;
 		int count = 0;
 		bool _isEnd = false;

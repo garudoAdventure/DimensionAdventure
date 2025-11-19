@@ -26,7 +26,7 @@ class Crystal : public Item {
 			texID = TEXTURE.loadTexture("./assets/UI/crystal.png");
 		}
 		void draw(Float3 pos) override {
-			SPRITE.drawSprite3D(pos, { 22.0f, 38.0f }, texID);
+			SPRITE.drawSpriteIn3D(pos, { 22.0f, 38.0f }, texID);
 		}
 		void get(Player* player) override {
 			player->addCrystal();

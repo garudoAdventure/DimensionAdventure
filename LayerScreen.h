@@ -34,6 +34,17 @@ class LayerScreen {
 			XMMATRIX view = XMMatrixLookAtLH(eye, focus, up);
 			SHADER.begin();
 			SHADER.set3DMatrix(view);
+			if (startEffect) {
+				TEXTURE.setTexture(layerTex[layerIdx].getTex());
+				SPRITE.drawTextureSprite({ 0.0f, 0.0f, _posZ }, { 1280.0f, 720.0f }, 1.0f);
+
+				float alpha = MathTool::lerp<float>(1.0f, 0.0f, startEffectCount / 15.0f);
+				float width = MathTool::lerp<float>(1280.0f, 2560.0f, startEffectCount / 15.0f);
+				float height = MathTool::lerp<float>(720.0f, 1440.0f, startEffectCount / 15.0f);
+				TEXTURE.setTexture(layerTex[layerIdx].getTex());
+				SPRITE.drawTextureSprite({ 0.0f, 0.0f, _posZ - 1.0f }, { width, height }, alpha);
+				return;
+			}
 			for (int i = layerNum; i >= -1; i--) {
 				int idx = (i + layerIdx + layerNum) % layerNum;
 				float alpha = 1.0f;
@@ -53,6 +64,15 @@ class LayerScreen {
 			return currentLayer;
 		}
 		bool selectLayer() {
+			if (startEffect) {
+				if (startEffectCount == 15) {
+					startEffect = false;
+				}
+				else {
+					startEffectCount++;
+				}
+				return true;
+			}
 			if (transformIn()) {
 				return true;
 			}
@@ -61,6 +81,8 @@ class LayerScreen {
 					_startTransformOut = false;
 					transformInCount = 1;
 					transformOutCount = 1;
+					startEffect = true;
+					startEffectCount = 0;
 					return false;
 				}
 				return true;
@@ -88,25 +110,6 @@ class LayerScreen {
 				currentLayer = layerIdx;
 				_startTransformOut = true;
 			}
-			//float add = 0.5f;
-			//if (Keyboard_IsKeyDown(KK_RIGHT)) {
-			//	_eye.x += add;
-			//}
-			//if (Keyboard_IsKeyDown(KK_LEFT)) {
-			//	_eye.x -= add;
-			//}
-			//if (Keyboard_IsKeyDown(KK_UP)) {
-			//	_eye.y += add;
-			//}
-			//if (Keyboard_IsKeyDown(KK_DOWN)) {
-			//	_eye.y -= add;
-			//}
-			//if (Keyboard_IsKeyDown(KK_W)) {
-			//	_eye.z += add;
-			//}
-			//if (Keyboard_IsKeyDown(KK_S)) {
-			//	_eye.z -= add;
-			//}
 			return true;
 		}
 
@@ -130,6 +133,8 @@ class LayerScreen {
 		bool _startTransformOut = false;
 		bool _isSelectFront = false;
 		bool _isSelectBack = false;
+		bool startEffect = true;
+		int startEffectCount = 0;
 
 		bool transformIn() {
 			if (transformInCount <= 30) {
