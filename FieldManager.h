@@ -18,6 +18,8 @@ class FieldManager {
 					return new Field03(gameEvent);
 				case 4:
 					return new Field04(gameEvent);
+				case 5:
+					return new Field05(gameEvent);
 			}
 		}
 };

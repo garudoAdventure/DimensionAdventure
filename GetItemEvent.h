@@ -24,7 +24,7 @@ class GetItemEvent : public IGameEvent {
 			}
 		}
 		void draw() override {
-			_item->draw({
+			_item->draw3D({
 				_playerPos.x,
 				_playerPos.y + 3.0f,
 				_playerPos.z

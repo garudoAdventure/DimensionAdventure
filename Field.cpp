@@ -2,16 +2,27 @@
 #include "MathTool.h"
 #include "Texture.h"
 #include "Block.h"
+#include "FloorBase.h"
 #include "CSVParser.h"
 #include "ModelManager.h"
 
-Field::Field(const char* file) {
-	_layer[0] = new Layer("./assets/bg1.png");
-	_layer[1] = new Layer("./assets/bg2.png");
-	_layer[2] = new Layer("./assets/bg3.png");
-	
+Field::Field(const char* file) : filePath(file) {
+	_layer[0] = new Layer();
+	_layer[1] = new Layer();
+	_layer[2] = new Layer();
+
+	_layer[0]->setBg("./assets/bg1.png");
+	_layer[1]->setBg("./assets/bg2.png");
+	_layer[2]->setBg("./assets/bg3.png");
+
+	_floor[0] = MODEL.loadModel("./assets/model/floor.fbx");
+	_floor[1] = MODEL.loadModel("./assets/model/floor.fbx");
+	_floor[2] = MODEL.loadModel("./assets/model/floor.fbx");
+}
+
+void Field::load() {
 	CSVParser parser;
-	const std::vector<BlockInfo> map = parser.loadCSV(file);
+	const std::vector<BlockInfo> map = parser.loadCSV(filePath);
 	for (BlockInfo block : map) {
 		const int layerIdx = block.pos.w;
 		const Float3 pos = MathTool::getCoordPos({
@@ -19,20 +30,27 @@ Field::Field(const char* file) {
 			block.pos.y + (float)((int)block.size.y % 2 == 0 ? 0.5f : 0),
 			block.pos.z - (float)((int)block.size.z % 2 == 0 ? 0.5f : 0)
 		});
-		const int floorTexID[3] = {
-			TEXTURE.loadTexture("./assets/tile1.png"),
-			TEXTURE.loadTexture("./assets/tile2.png"),
-			TEXTURE.loadTexture("./assets/tile3.png")
-		};
 		switch (block.type) {
+			// Floor
 			case 1:
-				_layer[layerIdx]->getBlockManager()->add(new Block(pos, block.size, MODEL.loadModel("./assets/model/floor.fbx")));
+				_layer[layerIdx]->getBlockManager()->add(new Block(pos, _floor[layerIdx]));
 				break;
+			
+			// Wall
 			case 2:
-			case 3:
-				_layer[layerIdx]->getBlockManager()->add(new Block(pos, block.size, MODEL.loadModel("./assets/model/stoneBlock.fbx")));
+				_layer[layerIdx]->getBlockManager()->add(new Block(pos, MODEL.loadModel("./assets/model/stoneBlock.fbx")));
 				break;
-			}
+
+			// Block
+			case 3:
+				_layer[layerIdx]->getBlockManager()->add(new Block(pos, MODEL.loadModel("./assets/model/box.fbx")));
+				break;
+
+			// FloorBase
+			case 5:
+				_layer[layerIdx]->getFloorBaseManager()->add(new FloorBase(pos, block.size, MODEL.loadModel("./assets/model/floorBase.fbx")));
+				break;
+		}
 	}
 }
 

@@ -6,12 +6,10 @@
 
 class Block : public GameObj {
 	public:
-		Block(Float3 pos, Float3 size, Model* model) : _model(model) {
+		Block(Float3 pos, Model* model) : _model(model) {
 			_pos = pos;
 			_size = model->getSize();
 			_color = { 1.0f, 1.0f, 1.0f, 0.3f };
-		}
-		virtual void update() {
 		}
 		void draw() override {
 			Light light;
@@ -26,9 +24,9 @@ class Block : public GameObj {
 		Model* _model;
 };
 
-class MovingBlock : public Block {
+class MovingFloor : public Block {
 	public:
-		MovingBlock(Float3 pos, Float3 vel, Float3 size, Model* model) : Block(pos, size, model) {
+		MovingFloor(Float3 pos, Float3 vel, Model* model) : Block(pos, model) {
 			_vel = vel;
 		}
 		void update() override {
@@ -43,4 +41,10 @@ class MovingBlock : public Block {
 	
 	private:
 		int count = 0;
+};
+
+class MovableBox : public Block {
+	public:
+		MovableBox(Float3 pos, Model* model) : Block(pos, model) {
+		}
 };

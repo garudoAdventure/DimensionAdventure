@@ -90,8 +90,9 @@ void CameraController3D::move(Player* player, Float3& eye, Float3& focus) {
 	focus.x = MathTool::getInRange(focus.x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
 	eye.x = focus.x - CAMERA_Z_DISTANCE;
 
-	focus.y = player->getPos().y + 5.0f;
-	eye.y = focus.y;
+	focus.y = player->getPos().y;
+	focus.y = MathTool::getInRange(focus.y, 0.0f, 20.0f);
+	eye.y = focus.y + 5.0f;
 
 	eye.z = 0.0f;
 }
@@ -100,6 +101,7 @@ void CameraController2D::rotate(Player* player, Float3& eye, Float3& focus, XMMA
 	const float srcEyePosX = MathTool::getInRange(player->getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
 	const float destEyePosX = MathTool::getInRange(player->getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
 	eye.x = MathTool::lerp(srcEyePosX, destEyePosX, step);
+	eye.y += 5.0f / 30.0f;
 	eye.z += 1.0f;
 
 	const float srcFocusPosX = MathTool::getInRange(player->getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
@@ -115,6 +117,7 @@ void CameraController3D::rotate(Player* player, Float3& eye, Float3& focus, XMMA
 	const float srcEyePosX = MathTool::getInRange(player->getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
 	const float destEyePosX = MathTool::getInRange(player->getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
 	eye.x = MathTool::lerp(srcEyePosX, destEyePosX, step);
+	eye.y -= 5.0f / 30.0f;
 	eye.z -= 1.0f;
 
 	const float srcFocusPosX = MathTool::getInRange(player->getPos().x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);

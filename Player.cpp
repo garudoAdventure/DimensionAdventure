@@ -21,19 +21,14 @@ void Player::update() {
 	autoRecoverEnergy();
 	invincibleUpdate();
 	attackModeUpdate();
-
-	_oldPos = _pos;
 	
+	GameObj::update();
+
 	currentState->update();
 
 	_vel.y -= GRAVITY;
 
-	if (_vel.x > 0) {
-		_dir.x = 1.0f;
-	}
-	if (_vel.x < 0) {
-		_dir.x = -1.0f;
-	}
+	_dir.x = _vel.x > 0 ? 1.0f : -1.0f;
 
 	_pos += _vel;
 	
@@ -149,7 +144,7 @@ void Player::autoRecoverEnergy() {
 	}
 }
 
-void Player::collide(GameObj* gameObj) {
+void Player::hitObj(GameObj* gameObj, bool isStatic) {
 	const float playerTop = _pos.y + _size.y / 2;
 	const float playerBottom = _pos.y - _size.y / 2;
 	const float playerRight = _pos.x + _size.x / 2;
@@ -172,33 +167,51 @@ void Player::collide(GameObj* gameObj) {
 		oldPlayerRight <= objLeft &&
 		playerRight > objLeft &&
 		objTop - playerBottom > 0.031f
-		) {
-		_vel.x = 0.0f;
-		_pos.x = objLeft - _size.x / 2;
+	) {
+		if (!isStatic) {
+			gameObj->setPosX(playerRight + gameObj->getSize().x / 2 + 0.001f);
+		}
+		else {
+			_pos.x = objLeft - _size.x / 2;
+		}
 	}
 	if (
 		oldPlayerLeft >= objRight &&
 		playerLeft < objRight &&
 		objTop - playerBottom > 0.031f
 		) {
-		_vel.x = 0.0f;
-		_pos.x = objRight + _size.x / 2;
+		if (!isStatic) {
+			gameObj->setPosX(playerLeft - gameObj->getSize().x / 2 - 0.001f);
+		}
+		else {
+			_pos.x = objRight + _size.x / 2;
+		}
 	}
 	if (
 		oldPlayerFront >= objBack &&
 		playerFront < objBack &&
-		objTop - playerBottom> 0.031f
-		) {
-		_vel.z = 0.0f;
-		_pos.z = objBack + _size.z / 2;
+		objTop - playerBottom > 0.031f
+	) {
+		if (!isStatic) {
+			gameObj->setPosZ(playerFront - gameObj->getSize().z / 2 - 0.001f);
+		}
+		else {
+			_vel.z = 0.0f;
+			_pos.z = objBack + _size.z / 2;
+		}
 	}
 	if (
 		oldPlayerBack <= objFront &&
 		playerBack > objFront &&
 		objTop - playerBottom > 0.031f
 		) {
-		_vel.z = 0.0f;
-		_pos.z = objFront - _size.z / 2;
+		if (!isStatic) {
+			gameObj->setPosZ(playerBack + gameObj->getSize().z / 2 + 0.001f);
+		}
+		else {
+			_vel.z = 0.0f;
+			_pos.z = objFront - _size.z / 2;
+		}
 	}
 	if (
 		!_isOnClimbableObj &&

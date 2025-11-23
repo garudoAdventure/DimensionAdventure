@@ -17,11 +17,11 @@ class PlayerState;
 class Player : public GameObj {
   public:
 		Player(IGameEventHandler* gameEvent);
-		void update();
-		void draw();
+		void update() override;
+		void draw() override;
 		void setState(PlayerState* state);
 
-		void collide(GameObj* gameObj);
+		void hitObj(GameObj* obj, bool isStatic = true) override;
 		void jump();
 		void climb(GameObj* climableObj);
 		void hurt(int damage);
@@ -83,8 +83,6 @@ class Player : public GameObj {
 
   private:
 		Model* _model;
-		Float3 _oldPos = { 0.2f, 0.8f, 0.0f };
-		Float3 _vel = { 0.0f, 0.0f, 0.0f };
 		Float3 _dir = { 1.0f, 0.0f, 0.0f };
 		PlayerState* currentState = nullptr;
 		PlayerState* newState = nullptr;

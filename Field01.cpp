@@ -6,14 +6,14 @@
 Field01::Field01(IGameEventHandler* gameEvent) : Field("./map/map1.csv") {
 	for (int i = 0; i < 3; i++) {
 		Door* door = new OpenedDoor(
-			MathTool::getCoordPos({ 5.0f, 4.0f, 0.0f }), 0, gameEvent,
+			MathTool::getCoordPos({ 5.0f, 2.4f, 0.0f }), 0, gameEvent,
 			MathTool::getCoordPos({ 53.0f, 3.5f, 4.0f })
 		);
 		_layer[i]->getDoorManager()->add(door);
 	}
 	for (int i = 0; i < 3; i++) {
 		Door* door = new OpenedDoor(
-			MathTool::getCoordPos({ 29.0f, 4.0f, 0.0f }), 2, gameEvent,
+			MathTool::getCoordPos({ 29.0f, 2.4f, 0.0f }), 2, gameEvent,
 			MathTool::getCoordPos({ 29.0f, 3.5f, 4.0f })
 		);
 		_layer[i]->getDoorManager()->add(door);
@@ -21,7 +21,7 @@ Field01::Field01(IGameEventHandler* gameEvent) : Field("./map/map1.csv") {
 	{
 		ItemBox* itemBox = new ItemBox(
 			MathTool::getCoordPos({ 56.0f, 7.0f, 4.0f }),
-			new Crystal({ 0.0f, 0.0f }, { 0.0f, 0.0f }), gameEvent
+			new Crystal(), gameEvent
 		);
 		_layer[0]->getItemBoxManager()->add(itemBox);
 	}

@@ -14,6 +14,7 @@ class IDialog {
 	public:
 		virtual void update() = 0;
 		virtual void draw() = 0;
+		virtual void draw(Float3 pos) {}
 		void drawStr(std::string str) {
 			SPRITE.drawSprite2D(_pos, _size, { 0.7f, 0.7f, 0.7f, 0.9f });
 			DWRITE.drawString(str, {
@@ -52,7 +53,7 @@ class NormalDialog : public IDialog {
 				openDialogAnimCount++;
 				return;
 			}
-			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
+			if (currentContextIdx == currentContextNum / 2 && Keyboard_IsKeyTrigger(KK_ENTER)) {
 				contextIdx += 1;
 				if (contextIdx < _context.size()) {
 					currentContextNum = _context[contextIdx].length();
@@ -63,7 +64,7 @@ class NormalDialog : public IDialog {
 				}
 			}
 			if (frameCount % 2 == 0) {
-				currentContextIdx = std::min(currentContextNum, currentContextIdx + 1);
+				currentContextIdx = std::min(currentContextNum / 2, currentContextIdx + 1);
 			}
 			frameCount++;
 		}
@@ -110,16 +111,17 @@ class GetItemDialog : public IDialog {
 
 class HintDialog : public IDialog {
 	public:
-		HintDialog(Float3 pos) : _objPos(pos) {
+		HintDialog() {
 			tex = TEXTURE.loadTexture("./assets/buttonA.png");
 		}
 		void update() override {
 		}
 		void draw() override {
-			SPRITE.drawSpriteIn3D({ _objPos.x, _objPos.y + 3.8f, _objPos.z }, { 32.0f, 32.0f }, tex);
+		}
+		void draw(Float3 pos) override {
+			SPRITE.drawSpriteIn3D(pos, { 32.0f, 32.0f }, tex);
 		}
 	
 	private:
 		unsigned int tex;
-		Float3 _objPos;
 };

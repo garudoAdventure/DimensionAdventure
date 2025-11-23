@@ -4,11 +4,10 @@
 
 Model::Model(const std::string fileName) {
 	_aiScene = aiImportFile(fileName.c_str(),
-		aiProcess_Triangulate |
+		aiProcess_Triangulate
 		//aiProcess_JoinIdenticalVertices |
 		//aiProcess_LimitBoneWeights |
 		//aiProcess_ImproveCacheLocality |
-		aiProcess_FlipUVs
 		//aiProcessPreset_TargetRealtime_MaxQuality |
 		//aiProcess_ConvertToLeftHanded
 	);

@@ -5,57 +5,71 @@
 #include "Player.h"
 #include "MathTool.h"
 #include "BlockManager.h"
+#include "FloorBaseManager.h"
 #include "DoorManager.h"
 #include "ClimbableObjManager.h"
 #include "EnemyManager.h"
-#include "ItemManager.h"
 #include "ItemBoxManager.h"
+#include "IStagePuzzle.h"
 
 class Layer {
 	public:
-		Layer(const char* path) {
-			bgTex = TEXTURE.loadTexture(path);
+		Layer() {
 			_blockManager = new BlockManager();
+			_floorBaseManager = new FloorBaseManager();
 			_doorManager = new DoorManager();
 			_climbableObkManager = new ClimbableObjManager();
 			_enemyManager = new EnemyManager();
-			_itemManager = new ItemManager();
 			_itemBoxManager = new ItemBoxManager();
 		}
 		~Layer() {
 			delete _blockManager;
+			delete _floorBaseManager;
 			delete _doorManager;
 			delete _climbableObkManager;
 			delete _enemyManager;
-			delete _itemManager;
 			delete _itemBoxManager;
 		}
 		void update() {
 			_blockManager->update();
+			_floorBaseManager->update();
 			_doorManager->update();
 			_enemyManager->update();
-			_itemManager->update();
 			_itemBoxManager->update();
+			for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
+				stagePuzzle->update();
+			}
 		}
 		void draw() {
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, bgTex);
 			_blockManager->draw();
+			_floorBaseManager->draw();
 			_doorManager->draw();
 			_climbableObkManager->draw();
 			_enemyManager->draw();
-			_itemManager->draw();
 			_itemBoxManager->draw();
+			for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
+				stagePuzzle->draw();
+			}
 		}
 		void collide(Player* player, bool is2D) {
 			_blockManager->collide(player, is2D);
 			_doorManager->collide(player, is2D);
 			_climbableObkManager->collide(player, is2D);
 			_enemyManager->collide(player, is2D);
-			_itemManager->collide(player, is2D);
 			_itemBoxManager->collide(player, is2D);
+			for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
+				stagePuzzle->collide(player, is2D);
+			}
+		}
+		void setBg(const char* path) {
+			bgTex = TEXTURE.loadTexture(path);
 		}
 		BlockManager* getBlockManager() const {
 			return _blockManager;
+		}
+		FloorBaseManager* getFloorBaseManager() const {
+			return _floorBaseManager;
 		}
 		DoorManager* getDoorManager() const {
 			return _doorManager;
@@ -66,19 +80,20 @@ class Layer {
 		EnemyManager* getEnemyManager() const {
 			return _enemyManager;
 		}
-		ItemManager* getItemManager() const {
-			return _itemManager;
-		}
 		ItemBoxManager* getItemBoxManager() const {
 			return _itemBoxManager;
 		}
+		void addStagePuzzle(IStagePuzzle* stagePuzzle) {
+			_stagePuzzles.emplace_back(stagePuzzle);
+		}
 
 	private:
-		unsigned int bgTex;
+		int bgTex = -1;
 		BlockManager* _blockManager;
+		FloorBaseManager* _floorBaseManager;
 		DoorManager* _doorManager;
 		ClimbableObjManager* _climbableObkManager;
 		EnemyManager* _enemyManager;
-		ItemManager* _itemManager;
 		ItemBoxManager* _itemBoxManager;
+		std::vector<IStagePuzzle*> _stagePuzzles;
 };

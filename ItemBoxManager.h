@@ -25,12 +25,7 @@ class ItemBoxManager : public ObjManager {
 		}
 		void collide(Player* player, bool is2D) override {
 			for (ItemBox* itemBox : itemBoxes) {
-				if (MathTool::checkCollision(player->getBox(), itemBox->getTriggerBox(), is2D)) {
-					itemBox->trigger(player);
-				}
-				if (MathTool::checkCollision(player->getBox(), itemBox->getBox(), is2D)) {
-					player->collide(itemBox);
-				}
+				itemBox->trigger(player, is2D);
 			}
 		}
 		void add(ItemBox* itemBox) {

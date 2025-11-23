@@ -11,10 +11,13 @@ class Field {
 		virtual ~Field();
 		void update(int currentLayer);
 		void draw(int currentLayer);
+		void load();
 		void collide(Player* player, bool is2D);
 
 	protected:
+		const char* filePath;
 		Layer* _layer[3];
+		Model* _floor[3];
 };
 
 class Field00 : public Field {
@@ -40,4 +43,9 @@ class Field03 : public Field {
 class Field04 : public Field {
 	public:
 		Field04(IGameEventHandler* gameEvent);
+};
+
+class Field05 : public Field {
+	public:
+		Field05(IGameEventHandler* gameEvent);
 };

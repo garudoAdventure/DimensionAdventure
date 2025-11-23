@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Field.h"
 #include "StatusUI.h"
+#include "ItemList.h"
 #include "FieldManager.h"
 #include "IGameEvent.h"
 #include "IGameEventHandler.h"
@@ -31,6 +32,7 @@ class GameMain : public GameState, public IGameEventHandler {
 		Field* currentField;
 		FieldManager fieldManager;
 		StatusUI statusUI;
+		ItemList itemList;
 		LayerScreen layerScreen;
 		std::vector<IGameEvent*> gameEventQueue;
 

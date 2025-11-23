@@ -26,7 +26,7 @@ class BlockManager : public ObjManager {
 		void collide(Player* player, bool is2D) override {
 			for (Block* block : blocks) {
 				if (MathTool::checkCollision(player->getBox(), block->getBox(), is2D)) {
-					player->collide(block);
+					player->hitObj(block);
 				}
 			}
 		}

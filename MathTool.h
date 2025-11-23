@@ -35,9 +35,9 @@ class MathTool {
 
 		static Float3 getCoordPos(Float3 coord) {
 			return {
-				-22.5f + 3.0f * coord.x,
-				-12.0f + 3.0f * coord.y,
-				12.0f - 3.0f * coord.z
+				-22.75f + 2.5f * coord.x,
+				-12.25f + 2.5f * coord.y,
+				12.5f - 2.5f * coord.z
 			};
 		}
 

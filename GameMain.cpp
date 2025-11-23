@@ -8,7 +8,8 @@
 GameMain::GameMain() {
   camera = new Camera();
   player = new Player(this);
-  currentField = newField = fieldManager.getField(0, this);
+  currentField = newField = fieldManager.getField(5, this);
+  currentField->load();
 }
 
 GameMain::~GameMain() {
@@ -32,9 +33,8 @@ void GameMain::update() {
 
   camera->moveCamera(player);
 
-  layerScreen.update(camera, currentField, player);
-
   statusUI.update(player);
+  itemList.update();
 }
 
 void GameMain::draw() {
@@ -56,12 +56,14 @@ void GameMain::draw() {
 
   // UI
   statusUI.draw();
+  itemList.draw();
 }
 
 void GameMain::changeField() {
   if (currentField != newField) {
     delete currentField;
     currentField = newField;
+    currentField->load();
     player->setPos(_playerInitPos);
     camera->set2DPos({ _playerInitPos.x, _playerInitPos.y });
     gameEventQueue.emplace_back(new FieldFadeInEvent({
@@ -93,6 +95,7 @@ void GameMain::transformDimension() {
 }
 
 void GameMain::transformLayer() {
+  layerScreen.update(camera, currentField, player);
   gameEventQueue.emplace_back(new TransformLayerEvent(&layerScreen, player));
 }
 
