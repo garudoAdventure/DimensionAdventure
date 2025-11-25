@@ -27,7 +27,7 @@ class Player : public GameObj {
 		void hurt(int damage);
 		void attackEnemy(Enemy* enemy);
 		void convertDimension();
-
+		
 		Model* getModel() {
 			return _model;
 		}

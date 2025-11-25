@@ -8,7 +8,7 @@ PlayerIdle::PlayerIdle() {
 }
 
 void PlayerIdle::init() {
-	player->getModel()->loadAnim(11);
+	player->getModel()->loadAnim(0);
 }
 
 void PlayerIdle::update() {

@@ -34,9 +34,9 @@ class LockedDoor : public Door {
 	public:
 		LockedDoor(Float3 pos, IGameEventHandler* gameEvent) : Door(pos), _gameEvent(gameEvent) {
 		}
-		void onTrigger(Player* player) override {
+		void onTrigger(GameObj* player) override {
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
-				IDialog* dialog = new NormalDialog({ "Œ®‚ª‚©‚©‚Á‚Ä‚¢‚é", "ŠJ‚¯‚È‚¢" });
+				IDialog* dialog = new MessageDialog({ "Œ®‚ª‚©‚©‚Á‚Ä‚¢‚é", "ŠJ‚¯‚È‚¢" });
 				_gameEvent->addEvent(new ShowDialogEvent(dialog));
 			}
 		}
@@ -49,7 +49,7 @@ class OpenedDoor : public Door {
 		OpenedDoor(Float3 pos, int fieldID, IGameEventHandler* gameEvent, Float3 playerInitPos) :
 			Door(pos), _gameEvent(gameEvent), _nextField(fieldID), _playerInitPos(playerInitPos) {
 		}
-		void onTrigger(Player* player) override {
+		void onTrigger(GameObj* player) override {
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
 				_gameEvent->setNewField(_nextField, _pos, _playerInitPos);
 			}

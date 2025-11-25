@@ -33,17 +33,17 @@ void Field::load() {
 		switch (block.type) {
 			// Floor
 			case 1:
-				_layer[layerIdx]->getBlockManager()->add(new Block(pos, _floor[layerIdx]));
+				_layer[layerIdx]->addGameObj(new Block(pos, _floor[layerIdx]));
 				break;
 			
 			// Wall
 			case 2:
-				_layer[layerIdx]->getBlockManager()->add(new Block(pos, MODEL.loadModel("./assets/model/stoneBlock.fbx")));
+				_layer[layerIdx]->addGameObj(new Block(pos, MODEL.loadModel("./assets/model/stoneBlock.fbx")));
 				break;
 
 			// Block
 			case 3:
-				_layer[layerIdx]->getBlockManager()->add(new Block(pos, MODEL.loadModel("./assets/model/box.fbx")));
+				_layer[layerIdx]->addGameObj(new Block(pos, MODEL.loadModel("./assets/model/box.fbx")));
 				break;
 
 			// FloorBase
@@ -62,8 +62,8 @@ void Field::draw(int currentLayer) {
 	_layer[currentLayer]->draw();
 }
 
-void Field::collide(Player* player, bool is2D) {
-	_layer[player->getCurrentLayer()]->collide(player, is2D);
+void Field::collisionCheck(Player* player, bool is2D) {
+	_layer[player->getCurrentLayer()]->collisionCheck(player, is2D);
 }
 
 Field::~Field() {

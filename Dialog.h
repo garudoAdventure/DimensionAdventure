@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "DirectX.h"
 #include "DirectWrite.h"
@@ -9,17 +9,23 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <functional>
 
 class IDialog {
 	public:
+		IDialog() {
+			tex = TEXTURE.loadTexture("./assets/messageBox.png");
+		}
 		virtual void update() = 0;
 		virtual void draw() = 0;
 		virtual void draw(Float3 pos) {}
-		void drawStr(std::string str) {
-			SPRITE.drawSprite2D(_pos, _size, { 0.7f, 0.7f, 0.7f, 0.9f });
+		void drawMessageBox() {
+			SPRITE.drawSprite2D(_pos, _size, tex, 0.8f);
+		}
+		void drawStr(Float2 pos, std::string str) {
 			DWRITE.drawString(str, {
-				_pos.x + 640.0f - _size.x * 0.5f + _margin.x,
-				360.0f - _pos.y - _size.y * 0.5f + _margin.y
+				pos.x + 640.0f - _size.x * 0.5f + _margin.x,
+				360.0f - pos.y - _size.y * 0.5f + _margin.y
 			});
 		}
 		bool isEnd() {
@@ -29,7 +35,7 @@ class IDialog {
 	protected:
 		Float2 _pos;
 		Float2 _size;
-		Float2 _margin = { 20.0f, 10.0f };
+		Float2 _margin = { 50.0f, 40.0f };
 		std::vector<std::string> _context;
 		int contextIdx = 0;
 		int currentContextNum = 0;
@@ -38,18 +44,22 @@ class IDialog {
 		int contextSpeed = 3;
 		int frameCount = 0;
 		bool _isEnd = false;
+
+	private:
+		unsigned int tex;
 };
 
-class NormalDialog : public IDialog {
+class MessageDialog : public IDialog {
 	public:
-		NormalDialog(std::vector<std::string> context) {
-			_pos = { 0.0f, 0.0f };
-			_size = { 500.0f, 150.0f };
+		MessageDialog(std::vector<std::string> context) {
+			_pos = { 0.0f, 100.0f };
+			_size = { 800.0f, 200.0f };
 			_context = context;
 			currentContextNum = _context[0].length();
 		}
 		void update() override {
 			if (openDialogAnimCount < 10) {
+				_size.x = MathTool::lerp<float>(0.0f, 800.0f, openDialogAnimCount / 10.0f);
 				openDialogAnimCount++;
 				return;
 			}
@@ -70,13 +80,9 @@ class NormalDialog : public IDialog {
 		}
 		void draw() override {
 			if (_isEnd) return;
-			if (openDialogAnimCount < 10) {
-				_size.x = MathTool::lerp<float>(0.0f, 500.0f, openDialogAnimCount / 10.0f);
-				SPRITE.drawSprite2D(_pos, _size, { 0.7f, 0.7f, 0.7f, 0.9f });
-				return;
-			}
 			std::string str = _context[contextIdx].substr(0, currentContextIdx * 2);
-			IDialog::drawStr(str);
+			IDialog::drawMessageBox();
+			IDialog::drawStr(_pos, str);
 		}
 };
 
@@ -90,6 +96,7 @@ class GetItemDialog : public IDialog {
 		}
 		void update() override {
 			if (openDialogAnimCount < 10) {
+				_size.x = MathTool::lerp<float>(0.0f, 500.0f, openDialogAnimCount / 10.0f);
 				openDialogAnimCount++;
 				return;
 			}
@@ -99,13 +106,9 @@ class GetItemDialog : public IDialog {
 			frameCount++;
 		}
 		void draw() override {
-			if (openDialogAnimCount < 10) {
-				_size.x = MathTool::lerp<float>(0.0f, 500.0f, openDialogAnimCount / 10.0f);
-				SPRITE.drawSprite2D(_pos, _size, { 0.7f, 0.7f, 0.7f, 0.9f });
-				return;
-			}
 			std::string str = _context[contextIdx].substr(0, currentContextIdx * 2);
-			IDialog::drawStr(str);
+			IDialog::drawMessageBox();
+			IDialog::drawStr(_pos, str);
 		}
 };
 
@@ -124,4 +127,56 @@ class HintDialog : public IDialog {
 	
 	private:
 		unsigned int tex;
+};
+
+class ConfirmDialog : public IDialog {
+	public:
+		ConfirmDialog(std::vector<std::string> context, std::function<void()> callback) : _callback(callback) {
+			_pos = { 0.0f, 0.0f };
+			_size = { 500.0f, 150.0f };
+			_context = context;
+			currentContextNum = _context[0].length();
+		}
+		void update() override {
+			if (openDialogAnimCount < 10) {
+				_size.x = MathTool::lerp<float>(0.0f, 500.0f, openDialogAnimCount / 10.0f);
+				openDialogAnimCount++;
+				return;
+			}
+			if (Keyboard_IsKeyTrigger(KK_RIGHT)) {
+				_isConfirm = false;
+			}
+			if (Keyboard_IsKeyTrigger(KK_LEFT)) {
+				_isConfirm = true;
+			}
+			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
+				if (_isConfirm) {
+					_callback();
+				}
+				_isEnd = true;
+			}
+			if (frameCount % 2 == 0) {
+				currentContextIdx = std::min(currentContextNum / 2, currentContextIdx + 1);
+			}
+			frameCount++;
+		}
+		void draw() override {
+			IDialog::drawMessageBox();
+
+			std::string str = _context[contextIdx].substr(0, currentContextIdx * 2);
+			IDialog::drawStr(_pos, str);
+
+			IDialog::drawStr({ _pos.x + 50.0f, _pos.y - 80.0f }, "はい");
+			IDialog::drawStr({ _pos.x + 200.0f, _pos.y - 80.0f }, "いいえ");
+			if (_isConfirm) {
+				IDialog::drawStr({ _pos.x + 20.0f, _pos.y - 80.0f }, "＞");
+			}
+			else {
+				IDialog::drawStr({ _pos.x + 170.0f, _pos.y - 80.0f }, "＞");
+			}
+		}
+
+	private:
+		bool _isConfirm = true;
+		std::function<void()> _callback;
 };

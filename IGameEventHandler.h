@@ -2,6 +2,7 @@
 
 #include "MathStruct.h"
 #include "IGameEvent.h"
+#include "ItemList.h"
 
 class IGameEventHandler {
 	public:
@@ -10,4 +11,6 @@ class IGameEventHandler {
 		virtual void transformDimension() = 0;
 		virtual void transformLayer() = 0;
 		virtual Float3& getCameraPos() = 0;
+		virtual ItemList* getItemList() = 0;
+		virtual void setFourGodCorrect(int idx, bool correct) = 0;
 };

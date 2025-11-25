@@ -54,12 +54,10 @@ VSOutput main(
     {
         float3 nor = mul(float4(normal, 0.0f), world);
         nor = normalize(nor);
-        VSOut.col.rgb = saturate(-dot(lightDirection, nor));
+        VSOut.col.rgb = saturate(-dot(lightDirection, nor)) * color;
         VSOut.col.a = 1.0f;
         
         VSOut.col.rgb += float3(0.4f, 0.4f, 0.4f);
-        
-        VSOut.col *= color;
     }
     
     VSOut.tex = tex;

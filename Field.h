@@ -12,7 +12,7 @@ class Field {
 		void update(int currentLayer);
 		void draw(int currentLayer);
 		void load();
-		void collide(Player* player, bool is2D);
+		void collisionCheck(Player* player, bool is2D);
 
 	protected:
 		const char* filePath;
@@ -48,4 +48,9 @@ class Field04 : public Field {
 class Field05 : public Field {
 	public:
 		Field05(IGameEventHandler* gameEvent);
+};
+
+class Field06 : public Field {
+	public:
+		Field06(IGameEventHandler* gameEvent);
 };

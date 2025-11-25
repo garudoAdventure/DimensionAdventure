@@ -64,7 +64,7 @@ class MovingBoxArea : public IStagePuzzle {
 					_isSolved = true;
 					itemBox->setLocked(false);
 					_gameEvent->addEvent(new ShowDialogEvent(
-						new NormalDialog({
+						new MessageDialog({
 							"ガチャッ",
 							"宝箱のロックが解除されました"
 						})

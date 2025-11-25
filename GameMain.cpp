@@ -8,13 +8,13 @@
 GameMain::GameMain() {
   camera = new Camera();
   player = new Player(this);
-  currentField = newField = fieldManager.getField(5, this);
-  currentField->load();
+  fieldManager = new FieldManager(this);
+  currentField = newField = fieldManager->getField(0);
 }
 
 GameMain::~GameMain() {
+  delete fieldManager;
   delete player;
-  delete currentField;
   delete camera;
 }
 
@@ -29,7 +29,7 @@ void GameMain::update() {
   currentField->update(player->getCurrentLayer());
   player->update();
 
-  currentField->collide(player, camera->is2D());
+  currentField->collisionCheck(player, camera->is2D());
 
   camera->moveCamera(player);
 
@@ -61,9 +61,7 @@ void GameMain::draw() {
 
 void GameMain::changeField() {
   if (currentField != newField) {
-    delete currentField;
     currentField = newField;
-    currentField->load();
     player->setPos(_playerInitPos);
     camera->set2DPos({ _playerInitPos.x, _playerInitPos.y });
     gameEventQueue.emplace_back(new FieldFadeInEvent({
@@ -78,7 +76,7 @@ void GameMain::addEvent(IGameEvent* gameEvent) {
 }
 
 void GameMain::setNewField(int fieldID, Float3 doorPos, Float3 playerInitPos) {
-  Field* field = fieldManager.getField(fieldID, this);
+  Field* field = fieldManager->getField(fieldID);
   newField = field;
   _playerInitPos = playerInitPos;
   if (!player->is2D()) {
@@ -101,4 +99,12 @@ void GameMain::transformLayer() {
 
 Float3& GameMain::getCameraPos() {
   return camera->getPos();
+}
+
+ItemList* GameMain::getItemList() {
+  return &itemList;
+}
+
+void GameMain::setFourGodCorrect(int idx, bool correct) {
+  fourGodCorrect[idx] = correct;
 }

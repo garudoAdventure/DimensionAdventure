@@ -1,10 +1,15 @@
 #pragma once
 
 #include "GameObj.h"
-#include "Player.h"
 #include "Texture.h"
 #include "Sprite.h"
 #include <string>
+
+enum ItemTag {
+	KEY,
+	STATUE,
+	CRYSTAL,
+};
 
 class Item {
 	public:
@@ -15,7 +20,7 @@ class Item {
 		virtual void draw2D(Float2 pos) {
 			SPRITE.drawSprite2D(pos, _size, texID);
 		}
-		virtual void get(Player* player) = 0;
+		virtual ItemTag getTag() = 0;
 		virtual std::string getName() = 0;
 
 	protected:

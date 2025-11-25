@@ -5,21 +5,25 @@
 
 class FieldManager {
 	public:
-		FieldManager() = default;
-		Field* getField(int id, IGameEventHandler* gameEvent) {
-			switch (id) {
-				case 0:
-					return new Field00(gameEvent);
-				case 1:
-					return new Field01(gameEvent);
-				case 2:
-					return new Field02(gameEvent);
-				case 3:
-					return new Field03(gameEvent);
-				case 4:
-					return new Field04(gameEvent);
-				case 5:
-					return new Field05(gameEvent);
+		FieldManager(IGameEventHandler* gameEvent) {
+			_fields.reserve(15);
+			_fields.emplace_back(new Field00(gameEvent));
+			_fields.emplace_back(new Field01(gameEvent));
+			_fields.emplace_back(new Field02(gameEvent));
+			_fields.emplace_back(new Field03(gameEvent));
+			_fields.emplace_back(new Field04(gameEvent));
+			_fields.emplace_back(new Field05(gameEvent));
+			_fields.emplace_back(new Field06(gameEvent));
+		}
+		~FieldManager() {
+			for (Field* field : _fields) {
+				delete field;
 			}
 		}
+		Field* getField(int id) {
+			return _fields[id];
+		}
+
+	private:
+		std::vector<Field*> _fields;
 };

@@ -7,7 +7,7 @@ PlayerWalk::PlayerWalk() {
 }
 
 void PlayerWalk::init() {
-	player->getModel()->loadAnim(10);
+	player->getModel()->loadAnim(1);
 }
 
 void PlayerWalk::update() {

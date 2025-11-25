@@ -23,6 +23,8 @@ class GameMain : public GameState, public IGameEventHandler {
 		void transformDimension() override;
 		void transformLayer() override;
 		Float3& getCameraPos() override;
+		ItemList* getItemList() override;
+		void setFourGodCorrect(int idx, bool correct) override;
 
 	private:
 		Camera* camera;
@@ -30,11 +32,12 @@ class GameMain : public GameState, public IGameEventHandler {
 		Float3 _playerInitPos = { 0.0f, 0.0f, 0.0f };
 		Field* newField;
 		Field* currentField;
-		FieldManager fieldManager;
+		FieldManager* fieldManager;
 		StatusUI statusUI;
 		ItemList itemList;
 		LayerScreen layerScreen;
 		std::vector<IGameEvent*> gameEventQueue;
+		bool fourGodCorrect[4] = { false, false, false, false };
 
 		void changeField();
 };

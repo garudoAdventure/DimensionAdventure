@@ -39,5 +39,5 @@ class Model {
 		std::vector<aiAnimation*> _animations;
 		std::unordered_map<std::string, AnimData> _animData;
 		int _frame = 0;
-		int _animDuration = 0;
+		int _animDuration = 1;
 };

@@ -9,12 +9,14 @@ Field00::Field00(IGameEventHandler* gameEvent) : Field("./map/map0.csv") {
 			MathTool::getCoordPos({ 53.0f, 2.9f, 0.0f }), 1, gameEvent,
 			MathTool::getCoordPos({ 5.0f, 2.5f, 0.0f })
 		);
-		_layer[i]->getDoorManager()->add(door);
+		_layer[i]->addGameObj(door);
 	}
 	for (int i = 0; i < 3; i++) {
 		Door* door = new LockedDoor(
 			MathTool::getCoordPos({ 5.0f, 2.4f, 0.0f }), gameEvent
 		);
-		_layer[i]->getDoorManager()->add(door);
+		_layer[i]->addGameObj(door);
 	}
+	
+	Field::load();
 }

@@ -2,6 +2,7 @@
 
 #include "MathStruct.h"
 #include "CubeRenderer.h"
+#include "MathTool.h"
 
 class GameObj {
 	public:
@@ -10,6 +11,11 @@ class GameObj {
 		}
 		virtual void draw() {
 			CUBE_RENDERER.drawCube({ _pos, _size }, _color, _texID);
+		}
+		virtual void collide(GameObj* gameObj, bool is2D) {
+			if (MathTool::checkCollision(this->getBox(), gameObj->getBox(), is2D)) {
+				gameObj->hitObj(this);
+			}
 		}
 		void setPos(Float3 pos) {
 			_pos = pos;
