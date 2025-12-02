@@ -3,14 +3,18 @@
 #include "PlayerIdle.h"
 #include "PlayerClimb.h"
 #include "PlayerHurt.h"
+#include "Shader.h"
+#include "Texture.h"
 
 Player::Player(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 	_pos = { -12.0f, -5.0f, 0.0f };
-	_size = { 2.0f, 4.0f, 2.0f };
+	_size = { 2.0f, 3.5f, 2.0f };
 	_color = { 1.0f, 1.0f, 1.0f, 0.8f };
+	_tag = ObjTag::PLAYER_TAG;
 
-	_model = new Model("./assets/model/character.fbx");
-	// _size = _model->getSize();
+	_model = new Model("./assets/model/player.fbx");
+	ballModel = new Model("./assets/model/ball.fbx");
+	ballModel->updateColor({ 0.54f, 1.0f, 0.43f, 0.3f });
 
 	_playerController = new PlayerController2D();
 	setState(new PlayerIdle());
@@ -28,31 +32,69 @@ void Player::update() {
 
 	_vel.y -= GRAVITY;
 
-	_dir.x = _vel.x > 0 ? 1.0f : -1.0f;
+	if (_vel.x > 0) {
+		_dir.x = 1.0f;
+	}
+	else if (_vel.x < 0) {
+		_dir.x = -1.0f;
+	}
+	if (_vel.z > 0) {
+		_dir.z = 1.0f;
+	}
+	if (_vel.z < 0) {
+		_dir.z = -1.0f;
+	}
 
 	_pos += _vel;
 	
-	if (hasBangle) {
+	if (_hasDimensionAbility) {
 		if (Keyboard_IsKeyTrigger(KK_BACK)) {
 			convertDimension();
 		}
-		convertLayer();
+		if (_crystalNum > 0 && Keyboard_IsKeyTrigger(KK_NUMPAD0)) {
+			convertLayer();
+		}
 	}
 
-	// _model->update();
+	 _model->update();
 }
 
 void Player::draw() {
-	Float3 radian = { 0.0f, 0.0f, 0.0f };
-	if (_dir.x > 0) {
-		radian.z = -PI / 2;
+	Float3 radian;
+	XMVECTOR direction;
+	if (_is2D) {
+		radian = { 0.0f, PI, 0.0f };
+		direction = { 0.0f, -0.5f, 1.0f };
+		if (_dir.x > 0) {
+			radian.y -= PI / 8;
+		}
+		if (_dir.x < 0) {
+			radian.y += PI / 8;
+		}
 	}
-	if (_dir.x < 0) {
-		radian.z = PI / 2;
+	else {
+		direction = { 0.5f, -1.0f, 0.0f };
+		radian = { 0.0f, PI / 2, 0.0f };
+		if (_dir.x > 0) {
+			radian.y += 0.0f;
+		}
+		if (_dir.x < 0) {
+			radian.y += PI;
+		}
 	}
-	// _model->draw(_pos, radian);
+	
+	Light light;
+	light.enable = true;
+	direction = XMVector3Normalize(direction);
+	XMStoreFloat3(&light.direction, direction);
 
-	currentState->draw();
+	SHADER.setLight(light);
+
+	_model->draw(_pos, radian);
+}
+
+void Player::drawCircle() {
+	ballModel->draw(_pos, { 0.0f, 0.0f, 0.0f });
 }
 
 void Player::setState(PlayerState* state) {
@@ -106,9 +148,7 @@ void Player::convertDimension() {
 }
 
 void Player::convertLayer() {
-	if (Keyboard_IsKeyTrigger(KK_NUMPAD0)) {
-		_gameEvent->transformLayer();
-	}
+	_gameEvent->transformLayer();
 }
 
 void Player::invincibleUpdate() {
@@ -145,6 +185,10 @@ void Player::autoRecoverEnergy() {
 }
 
 void Player::hitObj(GameObj* gameObj, bool isStatic) {
+	if (gameObj->getTag() == ObjTag::LADDER) {
+		climb(gameObj);
+		return;
+	}
 	const float playerTop = _pos.y + _size.y / 2;
 	const float playerBottom = _pos.y - _size.y / 2;
 	const float playerRight = _pos.x + _size.x / 2;

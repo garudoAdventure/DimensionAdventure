@@ -14,6 +14,7 @@ class Mesh {
 		void draw(Float3 pos, Float3 radian);
 		bool updateBoneTransform(aiNode* node, aiMatrix4x4 globalTransform);
 		void updateNodeTransform(aiMatrix4x4 globalTransform);
+		void updateColor(Float4 color);
 		Float3 getMinVertex() {
 			return minVertex;
 		}

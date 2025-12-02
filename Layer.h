@@ -3,83 +3,74 @@
 #include "Texture.h"
 #include "Sprite.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "MathTool.h"
-#include "FloorBaseManager.h"
-#include "ClimbableObjManager.h"
-#include "EnemyManager.h"
 #include "IStagePuzzle.h"
+#include "Shader.h"
 
 class Layer {
 	public:
-		Layer() {
-			_floorBaseManager = new FloorBaseManager();
-			_climbableObkManager = new ClimbableObjManager();
-			_enemyManager = new EnemyManager();
-		}
+		Layer() = default;
 		~Layer() {
-			delete _floorBaseManager;
-			delete _climbableObkManager;
-			delete _enemyManager;
+			for (GameObj* obj : _gameObjs) {
+				delete obj;
+			}
 		}
 		void update() {
-			_floorBaseManager->update();
-			_enemyManager->update();
-
 			for (GameObj* gameObj : _gameObjs) {
-				gameObj->update();
+				if (gameObj->isActive()) {
+					gameObj->update();
+				}
+			}
+			for (Enemy* enemy : _enemies) {
+				enemy->update();
 			}
 			for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
 				stagePuzzle->update();
 			}
 		}
 		void draw() {
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, bgTex);
-			_floorBaseManager->draw();
-			_climbableObkManager->draw();
-			_enemyManager->draw();
-
+			// SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, bgTex);
 			for (GameObj* gameObj : _gameObjs) {
-				gameObj->draw();
+				if (gameObj->isActive()) {
+					gameObj->draw();
+				}
+			}
+			for (Enemy* enemy : _enemies) {
+				enemy->draw();
 			}
 			for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
 				stagePuzzle->draw();
 			}
 		}
-		void collisionCheck(Player* player, bool is2D) {
-			_climbableObkManager->collide(player, is2D);
-			_enemyManager->collide(player, is2D);
-			
+		void collisionCheck(bool is2D) {
 			for (GameObj* gameObj : _gameObjs) {
-				gameObj->collide(player, is2D);
+				if (!gameObj->isActive()) continue;
+				gameObj->collide(&PLAYER, is2D);
 			}
-			for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
-				stagePuzzle->collide(player, is2D);
-			}
+			//for (Enemy* enemy : _enemies) {
+			//	enemy->collide(&PLAYER, is2D);
+			//}
+			//for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
+			//	stagePuzzle->collide(&PLAYER, is2D);
+			//}
 		}
 		void setBg(const char* path) {
 			bgTex = TEXTURE.loadTexture(path);
 		}
-		FloorBaseManager* getFloorBaseManager() const {
-			return _floorBaseManager;
+		void addGameObj(GameObj* gameObj) {
+			_gameObjs.emplace_back(gameObj);
 		}
-		ClimbableObjManager* getClimbableObjManager() const {
-			return _climbableObkManager;
-		}
-		EnemyManager* getEnemyManager() const {
-			return _enemyManager;
+		void addEnemy(Enemy* enemy) {
+			_enemies.emplace_back(enemy);
 		}
 		void addStagePuzzle(IStagePuzzle* stagePuzzle) {
 			_stagePuzzles.emplace_back(stagePuzzle);
 		}
-		void addGameObj(GameObj* gameObj) {
-			_gameObjs.emplace_back(gameObj);
-		}
 
 	private:
 		int bgTex = -1;
-		FloorBaseManager* _floorBaseManager;
-		ClimbableObjManager* _climbableObkManager;
-		EnemyManager* _enemyManager;
 		std::vector<IStagePuzzle*> _stagePuzzles;
 		std::vector<GameObj*> _gameObjs;
+		std::vector<Enemy*> _enemies;
 };

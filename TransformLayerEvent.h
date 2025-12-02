@@ -7,14 +7,13 @@
 
 class TransformLayerEvent : public IGameEvent {
 	public:
-		TransformLayerEvent(LayerScreen* layerScreen, Player* player) : _layerScreen(layerScreen), _player(player) {
+		TransformLayerEvent(LayerScreen* layerScreen) : _layerScreen(layerScreen) {
 		}
 		~TransformLayerEvent() {
-
 		}
 		void update() override {
 			if (!_layerScreen->selectLayer()) {
-				_player->setLayer(_layerScreen->getCurrentLayer());
+				PLAYER.setLayer(_layerScreen->getCurrentLayer());
 				_isEnd = true;
 			}
 		}
@@ -27,7 +26,6 @@ class TransformLayerEvent : public IGameEvent {
 		}
 
 	private:
-		Player* _player;
 		LayerScreen* _layerScreen;
 		bool _isEnd = false;
 };

@@ -20,7 +20,7 @@ void Camera::draw() {
 	SHADER.setProjection(projMatrix);
 }
 
-void Camera::transformDimension(Player* player) {
+void Camera::transformDimension() {
 	if (!_isTransforming) {
 		count = 1;
 		_isTransforming = true;
@@ -29,7 +29,7 @@ void Camera::transformDimension(Player* player) {
 	const int maxCount = 30;
 	float step = (float)count / maxCount;
 
-	cameraController->rotate(player, _eye, _focus, projMatrix, step);
+	cameraController->rotate(_eye, _focus, projMatrix, step);
 
 	if (count < maxCount) {
 		count++;
@@ -41,8 +41,8 @@ void Camera::transformDimension(Player* player) {
 	}
 }
 
-void Camera::moveCamera(Player* player) {
-	cameraController->move(player, _newEye, _newFocus);
+void Camera::moveCamera() {
+	cameraController->move(_newEye, _newFocus);
 	_eye = MathTool::lerp<Float3>(_eye, _newEye, 0.1f);
 	_focus = MathTool::lerp<Float3>(_focus, _newFocus, 0.1f);
 }
@@ -73,39 +73,39 @@ Float3& Camera::getPos() {
 	return _eye;
 }
 
-void CameraController2D::move(Player* player, Float3& eye, Float3& focus) {
-	eye.x = player->getPos().x;
+void CameraController2D::move(Float3& eye, Float3& focus) {
+	eye.x = PLAYER.getPos().x;
 	eye.x = MathTool::getInRange(eye.x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
 	focus.x = eye.x;
 
-	eye.y = player->getPos().y;
+	eye.y = PLAYER.getPos().y;
 	eye.y = MathTool::getInRange(eye.y, 0.0f, 20.0f);
 	focus.y = eye.y;
 
 	eye.z = -CAMERA_Z_DISTANCE;
 }
 
-void CameraController3D::move(Player* player, Float3& eye, Float3& focus) {
-	focus.x = player->getPos().x;
+void CameraController3D::move(Float3& eye, Float3& focus) {
+	focus.x = PLAYER.getPos().x;
 	focus.x = MathTool::getInRange(focus.x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
 	eye.x = focus.x - CAMERA_Z_DISTANCE;
 
-	focus.y = player->getPos().y;
+	focus.y = PLAYER.getPos().y;
 	focus.y = MathTool::getInRange(focus.y, 0.0f, 20.0f);
 	eye.y = focus.y + 5.0f;
 
 	eye.z = 0.0f;
 }
 
-void CameraController2D::rotate(Player* player, Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
-	const float srcEyePosX = MathTool::getInRange(player->getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
-	const float destEyePosX = MathTool::getInRange(player->getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
+void CameraController2D::rotate(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
+	const float srcEyePosX = MathTool::getInRange(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
+	const float destEyePosX = MathTool::getInRange(PLAYER.getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
 	eye.x = MathTool::lerp(srcEyePosX, destEyePosX, step);
 	eye.y += 5.0f / 30.0f;
 	eye.z += 1.0f;
 
-	const float srcFocusPosX = MathTool::getInRange(player->getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
-	const float destFocusPosX = MathTool::getInRange(player->getPos().x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
+	const float srcFocusPosX = MathTool::getInRange(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
+	const float destFocusPosX = MathTool::getInRange(PLAYER.getPos().x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
 	focus.x = MathTool::lerp(srcFocusPosX, destFocusPosX, step);
 
 	XMMATRIX ortho = SHADER.getOrthoMatrix();
@@ -113,15 +113,15 @@ void CameraController2D::rotate(Player* player, Float3& eye, Float3& focus, XMMA
 	projMat = MathTool::easeInQuad<XMMATRIX>(ortho, perspective, step);
 }
 
-void CameraController3D::rotate(Player* player, Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
-	const float srcEyePosX = MathTool::getInRange(player->getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
-	const float destEyePosX = MathTool::getInRange(player->getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
+void CameraController3D::rotate(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
+	const float srcEyePosX = MathTool::getInRange(PLAYER.getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
+	const float destEyePosX = MathTool::getInRange(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
 	eye.x = MathTool::lerp(srcEyePosX, destEyePosX, step);
 	eye.y -= 5.0f / 30.0f;
 	eye.z -= 1.0f;
 
-	const float srcFocusPosX = MathTool::getInRange(player->getPos().x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
-	const float destFocusPosX = MathTool::getInRange(player->getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
+	const float srcFocusPosX = MathTool::getInRange(PLAYER.getPos().x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
+	const float destFocusPosX = MathTool::getInRange(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
 	focus.x = MathTool::lerp(srcFocusPosX, destFocusPosX, step);
 
 	XMMATRIX ortho = SHADER.getOrthoMatrix();

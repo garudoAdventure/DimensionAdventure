@@ -14,6 +14,9 @@ struct Float2 {
   Float2 operator-(const Float2& r) {
 	  return { x - r.x, y - r.y };
   }
+  Float2 operator*(const float r) {
+    return { x * r, y * r };
+  }
   Float2 operator/(const float r) {
 	  return { x / r, y / r };
   }

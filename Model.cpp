@@ -29,10 +29,10 @@ Model::Model(const std::string fileName) {
 
 		Float3 meshMinVertex = mesh->getMinVertex();
 		Float3 meshMaxVertex = mesh->getMaxVertex();
-		if ((int)meshMinVertex.x <= (int)minVertex.x && (int)meshMinVertex.y <= (int)minVertex.y && (int)meshMinVertex.z <= (int)minVertex.z) {
+		if (meshMinVertex.x <= minVertex.x && meshMinVertex.y <= minVertex.y && meshMinVertex.z <= minVertex.z) {
 			minVertex = meshMinVertex;
 		}
-		if ((int)meshMaxVertex.x >= (int)maxVertex.x && (int)meshMaxVertex.y >= (int)maxVertex.y && (int)meshMaxVertex.z >= (int)maxVertex.z) {
+		if (meshMaxVertex.x >= maxVertex.x && meshMaxVertex.y >= maxVertex.y && meshMaxVertex.z >= maxVertex.z) {
 			maxVertex = meshMaxVertex;
 		}
 	}
@@ -116,7 +116,6 @@ void Model::updateNode(int frame, aiNode* node, aiMatrix4x4 parentTransform) {
 }
 
 void Model::draw(Float3 pos, Float3 radian) {
-	SHADER.begin();
 	DX3D.setDepthEnable(true);
 	TEXTURE.setTexture(-1);
 	for (int i = 0; i < _meshes.size(); i++) {
@@ -130,5 +129,11 @@ void Model::draw(Float3 pos, Float3 radian) {
 			DX3D.getDeviceContext()->PSSetShaderResources(0, 1, &_texture[texName.data]);
 		}
 		mesh->draw(pos, radian);
+	}
+}
+
+void Model::updateColor(Float4 color) {
+	for (Mesh* mesh : _meshes) {
+		mesh->updateColor(color);
 	}
 }

@@ -155,7 +155,6 @@ void Mesh::updateNodeTransform(aiMatrix4x4 globalTransform) {
 }
 
 void Mesh::draw(Float3 pos, Float3 radian) {
-	SHADER.setMatrix();
 	aiMatrix4x4 mat = nodeTransform;
 	XMMATRIX world = XMMATRIX(
 		(float)mat.a1, (float)mat.b1, (float)mat.c1, (float)mat.d1,
@@ -177,4 +176,11 @@ void Mesh::draw(Float3 pos, Float3 radian) {
 	DX3D.getDeviceContext()->VSSetConstantBuffers(1, 1, &_boneBuffer);
 	DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	DX3D.getDeviceContext()->DrawIndexed(_indexData.size(), 0, 0);
+}
+
+void Mesh::updateColor(Float4 color) {
+	for (int i = 0; i < _vertexData.size(); i++) {
+		_vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
+	}
+	DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &_vertexData[0], 0, 0);
 }

@@ -15,6 +15,8 @@
 #include "Keyboard.h"
 #include "Game.h"
 
+int g_countFPS;
+char g_debugStr[2048] = "ウインドウ表示";
 static constexpr char WINDOW_CLASS[] = "GameWindow";
 static constexpr char TITLE[] = "ウインドウ表示";
 
@@ -80,17 +82,22 @@ int WINAPI WinMain(_In_ HINSTANCE hInst, _In_opt_ HINSTANCE hPrevInst, _In_ LPST
 	  else {
 	    dwCurrentTime = timeGetTime();
 	    if (dwCurrentTime - dwFPSLastTime >= 1000) {
-		  dwFPSLastTime = dwCurrentTime;
-		  dwFrameCount = 0;
+        g_countFPS = dwFrameCount;
+		    dwFPSLastTime = dwCurrentTime;
+		    dwFrameCount = 0;
 	    }
 
 	    if (dwCurrentTime - dwExecLastTime >= (1000 / 60)) {
-		  dwExecLastTime = dwCurrentTime;
+		    dwExecLastTime = dwCurrentTime;
 
-		  Update();
-		  Draw();
+        wsprintf(g_debugStr, TITLE);
+        wsprintf(&g_debugStr[strlen(g_debugStr)], "FPS: %d", g_countFPS);
+        SetWindowText(hWnd, g_debugStr);
 
-		  dwFrameCount++;
+		    Update();
+		    Draw();
+
+		    dwFrameCount++;
 	    }
 	  }
   } while (msg.message != WM_QUIT);

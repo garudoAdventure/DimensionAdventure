@@ -11,6 +11,12 @@ using namespace DirectX;
 #define SCREEN_WIDTH  1280
 #define SCREEN_HEIGHT 720
 
+enum class BlendMode {
+	NORMAL,
+	ADD_ALPHA,
+	REND_TEX
+};
+
 class Direct3D {
   public:
 		ID3D11Device* getDevice();
@@ -19,8 +25,10 @@ class Direct3D {
 
 		void clear();
 		void present();
-		void setDepthEnable(bool depthEnable);
 		void setTargetView();
+		void setDepthEnable(bool depthEnable);
+		void setBlendMode(BlendMode mode);
+		void setViewport(float width, float height);
 
   private:
 		ID3D11Device* _device = NULL;
@@ -30,7 +38,9 @@ class Direct3D {
 		ID3D11RenderTargetView* _rtv = NULL;
 		ID3D11DepthStencilView* _depthStencilView = NULL;
 		ID3D11RasterizerState* _rasterizerState = NULL;
-		ID3D11BlendState* _blendState = NULL;
+		ID3D11BlendState* _blendStateAlpha = NULL;
+		ID3D11BlendState* _blendStateAdd = NULL;
+		ID3D11BlendState* _blendStateRendTex = NULL;
 		ID3D11DepthStencilState* _depthStencilStateDepthDisable = NULL;
 		ID3D11DepthStencilState* _depthStencilStateDepthEnable = NULL;
 

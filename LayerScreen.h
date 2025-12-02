@@ -12,16 +12,20 @@
 
 class LayerScreen {
 	public:
-		LayerScreen() = default;
-		void update(Camera* camera, Field* currentField, Player* player) {
-			layerNum = player->getCrystalNum();
+		LayerScreen() {
+			layerTex[0] = new RenderTexture(1280.0f, 720.0f);
+			layerTex[1] = new RenderTexture(1280.0f, 720.0f);
+			layerTex[2] = new RenderTexture(1280.0f, 720.0f);
+		}
+		void update(Camera* camera, Field* currentField) {
+			layerNum = PLAYER.getCrystalNum();
 
 			camera->draw();
 			for (int i = 0; i < 3; i++) {
-				layerTex[i].setTargetView();
-				layerTex[i].clear();
+				layerTex[i]->setTargetView();
+				layerTex[i]->clear();
 				currentField->draw(i);
-				player->draw();
+				PLAYER.draw();
 			}
 			//playerLayerTex.setTargetView();
 			//playerLayerTex.clear();
@@ -35,13 +39,13 @@ class LayerScreen {
 			SHADER.begin();
 			SHADER.set3DMatrix(view);
 			if (startEffect) {
-				TEXTURE.setTexture(layerTex[layerIdx].getTex());
+				TEXTURE.setTexture(layerTex[layerIdx]->getTex());
 				SPRITE.drawTextureSprite({ 0.0f, 0.0f, _posZ }, { 1280.0f, 720.0f }, 1.0f);
 
 				float alpha = MathTool::lerp<float>(1.0f, 0.0f, startEffectCount / 15.0f);
 				float width = MathTool::lerp<float>(1280.0f, 2560.0f, startEffectCount / 15.0f);
 				float height = MathTool::lerp<float>(720.0f, 1440.0f, startEffectCount / 15.0f);
-				TEXTURE.setTexture(layerTex[layerIdx].getTex());
+				TEXTURE.setTexture(layerTex[layerIdx]->getTex());
 				SPRITE.drawTextureSprite({ 0.0f, 0.0f, _posZ - 1.0f }, { width, height }, alpha);
 				return;
 			}
@@ -52,7 +56,7 @@ class LayerScreen {
 				if (i == 0)						 alpha = alphaFront;
 				if (i == layerNum - 1) alpha = alphaBack;
 				if (i == layerNum)		 alpha = 1 - alphaFront;
-				TEXTURE.setTexture(layerTex[idx].getTex());
+				TEXTURE.setTexture(layerTex[idx]->getTex());
 				SPRITE.drawTextureSprite({
 					0.0f, _posY + offsetY * i, _posZ + offsetZ * i
 				}, { 1280.0f, 720.0f }, alpha);
@@ -114,8 +118,8 @@ class LayerScreen {
 		}
 
 	private:
-		RenderTexture layerTex[3];
-		RenderTexture playerLayerTex;
+		RenderTexture* layerTex[3];
+		// RenderTexture* playerLayerTex;
 		Float3 _eye = { 0.0f, 0.0f, -30.0f };
 		const float offsetY = 80.0f;
 		float _posY = 0.0f;

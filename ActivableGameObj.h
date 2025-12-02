@@ -14,21 +14,23 @@ class ActivableGameObj : public GameObj {
 			_isTrigger = false;
 		}
 		virtual void draw() override {
-			if (_isTrigger) {
-				_hintDialog->draw({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
-			}
 		}
 		virtual void collide(GameObj* gameObj, bool is2D) override {
 			this->trigger(gameObj, is2D);
 		}
-		void trigger(GameObj* player, bool is2D) {
-			Cube triggerCube = { _pos, _triggerSize };
-			if (MathTool::checkCollision(player->getBox(), triggerCube, is2D)) {
-				_isTrigger = true;
-				onTrigger(player);
+		void drawHint(Float3 pos) {
+			if (_isTrigger) {
+				_hintDialog->draw(pos);
 			}
 		}
-		virtual void onTrigger(GameObj* player) = 0;
+		void trigger(GameObj* obj, bool is2D) {
+			Cube triggerCube = { _pos, _triggerSize };
+			if (MathTool::checkCollision(obj->getBox(), triggerCube, is2D)) {
+				_isTrigger = true;
+				onTrigger(obj);
+			}
+		}
+		virtual void onTrigger(GameObj* obj) = 0;
 
 	protected:
 		Float3 _triggerSize = { 0.0f, 0.0f, 0.0f };

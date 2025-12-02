@@ -18,8 +18,8 @@ Field03::Field03(IGameEventHandler* gameEvent) : Field("./map/map3.csv") {
 		_layer[i]->addGameObj(door);
 	}
 	{
-		ClimbableObj* ladder = new ClimbableObj(MathTool::getCoordPos({ 47.0f, 6.5f, 4.0f }), { 1.0f, 12.0f, 1.0f });
-		_layer[0]->getClimbableObjManager()->add(ladder);
+		ClimbableObj* ladder = new ClimbableObj(MathTool::getCoordPos({ 47.0f, 8.0f, 5.0f }), { 1.0f, 12.0f, 1.0f });
+		_layer[0]->addGameObj(ladder);
 	}
 	
 	Field::load();

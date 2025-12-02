@@ -4,7 +4,7 @@
 #include "Player.h"
 
 #define CAMERA_2D_MIN_X	(0.0f)
-#define CAMERA_2D_MAX_X	(122.0f)
+#define CAMERA_2D_MAX_X	(123.0f)
 #define CAMERA_3D_MIN_X	(-42.0f)
 #define CAMERA_3D_MAX_X	(142.0f)
 #define CAMERA_Z_DISTANCE (30.0f)
@@ -16,8 +16,8 @@ class Camera {
 		Camera();
 		~Camera();
 		void draw();
-		void moveCamera(Player* player);
-		void transformDimension(Player* player);
+		void moveCamera();
+		void transformDimension();
 		void set2DPos(Float2 pos);
 		Float2 get2DPos();
 		Float3& getPos();
@@ -41,20 +41,20 @@ class Camera {
 
 class CameraController {
 	public:
-		virtual void move(Player* player, Float3 &eye, Float3 &focus) = 0;
-		virtual void rotate(Player* player, Float3& eye, Float3& focus, XMMATRIX& projMat, float step) = 0;
+		virtual void move(Float3 &eye, Float3 &focus) = 0;
+		virtual void rotate(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) = 0;
 };
 
 class CameraController2D : public CameraController {
 	public:
 		CameraController2D() = default;
-		void move(Player* player, Float3& eye, Float3& focus) override;
-		void rotate(Player* player, Float3& eye, Float3& focus, XMMATRIX& projMat, float step) override;
+		void move(Float3& eye, Float3& focus) override;
+		void rotate(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) override;
 };
 
 class CameraController3D : public CameraController {
 	public:
 		CameraController3D() = default;
-		void move(Player* player, Float3& eye, Float3& focus) override;
-		void rotate(Player* player, Float3& eye, Float3& focus, XMMATRIX& projMat, float step) override;
+		void move(Float3& eye, Float3& focus) override;
+		void rotate(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) override;
 };

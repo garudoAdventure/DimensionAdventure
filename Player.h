@@ -16,9 +16,9 @@ class PlayerState;
 
 class Player : public GameObj {
   public:
-		Player(IGameEventHandler* gameEvent);
 		void update() override;
 		void draw() override;
+		void drawCircle();
 		void setState(PlayerState* state);
 
 		void hitObj(GameObj* obj, bool isStatic = true) override;
@@ -71,10 +71,10 @@ class Player : public GameObj {
 		void setAttackMode(bool isAttackMode) {
 			_isAttackMode = isAttackMode;
 		}
-		void getBangle() {
-			hasBangle = true;
+		void getDimensionAbility() {
+			_hasDimensionAbility = true;
 		}
-		void addCrystal() {
+		void addCrystalNum() {
 			_crystalNum += 1;
 		}
 		int getCrystalNum() {
@@ -83,6 +83,7 @@ class Player : public GameObj {
 
   private:
 		Model* _model;
+		Model* ballModel;
 		Float3 _dir = { 1.0f, 0.0f, 0.0f };
 		PlayerState* currentState = nullptr;
 		PlayerState* newState = nullptr;
@@ -98,12 +99,32 @@ class Player : public GameObj {
 		bool _isOnClimbableObj = false;
 		bool _isInvincible = false;
 		bool _isAttackMode = false;
-		bool hasBangle = true;
-		int _crystalNum = 3;
+		bool _hasDimensionAbility = true;
+		int _crystalNum = 0;
 
 		void changeState();
 		void convertLayer();
 		void autoRecoverEnergy();
 		void invincibleUpdate();
 		void attackModeUpdate();
+
+	public:
+		static void CreateInstance(IGameEventHandler* gameEvent) {
+			DeleteInstance();
+			s_instance = new Player(gameEvent);
+		}
+		static void DeleteInstance() {
+			delete s_instance;
+			s_instance = nullptr;
+		}
+		static Player& GetInstance() {
+			return *s_instance;
+		}
+
+	private:
+		Player(IGameEventHandler* gameEvent);
+		~Player() {}
+		static inline Player* s_instance;
 };
+
+#define PLAYER Player::GetInstance()

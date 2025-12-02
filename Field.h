@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Player.h"
 #include "MathStruct.h"
 #include "Layer.h"
 #include "IGameEventHandler.h"
@@ -12,7 +11,7 @@ class Field {
 		void update(int currentLayer);
 		void draw(int currentLayer);
 		void load();
-		void collisionCheck(Player* player, bool is2D);
+		void collisionCheck(bool is2D);
 
 	protected:
 		const char* filePath;

@@ -6,22 +6,21 @@
 
 class TransformDimensionEvent : public IGameEvent {
 	public:
-		TransformDimensionEvent(Camera* camera, Player* player) : _camera(camera), _player(player) {
+		TransformDimensionEvent(Camera* camera) : _camera(camera) {
 		}
 		~TransformDimensionEvent() {
 			
 		}
 		void update() override {
-			_camera->transformDimension(_player);
+			_camera->transformDimension();
 		}
 		void draw() override {
 
 		}
 		bool isEnd() override {
-			return _camera->is2D() == _player->is2D();
+			return _camera->is2D() == PLAYER.is2D();
 		}
 
 	private:
 		Camera* _camera;
-		Player* _player;
 };

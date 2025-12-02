@@ -15,9 +15,9 @@ Field::Field(const char* file) : filePath(file) {
 	_layer[1]->setBg("./assets/bg2.png");
 	_layer[2]->setBg("./assets/bg3.png");
 
-	_floor[0] = MODEL.loadModel("./assets/model/floor.fbx");
-	_floor[1] = MODEL.loadModel("./assets/model/floor.fbx");
-	_floor[2] = MODEL.loadModel("./assets/model/floor.fbx");
+	_floor[0] = MODEL.loadModel("./assets/model/transposeBox.fbx");
+	_floor[1] = MODEL.loadModel("./assets/model/transposeBox.fbx");
+	_floor[2] = MODEL.loadModel("./assets/model/transposeBox.fbx");
 }
 
 void Field::load() {
@@ -26,9 +26,7 @@ void Field::load() {
 	for (BlockInfo block : map) {
 		const int layerIdx = block.pos.w;
 		const Float3 pos = MathTool::getCoordPos({
-			block.pos.x + (float)((int)block.size.x % 2 == 0 ? 0.5f : 0),
-			block.pos.y + (float)((int)block.size.y % 2 == 0 ? 0.5f : 0),
-			block.pos.z - (float)((int)block.size.z % 2 == 0 ? 0.5f : 0)
+			(float)block.pos.x, (float)block.pos.y, (float)block.pos.z
 		});
 		switch (block.type) {
 			// Floor
@@ -38,18 +36,18 @@ void Field::load() {
 			
 			// Wall
 			case 2:
-				_layer[layerIdx]->addGameObj(new Block(pos, MODEL.loadModel("./assets/model/stoneBlock.fbx")));
+				_layer[layerIdx]->addGameObj(new Block(pos, MODEL.loadModel("./assets/model/transposeBox.fbx")));
 				break;
 
 			// Block
 			case 3:
-				_layer[layerIdx]->addGameObj(new Block(pos, MODEL.loadModel("./assets/model/box.fbx")));
+				_layer[layerIdx]->addGameObj(new Block(pos, MODEL.loadModel("./assets/model/transposeBox.fbx")));
 				break;
 
 			// FloorBase
-			case 5:
-				_layer[layerIdx]->getFloorBaseManager()->add(new FloorBase(pos, block.size, MODEL.loadModel("./assets/model/floorBase.fbx")));
-				break;
+			//case 5:
+			//	_layer[layerIdx]->addGameObj(new FloorBase(pos, block.size, MODEL.loadModel("./assets/model/floorBase.fbx")));
+			//	break;
 		}
 	}
 }
@@ -62,8 +60,8 @@ void Field::draw(int currentLayer) {
 	_layer[currentLayer]->draw();
 }
 
-void Field::collisionCheck(Player* player, bool is2D) {
-	_layer[player->getCurrentLayer()]->collisionCheck(player, is2D);
+void Field::collisionCheck(bool is2D) {
+	_layer[PLAYER.getCurrentLayer()]->collisionCheck(is2D);
 }
 
 Field::~Field() {

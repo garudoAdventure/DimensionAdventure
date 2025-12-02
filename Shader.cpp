@@ -10,13 +10,8 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   _deviceContext = deviceContext;
 
   ID3DBlob* compiledVS;
-  ID3DBlob* compiledPS;
-  D3DCompileFromFile(L"./shaderVertex.hlsl", nullptr, nullptr, "main", "vs_5_0", 0, 0, &compiledVS, nullptr);
-  D3DCompileFromFile(L"./shaderPixel.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &compiledPS, nullptr);
+  D3DCompileFromFile(L"./vertexShader.hlsl", nullptr, nullptr, "main", "vs_5_0", 0, 0, &compiledVS, nullptr);
   _device->CreateVertexShader(compiledVS->GetBufferPointer(), compiledVS->GetBufferSize(), nullptr, &_vertexShader);
-  _device->CreatePixelShader(compiledPS->GetBufferPointer(), compiledPS->GetBufferSize(), nullptr, &_pixelShader);
-  _deviceContext->VSSetShader(_vertexShader, NULL, 0);
-  _deviceContext->PSSetShader(_pixelShader, NULL, 0);
 
   D3D11_INPUT_ELEMENT_DESC layout[] = {
     { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -28,6 +23,31 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   };
   _device->CreateInputLayout(&layout[0], 6, compiledVS->GetBufferPointer(), compiledVS->GetBufferSize(), &_inputLayout);
   _deviceContext->IASetInputLayout(_inputLayout);
+
+  compiledVS->Release();
+
+  {
+    ID3DBlob* compiledPS;
+    D3DCompileFromFile(L"./pixelShader.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &compiledPS, nullptr);
+    _device->CreatePixelShader(compiledPS->GetBufferPointer(), compiledPS->GetBufferSize(), nullptr, &_pixelShader);
+    compiledPS->Release();
+  }
+  {
+    ID3DBlob* compiledPS;
+    D3DCompileFromFile(L"./blurPS.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &compiledPS, nullptr);
+    _device->CreatePixelShader(compiledPS->GetBufferPointer(), compiledPS->GetBufferSize(), nullptr, &_blurShader);
+    compiledPS->Release();
+  }
+  {
+    ID3DBlob* compiledPS;
+    D3DCompileFromFile(L"./getLuminancePS.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &compiledPS, nullptr);
+    _device->CreatePixelShader(compiledPS->GetBufferPointer(), compiledPS->GetBufferSize(), nullptr, &_luminanceShader);
+    compiledPS->Release();
+  }
+  
+  
+  _deviceContext->VSSetShader(_vertexShader, NULL, 0);
+  _deviceContext->PSSetShader(_pixelShader, NULL, 0);
 
   {
     D3D11_BUFFER_DESC desc;
@@ -88,12 +108,14 @@ Shader::~Shader() {
   SAFE_RELEASE(_samplerClampState);
 }
 
-void Shader::setSamplerWrapState(bool isWrap) {
-  if (isWrap) {
-    _deviceContext->PSSetSamplers(0, 1, &_samplerWrapState);
-  }
-  else {
-    _deviceContext->PSSetSamplers(0, 1, &_samplerClampState);
+void Shader::setSamplerState(SamplerState state) {
+  switch (state) {
+    case SamplerState::WRAP:
+      _deviceContext->PSSetSamplers(0, 1, &_samplerWrapState);
+      break;
+    case SamplerState::CLAMP:
+      _deviceContext->PSSetSamplers(0, 1, &_samplerClampState);
+      break;
   }
 }
 
@@ -104,6 +126,20 @@ void Shader::begin() {
   _deviceContext->VSSetConstantBuffers(0, 1, &_matrixBuffer);
   _deviceContext->VSSetConstantBuffers(2, 1, &_lightBuffer);
   _worldMatrix = XMMatrixIdentity();
+}
+
+void Shader::setPS(PS ps) {
+  switch (ps) {
+    case PS::NORMAL:
+      _deviceContext->PSSetShader(_pixelShader, nullptr, 0);
+      break;
+    case PS::BLUR:
+      _deviceContext->PSSetShader(_blurShader, nullptr, 0);
+      break;
+    case PS::LUMINANCE:
+      _deviceContext->PSSetShader(_luminanceShader, nullptr, 0);
+      break;
+  }
 }
 
 void Shader::setView(Float3 e, Float3 f) {
@@ -138,7 +174,7 @@ void Shader::setWorldMatrix(XMMATRIX& world) {
 
 void Shader::set2DMatrix() {
   Transpose mat;
-  mat.world = _worldMatrix;
+  mat.world = XMMatrixIdentity();
   mat.view = XMMatrixIdentity();
   mat.projection = getOrthoMatrix();
   setMatrix(mat);

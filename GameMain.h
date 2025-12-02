@@ -2,7 +2,6 @@
 
 #include "GameState.h"
 #include "Camera.h"
-#include "Player.h"
 #include "Field.h"
 #include "StatusUI.h"
 #include "ItemList.h"
@@ -11,6 +10,7 @@
 #include "IGameEventHandler.h"
 #include "LayerScreen.h"
 #include <vector>
+#include "PostProcess.h"
 
 class GameMain : public GameState, public IGameEventHandler {
 	public:
@@ -23,12 +23,10 @@ class GameMain : public GameState, public IGameEventHandler {
 		void transformDimension() override;
 		void transformLayer() override;
 		Float3& getCameraPos() override;
-		ItemList* getItemList() override;
 		void setFourGodCorrect(int idx, bool correct) override;
 
 	private:
 		Camera* camera;
-		Player* player;
 		Float3 _playerInitPos = { 0.0f, 0.0f, 0.0f };
 		Field* newField;
 		Field* currentField;
@@ -38,6 +36,8 @@ class GameMain : public GameState, public IGameEventHandler {
 		LayerScreen layerScreen;
 		std::vector<IGameEvent*> gameEventQueue;
 		bool fourGodCorrect[4] = { false, false, false, false };
-
+		PostProcess* postProcess;
+		RenderTexture* offscreenTex;
+		
 		void changeField();
 };

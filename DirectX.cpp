@@ -93,9 +93,17 @@ Direct3D::Direct3D(HWND hWnd) {
 
   blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
+  _device->CreateBlendState(&blendDesc, &_blendStateAlpha);
+  
+  blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+  _device->CreateBlendState(&blendDesc, &_blendStateAdd);
+
+  blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_INV_DEST_ALPHA;
+  blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+  _device->CreateBlendState(&blendDesc, &_blendStateRendTex);
+
   float blend_factor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-  _device->CreateBlendState(&blendDesc, &_blendState);
-  _deviceContext->OMSetBlendState(_blendState, blend_factor, 0xffffffff);
+  _deviceContext->OMSetBlendState(_blendStateAlpha, blend_factor, 0xffffffff);
 
   D3D11_DEPTH_STENCIL_DESC dsDesc = {};
   dsDesc.DepthEnable = FALSE;
@@ -113,7 +121,8 @@ Direct3D::Direct3D(HWND hWnd) {
 Direct3D::~Direct3D() {
   SAFE_RELEASE(_depthStencilStateDepthDisable);
   SAFE_RELEASE(_depthStencilStateDepthEnable);
-  SAFE_RELEASE(_blendState);
+  SAFE_RELEASE(_blendStateAlpha);
+  SAFE_RELEASE(_blendStateAdd);
   SAFE_RELEASE(_rasterizerState);
   SAFE_RELEASE(_depthStencilView);
   SAFE_RELEASE(_depthStencilTex);
@@ -145,6 +154,10 @@ void Direct3D::present() {
   _swapChain->Present(0, 0);
 }
 
+void Direct3D::setTargetView() {
+  _deviceContext->OMSetRenderTargets(1, &_rtv, _depthStencilView);
+}
+
 void Direct3D::setDepthEnable(bool depthEnable) {
   if (depthEnable) {
     _deviceContext->OMSetDepthStencilState(_depthStencilStateDepthEnable, NULL);
@@ -154,6 +167,29 @@ void Direct3D::setDepthEnable(bool depthEnable) {
   }
 }
 
-void Direct3D::setTargetView() {
-  _deviceContext->OMSetRenderTargets(1, &_rtv, _depthStencilView);
+void Direct3D::setBlendMode(BlendMode mode) {
+  float blend_factor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  switch (mode) {
+    case BlendMode::ADD_ALPHA:
+      _deviceContext->OMSetBlendState(_blendStateAdd, blend_factor, 0xffffffff);
+      break;
+    case BlendMode::REND_TEX:
+      _deviceContext->OMSetBlendState(_blendStateRendTex, blend_factor, 0xffffffff);
+      break;
+    case BlendMode::NORMAL:
+    default:
+      _deviceContext->OMSetBlendState(_blendStateAlpha, blend_factor, 0xffffffff);
+      break;
+  }
+}
+
+void Direct3D::setViewport(float width, float height) {
+  D3D11_VIEWPORT vp;
+  vp.Width = width;
+  vp.Height = height;
+  vp.MinDepth = 0.0f;
+  vp.MaxDepth = 1.0f;
+  vp.TopLeftX = 0;
+  vp.TopLeftY = 0;
+  _deviceContext->RSSetViewports(1, &vp);
 }

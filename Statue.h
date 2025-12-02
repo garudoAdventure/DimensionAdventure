@@ -21,10 +21,12 @@ class Statue : public ActivableGameObj {
 		}
 		void draw() override {
 			GameObj::draw();
-			ActivableGameObj::draw();
+			Float3 hintPos = { _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z };
 			if (statueItem) {
 				statueItem->draw3D({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
+				hintPos.y += 2.0f;
 			}
+			ActivableGameObj::drawHint(hintPos);
 		}
 		void onTrigger(GameObj* player) {
 			player->hitObj(this);

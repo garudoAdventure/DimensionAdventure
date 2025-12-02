@@ -24,6 +24,7 @@ class Model {
 		void draw(Float3 pos, Float3 radian);
 		void loadAnim(int animIdx);
 		void updateNode(int frame, aiNode* node, aiMatrix4x4 parentTransform);
+		void updateColor(Float4 color);
 		Float3 getSize() {
 			return _size;
 		}

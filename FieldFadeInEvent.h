@@ -18,15 +18,15 @@ class FieldFadeInEvent : public IGameEvent {
 			count++;
 		}
 		void draw() override {
-			SHADER.setSamplerWrapState(false);
+			SHADER.setSamplerState(SamplerState::CLAMP);
 
 			float scale = MathTool::easeOutQuad<float>(20.0f, -2.0f, count / 45.0f);
 			SPRITE.drawSprite2DUV(_focusPos, { 1280.0f, 1280.0f }, coverTex, scale);
 			
-			SHADER.setSamplerWrapState(true);
+			SHADER.setSamplerState(SamplerState::WRAP);
 		}
 		bool isEnd() override {
-			return count == 45;
+			return count == 35;
 		}
 
 	private:

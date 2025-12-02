@@ -48,18 +48,7 @@ void Sprite::drawTextureSprite(Float3 pos, Float2 size, float alpha) {
 
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
-  DX3D.setDepthEnable(true);
-  SHADER.begin();
-
-  Light light;
-  light.enable = false;
-  SHADER.setLight(light);
-
-  UINT stride = sizeof(Vertex);
-  UINT offset = 0;
-  DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-  DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-  DX3D.getDeviceContext()->Draw(4, 0);
+  draw();
 }
 
 void Sprite::drawSpriteIn3D(Float3 pos, Float2 size, int texID) {
@@ -90,19 +79,10 @@ void Sprite::drawSpriteIn3D(Float3 pos, Float2 size, int texID) {
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
   DX3D.setDepthEnable(true);
-  SHADER.begin();
   SHADER.setMatrix();
   TEXTURE.setTexture(texID);
 
-  Light light;
-  light.enable = false;
-  SHADER.setLight(light);
-
-  UINT stride = sizeof(Vertex);
-  UINT offset = 0;
-  DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-  DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-  DX3D.getDeviceContext()->Draw(4, 0);
+  draw();
 }
 
 void Sprite::drawSprite2D(Float2 pos, Float2 size, Float4 color) {
@@ -138,22 +118,54 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, Float4 color) {
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
   DX3D.setDepthEnable(false);
-  SHADER.begin();
   SHADER.set2DMatrix();
   TEXTURE.setTexture(-1);
 
-  Light light;
-  light.enable = false;
-  SHADER.setLight(light);
-
-  UINT stride = sizeof(Vertex);
-  UINT offset = 0;
-  DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-  DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-  DX3D.getDeviceContext()->Draw(4, 0);
+  draw();
 }
 
-void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID) {
+void Sprite::drawSprite2D(Float2 pos, Float2 size, ID3D11ShaderResourceView* tex, float width, float height) {
+  Vertex vertexData[4];
+
+  const Float2 repos = {
+    pos.x / width * 16.0f * 3.0f,
+    pos.y / height * 9.0f * 3.0f,
+  };
+
+  const Float2 resize = {
+    size.x / width * 16.0f * 3.0f,
+    size.y / height * 9.0f * 3.0f,
+  };
+
+  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
+  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
+  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
+  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
+
+  vertexData[0].texCoord = { 0.0f, 0.0f };
+  vertexData[1].texCoord = { 1.0f, 0.0f };
+  vertexData[2].texCoord = { 0.0f, 1.0f };
+  vertexData[3].texCoord = { 1.0f, 1.0f };
+
+  for (int i = 0; i < 4; i++) {
+    vertexData[i].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+  }
+  for (int i = 0; i < 4; i++) {
+    vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
+  }
+
+  DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
+
+  DX3D.setDepthEnable(false);
+  SHADER.set2DMatrix();
+  if (tex != nullptr) {
+    TEXTURE.setTexture(tex);
+  }
+
+  draw();
+}
+
+void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID, float alpha) {
   Vertex vertexData[4];
 
   const Float2 repos = {
@@ -177,6 +189,84 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID) {
   vertexData[3].texCoord = { 1.0f, 1.0f };
 
   for (int i = 0; i < 4; i++) {
+    vertexData[i].color = XMFLOAT4(1.0f, 1.0f, 1.0f, alpha);
+  }
+  for (int i = 0; i < 4; i++) {
+    vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
+  }
+
+  DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
+
+  DX3D.setDepthEnable(false);
+  SHADER.set2DMatrix();
+  TEXTURE.setTexture(texID);
+
+  draw();
+}
+
+void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID, Float4 color) {
+  Vertex vertexData[4];
+
+  const Float2 repos = {
+    pos.x / 1280.0f * 16.0f * 3.0f,
+    pos.y / 720.0f * 9.0f * 3.0f,
+  };
+
+  const Float2 resize = {
+    size.x / 1280.0f * 16.0f * 3.0f,
+    size.y / 720.0f * 9.0f * 3.0f,
+  };
+
+  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
+  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
+  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
+  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
+
+  vertexData[0].texCoord = { 0.0f, 0.0f };
+  vertexData[1].texCoord = { 1.0f, 0.0f };
+  vertexData[2].texCoord = { 0.0f, 1.0f };
+  vertexData[3].texCoord = { 1.0f, 1.0f };
+
+  for (int i = 0; i < 4; i++) {
+    vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
+  }
+  for (int i = 0; i < 4; i++) {
+    vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
+  }
+
+  DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
+
+  DX3D.setDepthEnable(false);
+  SHADER.set2DMatrix();
+  TEXTURE.setTexture(texID);
+
+  draw();
+}
+
+void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID, Float2 uvSize) {
+  Vertex vertexData[4];
+
+  const Float2 repos = {
+    pos.x / 1280.0f * 16.0f * 3.0f,
+    pos.y / 720.0f * 9.0f * 3.0f,
+  };
+
+  const Float2 resize = {
+    size.x / 1280.0f * 16.0f * 3.0f,
+    size.y / 720.0f * 9.0f * 3.0f,
+  };
+
+  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
+  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
+  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
+  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
+
+  vertexData[0].texCoord = { 0.0f, 0.0f };
+  vertexData[1].texCoord = { uvSize.x, 0.0f };
+  vertexData[2].texCoord = { 0.0f, uvSize.y };
+  vertexData[3].texCoord = { uvSize.x, uvSize.y };
+
+  for (int i = 0; i < 4; i++) {
     vertexData[i].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
   }
   for (int i = 0; i < 4; i++) {
@@ -186,19 +276,10 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID) {
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
   DX3D.setDepthEnable(false);
-  SHADER.begin();
   SHADER.set2DMatrix();
   TEXTURE.setTexture(texID);
 
-  Light light;
-  light.enable = false;
-  SHADER.setLight(light);
-
-  UINT stride = sizeof(Vertex);
-  UINT offset = 0;
-  DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-  DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-  DX3D.getDeviceContext()->Draw(4, 0);
+  draw();
 }
 
 void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian, Float2 center) {
@@ -246,19 +327,10 @@ void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
   DX3D.setDepthEnable(false);
-  SHADER.begin();
   SHADER.set2DMatrix();
   TEXTURE.setTexture(texID);
 
-  Light light;
-  light.enable = false;
-  SHADER.setLight(light);
-
-  UINT stride = sizeof(Vertex);
-  UINT offset = 0;
-  DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-  DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-  DX3D.getDeviceContext()->Draw(4, 0);
+  draw();
 }
 
 void Sprite::drawSprite2DUV(Float2 pos, Float2 size, int texID, float scale) {
@@ -318,11 +390,15 @@ void Sprite::drawSprite2DUV(Float2 pos, Float2 size, int texID, float scale) {
 
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
-  DX3D.setDepthEnable(false);
-  SHADER.begin();
-  SHADER.set2DMatrix();
   TEXTURE.setTexture(texID);
 
+  DX3D.setDepthEnable(false);
+  SHADER.set2DMatrix();
+
+  draw();
+}
+
+void Sprite::draw() {
   Light light;
   light.enable = false;
   SHADER.setLight(light);

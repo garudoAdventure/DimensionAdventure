@@ -37,7 +37,7 @@ class ItemBox : public ActivableGameObj {
 		}
 		void draw() override {
 			GameObj::draw();
-			ActivableGameObj::draw();
+			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 		}
 		void setLocked(bool locked) {
 			_isLocked = locked;

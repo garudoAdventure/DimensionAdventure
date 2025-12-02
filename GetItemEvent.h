@@ -7,7 +7,7 @@
 
 class GetItemEvent : public IGameEvent {
 	public:
-		GetItemEvent(Item* item, Float3 playerPos) : _item(item), _playerPos(playerPos) {
+		GetItemEvent(Item* item) : _item(item) {
 			std::stringstream ss;
 			std::string context;
 			ss << item->getName() << "‚ðƒQƒbƒgI";
@@ -15,7 +15,7 @@ class GetItemEvent : public IGameEvent {
 			_dialog = new GetItemDialog({context});
 		}
 		void update() override {
-			if (count == 300) {
+			if (count == 180) {
 				_isEnd = true;
 			}
 			else {
@@ -24,11 +24,6 @@ class GetItemEvent : public IGameEvent {
 			}
 		}
 		void draw() override {
-			_item->draw3D({
-				_playerPos.x,
-				_playerPos.y + 3.0f,
-				_playerPos.z
-			});
 			_dialog->draw();
 		}
 		bool isEnd() override {
@@ -38,7 +33,6 @@ class GetItemEvent : public IGameEvent {
 	private:
 		Item* _item;
 		IDialog* _dialog;
-		Float3 _playerPos;
 		int count = 0;
 		bool _isEnd = false;
 };

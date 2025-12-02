@@ -22,7 +22,8 @@ class Door : public ActivableGameObj {
 			ActivableGameObj::update();
 		}
 		virtual void draw() {
-			ActivableGameObj::draw();
+			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
+			_model->updateColor(_color);
 			_model->draw(_pos, { 0.0f, 0.0f, 0.0f });
 		}
 
@@ -33,8 +34,12 @@ class Door : public ActivableGameObj {
 class LockedDoor : public Door {
 	public:
 		LockedDoor(Float3 pos, IGameEventHandler* gameEvent) : Door(pos), _gameEvent(gameEvent) {
+			_color = { 1.0f, 1.0f, 1.0f, 0.3f };
 		}
 		void onTrigger(GameObj* player) override {
+			if (MathTool::checkCollision(player->getBox(), this->getBox(), false)) {
+				player->hitObj(this);
+			}
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
 				IDialog* dialog = new MessageDialog({ "Œ®‚ª‚©‚©‚Á‚Ä‚¢‚é", "ŠJ‚¯‚È‚¢" });
 				_gameEvent->addEvent(new ShowDialogEvent(dialog));
@@ -50,6 +55,9 @@ class OpenedDoor : public Door {
 			Door(pos), _gameEvent(gameEvent), _nextField(fieldID), _playerInitPos(playerInitPos) {
 		}
 		void onTrigger(GameObj* player) override {
+			if (MathTool::checkCollision(player->getBox(), this->getBox(), false)) {
+				player->hitObj(this);
+			}
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
 				_gameEvent->setNewField(_nextField, _pos, _playerInitPos);
 			}

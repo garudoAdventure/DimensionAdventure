@@ -2,6 +2,7 @@
 
 #include "DirectX.h"
 #include "DirectWrite.h"
+#include "Shader.h"
 #include "Texture.h"
 #include "Sprite.h"
 #include "Keyboard.h"
@@ -53,12 +54,12 @@ class MessageDialog : public IDialog {
 	public:
 		MessageDialog(std::vector<std::string> context) {
 			_pos = { 0.0f, 100.0f };
-			_size = { 800.0f, 200.0f };
+			_size = { 0.0f, 200.0f };
 			_context = context;
 			currentContextNum = _context[0].length();
 		}
 		void update() override {
-			if (openDialogAnimCount < 10) {
+			if (openDialogAnimCount <= 10) {
 				_size.x = MathTool::lerp<float>(0.0f, 800.0f, openDialogAnimCount / 10.0f);
 				openDialogAnimCount++;
 				return;
@@ -90,13 +91,13 @@ class GetItemDialog : public IDialog {
 	public:
 		GetItemDialog(std::vector<std::string> context) {
 			_pos = { 0.0f, 200.0f };
-			_size = { 300.0f, 80.0f };
+			_size = { 0.0f, 120.0f };
 			_context = context;
 			currentContextNum = _context[0].length();
 		}
 		void update() override {
-			if (openDialogAnimCount < 10) {
-				_size.x = MathTool::lerp<float>(0.0f, 500.0f, openDialogAnimCount / 10.0f);
+			if (openDialogAnimCount <= 10) {
+				_size.x = MathTool::lerp<float>(0.0f, 380.0f, openDialogAnimCount / 10.0f);
 				openDialogAnimCount++;
 				return;
 			}
@@ -122,6 +123,7 @@ class HintDialog : public IDialog {
 		void draw() override {
 		}
 		void draw(Float3 pos) override {
+			SHADER.begin();
 			SPRITE.drawSpriteIn3D(pos, { 32.0f, 32.0f }, tex);
 		}
 	
@@ -132,13 +134,13 @@ class HintDialog : public IDialog {
 class ConfirmDialog : public IDialog {
 	public:
 		ConfirmDialog(std::vector<std::string> context, std::function<void()> callback) : _callback(callback) {
-			_pos = { 0.0f, 0.0f };
-			_size = { 500.0f, 150.0f };
+			_pos = { 0.0f, 200.0f };
+			_size = { 0.0f, 200.0f };
 			_context = context;
 			currentContextNum = _context[0].length();
 		}
 		void update() override {
-			if (openDialogAnimCount < 10) {
+			if (openDialogAnimCount <= 10) {
 				_size.x = MathTool::lerp<float>(0.0f, 500.0f, openDialogAnimCount / 10.0f);
 				openDialogAnimCount++;
 				return;
@@ -166,13 +168,15 @@ class ConfirmDialog : public IDialog {
 			std::string str = _context[contextIdx].substr(0, currentContextIdx * 2);
 			IDialog::drawStr(_pos, str);
 
-			IDialog::drawStr({ _pos.x + 50.0f, _pos.y - 80.0f }, "はい");
-			IDialog::drawStr({ _pos.x + 200.0f, _pos.y - 80.0f }, "いいえ");
-			if (_isConfirm) {
-				IDialog::drawStr({ _pos.x + 20.0f, _pos.y - 80.0f }, "＞");
-			}
-			else {
-				IDialog::drawStr({ _pos.x + 170.0f, _pos.y - 80.0f }, "＞");
+			if (currentContextIdx == currentContextNum / 2) {
+				IDialog::drawStr({ _pos.x + 50.0f, _pos.y - 80.0f }, "はい");
+				IDialog::drawStr({ _pos.x + 200.0f, _pos.y - 80.0f }, "いいえ");
+				if (_isConfirm) {
+					IDialog::drawStr({ _pos.x + 20.0f, _pos.y - 80.0f }, "＞");
+				}
+				else {
+					IDialog::drawStr({ _pos.x + 170.0f, _pos.y - 80.0f }, "＞");
+				}
 			}
 		}
 

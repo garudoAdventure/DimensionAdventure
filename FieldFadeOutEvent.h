@@ -18,7 +18,7 @@ class FieldFadeOutEvent : public IGameEvent {
 			count++;
 		}
 		void draw() override {
-			SHADER.setSamplerWrapState(false);
+			SHADER.setSamplerState(SamplerState::CLAMP);
 			
 			if (count > 60) {
 				SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 1280.0f }, { 0.0f, 0.0f, 0.0f, 1.0f });
@@ -27,10 +27,10 @@ class FieldFadeOutEvent : public IGameEvent {
 			float scale =  MathTool::easeInQuad<float>(-1.6f, 30.0f, count / 60.f);
 			SPRITE.drawSprite2DUV(_focusPos, { 1280.0f, 1280.0f }, coverTex, scale);
 
-			SHADER.setSamplerWrapState(true);
+			SHADER.setSamplerState(SamplerState::WRAP);
 		}
 		bool isEnd() override {
-			return count == 100;
+			return count == 90;
 		}
 
 	private:
