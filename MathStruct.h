@@ -76,6 +76,13 @@ struct Float4 {
   float g;
   float b;
   float a;
+
+  Float4 operator-(const Float4& f) {
+    return { r - f.r, g - f.g, b - f.b, a - f.a };
+  }
+  Float4 operator*(const float n) {
+    return { r * n, g * n, b * n, a * n };
+  }
 };
 
 struct Cube {

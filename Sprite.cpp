@@ -73,7 +73,7 @@ void Sprite::drawSpriteIn3D(Float3 pos, Float2 size, int texID) {
     vertexData[i].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
   }
   for (int i = 0; i < 4; i++) {
-    vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
+    vertexData[i].normal = { 0.0f, 0.0f, -1.0f };
   }
 
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
@@ -282,7 +282,7 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID, Float2 uvSize) {
   draw();
 }
 
-void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian, Float2 center) {
+void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian, Float2 center, Float4 color) {
   Vertex vertexData[4];
 
   const Float2 repos = {
@@ -318,7 +318,7 @@ void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian
   vertexData[3].texCoord = { 1.0f, 1.0f };
 
   for (int i = 0; i < 4; i++) {
-    vertexData[i].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+    vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
   }
   for (int i = 0; i < 4; i++) {
     vertexData[i].normal = { 0.0f, 0.0f, 1.0f };

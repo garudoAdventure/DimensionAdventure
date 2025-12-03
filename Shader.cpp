@@ -207,3 +207,7 @@ void Shader::setMatrix(Transpose& mat) {
 void Shader::setLight(const Light light) {
   _deviceContext->UpdateSubresource(_lightBuffer, 0, nullptr, &light, 0, 0);
 }
+
+XMMATRIX Shader::getView() {
+  return _viewMatrix;
+}

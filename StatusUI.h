@@ -12,12 +12,15 @@ class StatusUI {
 			crystalTex = TEXTURE.loadTexture("./assets/UI/crystal.png");
 			circleArrowTex = TEXTURE.loadTexture("./assets/UI/circleArrow.png");
 			baseCircleTex = TEXTURE.loadTexture("./assets/UI/baseCircle.png");
+			crystalColor[0] = { 255 / 255.0f, 66 / 255.0f,	60 / 255.0f,	1.0f };
+			crystalColor[1] = { 0 / 255.0f,		219 / 255.0f,	0 / 255.0f,		1.0f };
+			crystalColor[2] = { 0 / 255.0f,		124 / 255.0f, 255 / 255.0f, 1.0f };
 		}
-		void update(Player* player) {
-			hpNum = player->getHp();
-			energyNum = player->getEnergy();
-			crystalNum = player->getCrystalNum();
-			if (player->is2D()) {
+		void update() {
+			hpNum = PLAYER.getHp();
+			energyNum = PLAYER.getEnergy();
+			crystalNum = PLAYER.getCrystalNum();
+			if (PLAYER.is2D()) {
 				count = 0;
 				return;
 			}
@@ -33,7 +36,11 @@ class StatusUI {
 			SPRITE.drawSprite2D({ 95.0f - 640.0f, -83.0f + 360.0f }, { 108.0f, 102.0f }, baseCircleTex);
 			SPRITE.drawSprite2DRotate({ 90.0f - 640.0f, -82.0f + 360.0f }, { 126.0f, 119.0f }, circleArrowTex, rotateRadian, { 95.0f - 640.0f, -82.0f + 360.0f });
 			for (int i = 0; i < crystalNum; i++) {
-				SPRITE.drawSprite2DRotate({ 95.0f - 640.0f, -61.0f + 360.0f }, { 22.0f, 38.0f }, crystalTex, 2 * PI * i / 3.0f, { 95.0f - 640.0f, -83.0f + 360.0f });
+				SPRITE.drawSprite2DRotate(
+					{ 95.0f - 640.0f, -61.0f + 360.0f }, { 22.0f, 38.0f },
+					crystalTex, 2 * PI * i / 3.0f, { 95.0f - 640.0f, -83.0f + 360.0f },
+					crystalColor[i]
+				);
 			}
 			for (int i = 0; i < hpNum; i++) {
 				SPRITE.drawSprite2D({ 181.0f - 640.0f + 45.0f * i, -60.0f + 360.0f }, { 38.0f, 37.0f }, heartTex);
@@ -56,4 +63,5 @@ class StatusUI {
 		int energyNum = 5;
 		int crystalNum = 0;
 		int count = 0;
+		Float4 crystalColor[3];
 };

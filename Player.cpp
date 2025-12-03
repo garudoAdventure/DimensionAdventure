@@ -4,7 +4,6 @@
 #include "PlayerClimb.h"
 #include "PlayerHurt.h"
 #include "Shader.h"
-#include "Texture.h"
 
 Player::Player(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 	_pos = { -12.0f, -5.0f, 0.0f };
@@ -13,8 +12,6 @@ Player::Player(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 	_tag = ObjTag::PLAYER_TAG;
 
 	_model = new Model("./assets/model/player.fbx");
-	ballModel = new Model("./assets/model/ball.fbx");
-	ballModel->updateColor({ 0.54f, 1.0f, 0.43f, 0.3f });
 
 	_playerController = new PlayerController2D();
 	setState(new PlayerIdle());
@@ -91,10 +88,6 @@ void Player::draw() {
 	SHADER.setLight(light);
 
 	_model->draw(_pos, radian);
-}
-
-void Player::drawCircle() {
-	ballModel->draw(_pos, { 0.0f, 0.0f, 0.0f });
 }
 
 void Player::setState(PlayerState* state) {

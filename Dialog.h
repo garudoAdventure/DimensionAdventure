@@ -124,7 +124,17 @@ class HintDialog : public IDialog {
 		}
 		void draw(Float3 pos) override {
 			SHADER.begin();
-			SPRITE.drawSpriteIn3D(pos, { 32.0f, 32.0f }, tex);
+			// ビルボード処理
+			XMMATRIX view = SHADER.getView();
+			XMMATRIX invView = XMMatrixInverse(nullptr, view);
+			invView.r[3].m128_f32[0] = 0.0f;
+			invView.r[3].m128_f32[1] = 0.0f;
+			invView.r[3].m128_f32[2] = 0.0f;
+			XMMATRIX world = XMMatrixIdentity();
+			world *= invView;
+			world *= XMMatrixTranslation(pos.x, pos.y, pos.z);
+			SHADER.setWorldMatrix(world);
+			SPRITE.drawSpriteIn3D({0.0f, 0.0f, 0.0f}, {32.0f, 32.0f}, tex);
 		}
 	
 	private:

@@ -18,12 +18,12 @@ struct PixelConst {
 class PostProcess {
 	public:
 		PostProcess(RenderTexture* offscreenTex) : _offscreenTex(offscreenTex) {
-      _offscreenCopyTex = new RenderTexture(1280, 720, {0.3f, 0.3f, 0.3f, 0.1f});
+      _offscreenCopyTex = new RenderTexture(1280, 720);
       _luminanceTex = new RenderTexture(1280, 720);
-      for (int i = 0; i < 4; i++) {
-        Float4 color = { 0.54f, 1.0f, 0.43f, 0.0f };
-        blurVTex[i] = new RenderTexture(1280 >> i, 720 >> i, color);
-        blurTex[i] = new RenderTexture(1280 >> i, 720 >> i, color);
+      for (int i = 0; i < 5; i++) {
+        Float4 clearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+        blurVTex[i] = new RenderTexture(1280 >> i, 720 >> i);
+        blurTex[i] = new RenderTexture(1280 >> i, 720 >> i);
 			}
 
 			D3D11_BUFFER_DESC desc = {};
@@ -34,31 +34,26 @@ class PostProcess {
 			desc.StructureByteStride = 0;
 			desc.CPUAccessFlags = 0;
 			DX3D.getDevice()->CreateBuffer(&desc, NULL, &pixelConstBuffer);
-
-      circleTex = TEXTURE.loadTexture("./assets/circleTex.png");
-      bgTex = TEXTURE.loadTexture("./assets/bg1.png");
-      itemTex = TEXTURE.loadTexture("./assets/south.png");
 		}
 
-		void update() {
-      //SHADER.begin();
-      //_offscreenCopyTex->setTargetView();
-      //_offscreenCopyTex->clear();
-      //// Reference: https://stackoverflow.com/questions/27929483/directx-render-to-texture-alpha-blending
-      //DX3D.setBlendMode(BlendMode::REND_TEX);
-      //SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex());
-      //PLAYER.drawCircle();
-      //DX3D.setBlendMode(BlendMode::NORMAL);
-
-      _luminanceTex->setTargetView();
-      _luminanceTex->clear();
-      SHADER.setPS(PS::LUMINANCE);
+		void update() {      
+      SHADER.begin();
+      _offscreenCopyTex->setTargetView();
+      _offscreenCopyTex->clear();
+      // Ref: https://stackoverflow.com/questions/27929483/directx-render-to-texture-alpha-blending
+      DX3D.setBlendMode(BlendMode::REND_TEX);
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex());
+      DX3D.setBlendMode(BlendMode::NORMAL);
+
+      //_luminanceTex->setTargetView();
+      //_luminanceTex->clear();
+      //SHADER.setPS(PS::LUMINANCE);
+      //SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenCopyTex->getTex());
 
       SHADER.setPS(PS::BLUR);
       SHADER.setSamplerState(SamplerState::CLAMP);
       PixelConst pc;
-      for (int i = 0; i < 3; i++) {
+      for (int i = 0; i < 5; i++) {
         blurVTex[i]->setTargetView();
         blurVTex[i]->clear();
         pc.isVertical = true;
@@ -69,7 +64,7 @@ class PostProcess {
         DX3D.getDeviceContext()->PSSetConstantBuffers(1, 1, &pixelConstBuffer);
         SPRITE.drawSprite2D(
           { 0.0f, 0.0f }, { pc.width, pc.height },
-          (i == 0 ? _luminanceTex->getTex() : blurTex[i - 1]->getTex()),
+          (i == 0 ? _offscreenCopyTex->getTex() : blurTex[i - 1]->getTex()),
           pc.width, pc.height
         );
 
@@ -90,22 +85,19 @@ class PostProcess {
       SHADER.begin();
 
       DX3D.setBlendMode(BlendMode::ADD_ALPHA);
+      // SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[4]->getTex());
+      // SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[3]->getTex());
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[2]->getTex());
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[1]->getTex());
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[0]->getTex());
-      // SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex());
-      // SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _luminanceTex->getTex());
       DX3D.setBlendMode(BlendMode::NORMAL);
     }
 
 	private:
-    unsigned int circleTex;
-    unsigned int bgTex;
-    unsigned int itemTex;
 		ID3D11Buffer* pixelConstBuffer;
     RenderTexture* _offscreenTex;
     RenderTexture* _offscreenCopyTex;
     RenderTexture* _luminanceTex;
-		RenderTexture* blurVTex[4];
-		RenderTexture* blurTex[4];
+		RenderTexture* blurVTex[5];
+		RenderTexture* blurTex[5];
 };

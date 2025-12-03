@@ -18,7 +18,6 @@ class Player : public GameObj {
   public:
 		void update() override;
 		void draw() override;
-		void drawCircle();
 		void setState(PlayerState* state);
 
 		void hitObj(GameObj* obj, bool isStatic = true) override;
@@ -83,7 +82,6 @@ class Player : public GameObj {
 
   private:
 		Model* _model;
-		Model* ballModel;
 		Float3 _dir = { 1.0f, 0.0f, 0.0f };
 		PlayerState* currentState = nullptr;
 		PlayerState* newState = nullptr;
@@ -100,7 +98,7 @@ class Player : public GameObj {
 		bool _isInvincible = false;
 		bool _isAttackMode = false;
 		bool _hasDimensionAbility = true;
-		int _crystalNum = 0;
+		int _crystalNum = 3;
 
 		void changeState();
 		void convertLayer();

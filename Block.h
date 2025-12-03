@@ -5,19 +5,21 @@
 #include "Model.h"
 #include "Shader.h"
 #include "DirectX.h"
+#include "MathTool.h"
 
 class Block : public ActivableGameObj {
 	public:
 		Block(Float3 pos, Model* model) : _model(model) {
 			_pos = pos;
 			_size = model->getSize();
-			_triggerSize = { _size.x + 1.0f, _size.y + 1.0f, _size.z + 1.0f };
+			_triggerSize = { _size.x + 0.1f, _size.y + 0.1f, _size.z + 0.1f };
 			_color = { 0.54f, 1.0f, 0.43f, 1.0f };
 		}
 		void update() override {
 			GameObj::update();
 			ActivableGameObj::update();
-			_color = { 1.0f, 1.0f, 1.0f, 0.3f };
+			_color = MathTool::lerp<Float4>(normalColor, lightColor, count / 60.0f);
+			count = count < 0 ? 0 : count - 1;
 		}
 		void draw() override {
 			Light light;
@@ -30,11 +32,14 @@ class Block : public ActivableGameObj {
 		}
 		void onTrigger(GameObj* player) override {
 			player->hitObj(this);
-			_color = { 0.54f, 1.0f, 0.43f, 1.0f };
+			count = 60;
 		}
 	
 	private:
 		Model* _model;
+		int count = 0;
+		const Float4 lightColor = { 0.54f, 1.0f, 0.43f, 1.0f };
+		const Float4 normalColor = { 1.0f, 1.0f, 1.0f, 0.3f };
 };
 
 class MovingFloor : public Block {

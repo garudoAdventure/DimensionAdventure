@@ -16,7 +16,7 @@ class Door : public ActivableGameObj {
 			_color = { 1.0f, 1.0f, 0.2f, 0.8f };
 			_model = new Model("./assets/model/door.fbx");
 			_size = _model->getSize();
-			_triggerSize = _size;
+			_triggerSize = { _size.x, _size.y, _size.z + 0.5f };
 		}
 		virtual void update() {
 			ActivableGameObj::update();

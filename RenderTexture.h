@@ -6,7 +6,7 @@
 
 class RenderTexture {
 	public:
-    RenderTexture(float w, float h, Float4 clearColor = {0.0f, 0.0f, 0.0f, 0.0f}) : width(w), height(h), _clearColor(clearColor) {
+    RenderTexture(float w, float h) : width(w), height(h) {
       D3D11_TEXTURE2D_DESC txDesc = {};
       txDesc.Width = width;
       txDesc.Height = height;
@@ -56,7 +56,7 @@ class RenderTexture {
       SAFE_RELEASE(_depthStencilView);
     }
     void clear() {
-      float clearColor[4] = { _clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a };
+      float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
       DX3D.getDeviceContext()->ClearRenderTargetView(_renderTargetView, clearColor);
       DX3D.getDeviceContext()->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     }
@@ -67,7 +67,6 @@ class RenderTexture {
 	private:
     float width;
     float height;
-    Float4 _clearColor;
     ID3D11Texture2D* _renderTargetTex;
     ID3D11Texture2D* _depthStencilTex;
     ID3D11RenderTargetView* _renderTargetView;
