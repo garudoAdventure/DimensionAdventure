@@ -36,8 +36,8 @@ void PlayerTeleport::update() {
 		if (Keyboard_IsKeyDown(KK_DOWN)) {
 			_teleportDistance.y -= 0.2f;
 		}
-		_teleportDistance.x = MathTool::getInRange(_teleportDistance.x, _minDistance, _maxDistance);
-		_teleportDistance.y = MathTool::getInRange(_teleportDistance.y, 0.0f, _maxDistance);
+		_teleportDistance.x = MathTool::clamp(_teleportDistance.x, _minDistance, _maxDistance);
+		_teleportDistance.y = MathTool::clamp(_teleportDistance.y, 0.0f, _maxDistance);
 	}
 	if (Keyboard_IsKeyUp(KK_X)) {
 		_isTeleport = true;

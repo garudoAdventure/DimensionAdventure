@@ -15,8 +15,7 @@ class Field {
 
 	protected:
 		const char* filePath;
-		Layer* _layer[3];
-		Model* _floor[3];
+		Layer* _layer[4];
 };
 
 class Field00 : public Field {

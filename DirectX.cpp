@@ -98,6 +98,7 @@ Direct3D::Direct3D(HWND hWnd) {
   blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
   _device->CreateBlendState(&blendDesc, &_blendStateAdd);
 
+  // Ref: https://stackoverflow.com/questions/27929483/directx-render-to-texture-alpha-blending
   blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_INV_DEST_ALPHA;
   blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
   _device->CreateBlendState(&blendDesc, &_blendStateRendTex);

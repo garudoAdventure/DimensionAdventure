@@ -13,7 +13,7 @@ class Sprite {
 		void drawSprite2D(Float2 pos, Float2 size, int texID, Float2 uvSize);
 		void drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian, Float2 center, Float4 color = {1.0f, 1.0f, 1.0f, 1.0f});
 		void drawSprite2DUV(Float2 pos, Float2 size, int texID, float scale);
-		void drawSpriteIn3D(Float3 pos, Float2 size, int texID);
+		void drawSpriteIn3D(Float3 pos, Float2 size, int texID, Float4 color = {1.0f, 1.0f, 1.0f, 1.0f});
 		void draw();
 
   private:

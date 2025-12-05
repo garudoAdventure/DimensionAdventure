@@ -4,25 +4,24 @@
 #include "Block.h"
 #include "FloorBase.h"
 #include "CSVParser.h"
-#include "ModelManager.h"
+#include "Color.h"
 
 Field::Field(const char* file) : filePath(file) {
 	_layer[0] = new Layer();
 	_layer[1] = new Layer();
 	_layer[2] = new Layer();
-
-	_layer[0]->setBg("./assets/bg1.png");
-	_layer[1]->setBg("./assets/bg2.png");
-	_layer[2]->setBg("./assets/bg3.png");
-
-	_floor[0] = MODEL.loadModel("./assets/model/transposeBox.fbx");
-	_floor[1] = MODEL.loadModel("./assets/model/transposeBox.fbx");
-	_floor[2] = MODEL.loadModel("./assets/model/transposeBox.fbx");
+	_layer[3] = new Layer();
 }
 
 void Field::load() {
 	CSVParser parser;
 	const std::vector<BlockInfo> map = parser.loadCSV(filePath);
+	Float4 layerColor[4] = {
+		Color::white,
+		Color::lightRed,
+		Color::lightGreen,
+		Color::lightBlue,
+	};
 	for (BlockInfo block : map) {
 		const int layerIdx = block.pos.w;
 		const Float3 pos = MathTool::getCoordPos({
@@ -31,23 +30,10 @@ void Field::load() {
 		switch (block.type) {
 			// Floor
 			case 1:
-				_layer[layerIdx]->addGameObj(new Block(pos, _floor[layerIdx]));
-				break;
-			
-			// Wall
 			case 2:
-				_layer[layerIdx]->addGameObj(new Block(pos, MODEL.loadModel("./assets/model/transposeBox.fbx")));
-				break;
-
-			// Block
 			case 3:
-				_layer[layerIdx]->addGameObj(new Block(pos, MODEL.loadModel("./assets/model/transposeBox.fbx")));
+				_layer[layerIdx]->addGameObj(new Block(pos, block.scale, layerColor[layerIdx]));
 				break;
-
-			// FloorBase
-			//case 5:
-			//	_layer[layerIdx]->addGameObj(new FloorBase(pos, block.size, MODEL.loadModel("./assets/model/floorBase.fbx")));
-			//	break;
 		}
 	}
 }

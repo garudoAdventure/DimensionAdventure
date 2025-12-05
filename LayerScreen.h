@@ -16,12 +16,13 @@ class LayerScreen {
 			layerTex[0] = new RenderTexture(1280.0f, 720.0f);
 			layerTex[1] = new RenderTexture(1280.0f, 720.0f);
 			layerTex[2] = new RenderTexture(1280.0f, 720.0f);
+			layerTex[3] = new RenderTexture(1280.0f, 720.0f);
 		}
 		void update(Camera* camera, Field* currentField) {
 			layerNum = PLAYER.getCrystalNum();
 
 			camera->draw();
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < 4; i++) {
 				layerTex[i]->setTargetView();
 				layerTex[i]->clear();
 				currentField->draw(i);
@@ -118,7 +119,7 @@ class LayerScreen {
 		}
 
 	private:
-		RenderTexture* layerTex[3];
+		RenderTexture* layerTex[4];
 		// RenderTexture* playerLayerTex;
 		Float3 _eye = { 0.0f, 0.0f, -30.0f };
 		const float offsetY = 80.0f;

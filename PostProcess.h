@@ -40,16 +40,14 @@ class PostProcess {
       SHADER.begin();
       _offscreenCopyTex->setTargetView();
       _offscreenCopyTex->clear();
-      // Ref: https://stackoverflow.com/questions/27929483/directx-render-to-texture-alpha-blending
-      DX3D.setBlendMode(BlendMode::REND_TEX);
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex());
-      DX3D.setBlendMode(BlendMode::NORMAL);
 
       //_luminanceTex->setTargetView();
       //_luminanceTex->clear();
       //SHADER.setPS(PS::LUMINANCE);
       //SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenCopyTex->getTex());
 
+      DX3D.setBlendMode(BlendMode::NORMAL);
       SHADER.setPS(PS::BLUR);
       SHADER.setSamplerState(SamplerState::CLAMP);
       PixelConst pc;
@@ -79,11 +77,6 @@ class PostProcess {
 		}
 
     void draw() {
-      DX3D.setTargetView();
-      DX3D.clear();
-      DX3D.setViewport(1280.0f, 720.0f);
-      SHADER.begin();
-
       DX3D.setBlendMode(BlendMode::ADD_ALPHA);
       // SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[4]->getTex());
       // SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[3]->getTex());

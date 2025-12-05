@@ -7,6 +7,7 @@ enum class ObjTag {
 	PLAYER_TAG,
 	ITEM,
 	LADDER,
+	MOVING_FLOOR
 };
 
 class GameObj {

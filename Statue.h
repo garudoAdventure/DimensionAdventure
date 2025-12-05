@@ -23,7 +23,7 @@ class Statue : public ActivableGameObj {
 			GameObj::draw();
 			Float3 hintPos = { _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z };
 			if (statueItem) {
-				statueItem->draw3D({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
+				// statueItem->draw3D({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 				hintPos.y += 2.0f;
 			}
 			ActivableGameObj::drawHint(hintPos);
@@ -31,7 +31,7 @@ class Statue : public ActivableGameObj {
 		void onTrigger(GameObj* player) {
 			player->hitObj(this);
 
-			if (Keyboard_IsKeyTrigger(KK_SPACE)) {
+			/*if (Keyboard_IsKeyTrigger(KK_SPACE)) {
 				if (statueItem) {
 					_gameEvent->addEvent(new ShowDialogEvent(
 						new ConfirmDialog({ "アイテムを台座から取りますが？" }, [=]() {
@@ -54,7 +54,7 @@ class Statue : public ActivableGameObj {
 				_gameEvent->addEvent(new ShowDialogEvent(
 					new MessageDialog({ "何らかの台座らしいです。" })
 				));
-			}
+			}*/
 		}
 		virtual void setStatueItem(Item* item) {
 			statueItem = item;

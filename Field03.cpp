@@ -1,26 +1,29 @@
 #include "Field.h"
 #include "Door.h"
-#include "ClimbableObj.h"
+#include "Crystal.h"
 
 Field03::Field03(IGameEventHandler* gameEvent) : Field("./map/map3.csv") {
 	for (int i = 0; i < 3; i++) {
 		Door* door = new OpenedDoor(
-			MathTool::getCoordPos({ 55.0f, 14.0f, 0.0f }), 2, gameEvent,
-			MathTool::getCoordPos({ 5.0f, 3.5f, 4.0f })
+			MathTool::getCoordPos({ 5.0f, 1.5f, 10.0f }), 5, gameEvent,
+			MathTool::getCoordPos({ 55.0f, 1.1f, 5.0f })
 		);
 		_layer[i]->addGameObj(door);
 	}
 	for (int i = 0; i < 3; i++) {
 		Door* door = new OpenedDoor(
-			MathTool::getCoordPos({ 55.0f, 4.0f, 0.0f }), 4, gameEvent,
-			MathTool::getCoordPos({ 5.0f, 3.5f, 4.0f })
+			MathTool::getCoordPos({ 29.0f, 1.5f, 10.0f }), 1, gameEvent,
+			MathTool::getCoordPos({ 29.0f, 1.1f, 5.0f })
 		);
 		_layer[i]->addGameObj(door);
 	}
-	{
-		ClimbableObj* ladder = new ClimbableObj(MathTool::getCoordPos({ 47.0f, 8.0f, 5.0f }), { 1.0f, 12.0f, 1.0f });
-		_layer[0]->addGameObj(ladder);
+	for (int i = 0; i < 3; i++) {
+		Door* door = new OpenedDoor(
+			MathTool::getCoordPos({ 55.0f, 1.5f, 10.0f }), 4, gameEvent,
+			MathTool::getCoordPos({ 5.0f, 1.1f, 5.0f })
+		);
+		_layer[i]->addGameObj(door);
 	}
-	
+
 	Field::load();
 }

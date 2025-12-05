@@ -4,14 +4,19 @@
 #include "PlayerClimb.h"
 #include "PlayerHurt.h"
 #include "Shader.h"
+#include "MathTool.h"
+#include "ShowDialogEvent.h"
+#include "Dialog.h"
 
 Player::Player(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
-	_pos = { -12.0f, -5.0f, 0.0f };
+	_pos = MathTool::getCoordPos({ 5.0f, 1.1f, 5.0f });
 	_size = { 2.0f, 3.5f, 2.0f };
 	_color = { 1.0f, 1.0f, 1.0f, 0.8f };
 	_tag = ObjTag::PLAYER_TAG;
-
 	_model = new Model("./assets/model/player.fbx");
+
+	_spirit = new Spirit();
+	_spirit->setPos(_pos);
 
 	_playerController = new PlayerController2D();
 	setState(new PlayerIdle());
@@ -53,6 +58,9 @@ void Player::update() {
 		}
 	}
 
+	 _spirit->updatePos(_pos, _dir);
+	 _spirit->update();
+
 	 _model->update();
 }
 
@@ -79,7 +87,7 @@ void Player::draw() {
 			radian.y += PI;
 		}
 	}
-	
+
 	Light light;
 	light.enable = true;
 	direction = XMVector3Normalize(direction);
@@ -88,6 +96,8 @@ void Player::draw() {
 	SHADER.setLight(light);
 
 	_model->draw(_pos, radian);
+
+	// _spirit->draw();
 }
 
 void Player::setState(PlayerState* state) {
@@ -177,6 +187,17 @@ void Player::autoRecoverEnergy() {
 	}
 }
 
+void Player::getDimensionAbility() {
+	_hasDimensionAbility = true;
+	_gameEvent->addEvent(new ShowDialogEvent(
+		new TutorialDialog()
+	));
+}
+
+void Player::addCrystalNum() {
+	_crystalNum += 1;
+}
+
 void Player::hitObj(GameObj* gameObj, bool isStatic) {
 	if (gameObj->getTag() == ObjTag::LADDER) {
 		climb(gameObj);
@@ -251,6 +272,7 @@ void Player::hitObj(GameObj* gameObj, bool isStatic) {
 		}
 	}
 	if (
+		gameObj->getTag() == ObjTag::MOVING_FLOOR ||
 		!_isOnClimbableObj &&
 		oldPlayerBottom >= objTop &&
 		playerBottom < objTop &&
@@ -262,5 +284,5 @@ void Player::hitObj(GameObj* gameObj, bool isStatic) {
 	}
 
 	// Šµ«
-	_pos.x += gameObj->getVel().x;
+	_pos += gameObj->getVel();
 }

@@ -32,7 +32,7 @@ class Shader {
 		void setLight(const Light light);
 		XMMATRIX getOrthoMatrix();
 		XMMATRIX getPerspectiveMatrix();
-		XMMATRIX getView();
+		XMMATRIX getInverseView();
 
   private:
 		ID3D11Device* _device = nullptr;

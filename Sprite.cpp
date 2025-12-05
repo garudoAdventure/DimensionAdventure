@@ -51,7 +51,7 @@ void Sprite::drawTextureSprite(Float3 pos, Float2 size, float alpha) {
   draw();
 }
 
-void Sprite::drawSpriteIn3D(Float3 pos, Float2 size, int texID) {
+void Sprite::drawSpriteIn3D(Float3 pos, Float2 size, int texID, Float4 color) {
   Vertex vertexData[4];
 
   const Float2 resize = {
@@ -70,7 +70,7 @@ void Sprite::drawSpriteIn3D(Float3 pos, Float2 size, int texID) {
   vertexData[3].texCoord = { 1.0f, 1.0f };
 
   for (int i = 0; i < 4; i++) {
-    vertexData[i].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+    vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
   }
   for (int i = 0; i < 4; i++) {
     vertexData[i].normal = { 0.0f, 0.0f, -1.0f };

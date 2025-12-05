@@ -10,7 +10,7 @@
 
 enum class ItemTag {
 	KEY,
-	STATUE,
+	BANGLE,
 	CRYSTAL,
 };
 

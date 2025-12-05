@@ -208,6 +208,11 @@ void Shader::setLight(const Light light) {
   _deviceContext->UpdateSubresource(_lightBuffer, 0, nullptr, &light, 0, 0);
 }
 
-XMMATRIX Shader::getView() {
-  return _viewMatrix;
+XMMATRIX Shader::getInverseView() {
+  XMMATRIX inverseView;
+  inverseView = XMMatrixInverse(nullptr, _viewMatrix);
+  inverseView.r[3].m128_f32[0] = 0.0f;
+  inverseView.r[3].m128_f32[1] = 0.0f;
+  inverseView.r[3].m128_f32[2] = 0.0f;
+  return inverseView;
 }

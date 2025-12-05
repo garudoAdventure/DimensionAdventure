@@ -41,7 +41,10 @@ class LockedDoor : public Door {
 				player->hitObj(this);
 			}
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
-				IDialog* dialog = new MessageDialog({ "Œ®‚ª‚©‚©‚Á‚Ä‚¢‚é", "ŠJ‚¯‚È‚¢" });
+				IDialog* dialog = new MessageDialog({
+					{ Talker::SELF, "Œ®‚ª‚©‚©‚Á‚Ä‚¢‚é" },
+					{ Talker::SELF, "ŠJ‚¯‚È‚¢" }
+				});
 				_gameEvent->addEvent(new ShowDialogEvent(dialog));
 			}
 		}

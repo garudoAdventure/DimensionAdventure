@@ -41,7 +41,7 @@ class MathTool {
 			};
 		}
 
-		static float getInRange(float num, float min, float max) {
+		static float clamp(float num, float min, float max) {
 			if (num < min) {
 				return min;
 			}

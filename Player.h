@@ -7,6 +7,7 @@
 #include "IGameEventHandler.h"
 #include "Enemy.h"
 #include "Model.h"
+#include "Spirit.h"
 
 #define MOVE_VEL		(0.2f)
 #define JUMP_FORCE  (0.7f)
@@ -26,6 +27,8 @@ class Player : public GameObj {
 		void hurt(int damage);
 		void attackEnemy(Enemy* enemy);
 		void convertDimension();
+		void getDimensionAbility();
+		void addCrystalNum();
 		
 		Model* getModel() {
 			return _model;
@@ -70,17 +73,15 @@ class Player : public GameObj {
 		void setAttackMode(bool isAttackMode) {
 			_isAttackMode = isAttackMode;
 		}
-		void getDimensionAbility() {
-			_hasDimensionAbility = true;
-		}
-		void addCrystalNum() {
-			_crystalNum += 1;
-		}
 		int getCrystalNum() {
 			return _crystalNum;
 		}
+		Spirit* getSpirit() {
+			return _spirit;
+		}
 
   private:
+		Spirit* _spirit;
 		Model* _model;
 		Float3 _dir = { 1.0f, 0.0f, 0.0f };
 		PlayerState* currentState = nullptr;
@@ -98,7 +99,7 @@ class Player : public GameObj {
 		bool _isInvincible = false;
 		bool _isAttackMode = false;
 		bool _hasDimensionAbility = true;
-		int _crystalNum = 3;
+		int _crystalNum = 0;
 
 		void changeState();
 		void convertLayer();

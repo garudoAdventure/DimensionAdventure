@@ -4,10 +4,11 @@
 #include "Item.h"
 #include "Dialog.h"
 #include <sstream>
+#include <functional>
 
 class GetItemEvent : public IGameEvent {
 	public:
-		GetItemEvent(Item* item) : _item(item) {
+		GetItemEvent(Item* item, std::function<void()> callback) : _item(item), _callback(callback) {
 			std::stringstream ss;
 			std::string context;
 			ss << item->getName() << "‚ðƒQƒbƒgI";
@@ -17,6 +18,7 @@ class GetItemEvent : public IGameEvent {
 		void update() override {
 			if (count == 180) {
 				_isEnd = true;
+				_callback();
 			}
 			else {
 				count++;
@@ -33,6 +35,7 @@ class GetItemEvent : public IGameEvent {
 	private:
 		Item* _item;
 		IDialog* _dialog;
+		std::function<void()> _callback;
 		int count = 0;
 		bool _isEnd = false;
 };

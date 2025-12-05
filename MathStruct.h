@@ -92,7 +92,7 @@ struct Cube {
 
 struct BlockInfo {
   Int4 pos;
-  Float3 size;
+  Float3 scale;
   int type;
 };
 

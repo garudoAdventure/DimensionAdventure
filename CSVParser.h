@@ -34,7 +34,7 @@ class CSVParser {
 				BlockInfo info;
 				info.pos = { x, y, z, w };
 				info.type = val;
-				info.size = size;
+				info.scale = size;
 				array.emplace_back(info);
 			}
 			return array;

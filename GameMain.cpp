@@ -44,8 +44,10 @@ void GameMain::update() {
 void GameMain::draw() {
   offscreenTex->setTargetView();
   offscreenTex->clear();
+  DX3D.setBlendMode(BlendMode::REND_TEX);
   camera->draw();
   currentField->draw(PLAYER.getCurrentLayer());
+  PLAYER.getSpirit()->draw();
   postProcess->update();
 
   DX3D.setTargetView();
@@ -76,6 +78,7 @@ void GameMain::changeField() {
   if (currentField != newField) {
     currentField = newField;
     PLAYER.setPos(_playerInitPos);
+    PLAYER.getSpirit()->setPos(_playerInitPos);
     camera->set2DPos({ _playerInitPos.x, _playerInitPos.y });
     gameEventQueue.emplace_back(new FieldFadeInEvent({
       _playerInitPos.x - camera->get2DPos().x,

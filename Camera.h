@@ -4,10 +4,10 @@
 #include "Player.h"
 
 #define CAMERA_2D_MIN_X	(0.0f)
-#define CAMERA_2D_MAX_X	(123.0f)
-#define CAMERA_3D_MIN_X	(-42.0f)
-#define CAMERA_3D_MAX_X	(142.0f)
-#define CAMERA_Z_DISTANCE (30.0f)
+#define CAMERA_2D_MAX_X	(132.0f)
+#define CAMERA_3D_MIN_X	(-52.0f)
+#define CAMERA_3D_MAX_X	(102.0f)
+#define CAMERA_Z_DISTANCE (40.0f)
 
 class CameraController;
 

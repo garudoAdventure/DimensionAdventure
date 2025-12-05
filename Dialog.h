@@ -12,6 +12,16 @@
 #include <vector>
 #include <functional>
 
+enum class Talker {
+	SELF,
+	SPIRIT
+};
+
+struct DialogContext {
+	Talker talker;
+	std::string content;
+};
+
 class IDialog {
 	public:
 		IDialog() {
@@ -37,12 +47,12 @@ class IDialog {
 		Float2 _pos;
 		Float2 _size;
 		Float2 _margin = { 50.0f, 40.0f };
-		std::vector<std::string> _context;
+		 std::vector<DialogContext> _context;
 		int contextIdx = 0;
-		int currentContextNum = 0;
-		int currentContextIdx = 0;
+		int currentContentStrNum = 0;
+		int currentContentStrIdx = 0;
 		int openDialogAnimCount = 0;
-		int contextSpeed = 3;
+		int contentSpeed = 3;
 		int frameCount = 0;
 		bool _isEnd = false;
 
@@ -52,11 +62,13 @@ class IDialog {
 
 class MessageDialog : public IDialog {
 	public:
-		MessageDialog(std::vector<std::string> context) {
+		MessageDialog(std::vector<DialogContext> context) {
 			_pos = { 0.0f, 100.0f };
 			_size = { 0.0f, 200.0f };
 			_context = context;
-			currentContextNum = _context[0].length();
+			currentContentStrNum = _context[0].content.length();
+			playerIconTex = TEXTURE.loadTexture("./assets/UI/playerIcon.png");
+			spiritIconTex = TEXTURE.loadTexture("./assets/UI/spiritIcon.png");
 		}
 		void update() override {
 			if (openDialogAnimCount <= 10) {
@@ -64,27 +76,44 @@ class MessageDialog : public IDialog {
 				openDialogAnimCount++;
 				return;
 			}
-			if (currentContextIdx == currentContextNum / 2 && Keyboard_IsKeyTrigger(KK_ENTER)) {
+			if (currentContentStrIdx == currentContentStrNum / 2 && Keyboard_IsKeyTrigger(KK_ENTER)) {
 				contextIdx += 1;
 				if (contextIdx < _context.size()) {
-					currentContextNum = _context[contextIdx].length();
-					currentContextIdx = 0;
+					currentContentStrNum = _context[contextIdx].content.length();
+					currentContentStrIdx = 0;
 				}
 				if (contextIdx == _context.size()) {
 					_isEnd = true;
 				}
 			}
 			if (frameCount % 2 == 0) {
-				currentContextIdx = std::min(currentContextNum / 2, currentContextIdx + 1);
+				currentContentStrIdx = std::min(currentContentStrNum / 2, currentContentStrIdx + 1);
 			}
 			frameCount++;
 		}
 		void draw() override {
 			if (_isEnd) return;
-			std::string str = _context[contextIdx].substr(0, currentContextIdx * 2);
+			std::string str = _context[contextIdx].content.substr(0, currentContentStrIdx * 2);
 			IDialog::drawMessageBox();
+			int iconTex = -1;
+			if (_context[contextIdx].talker == Talker::SELF) {
+				iconTex = playerIconTex;
+			}
+			if (_context[contextIdx].talker == Talker::SPIRIT) {
+				iconTex = spiritIconTex;
+			}
+			if (openDialogAnimCount > 10) {
+				SPRITE.drawSprite2D(
+					{ _pos.x - _size.x / 2 + 20.0f, _pos.y - _size.y / 2 + 20.0f },
+					{ 102.0f, 102.0f }, iconTex
+				);
+			}
 			IDialog::drawStr(_pos, str);
 		}
+
+	private:
+		unsigned int playerIconTex;
+		unsigned int spiritIconTex;
 };
 
 class GetItemDialog : public IDialog {
@@ -111,6 +140,11 @@ class GetItemDialog : public IDialog {
 			IDialog::drawMessageBox();
 			IDialog::drawStr(_pos, str);
 		}
+
+	private:
+		std::vector<std::string> _context;
+		int currentContextNum;
+		int currentContextIdx;
 };
 
 class HintDialog : public IDialog {
@@ -125,13 +159,8 @@ class HintDialog : public IDialog {
 		void draw(Float3 pos) override {
 			SHADER.begin();
 			// ビルボード処理
-			XMMATRIX view = SHADER.getView();
-			XMMATRIX invView = XMMatrixInverse(nullptr, view);
-			invView.r[3].m128_f32[0] = 0.0f;
-			invView.r[3].m128_f32[1] = 0.0f;
-			invView.r[3].m128_f32[2] = 0.0f;
 			XMMATRIX world = XMMatrixIdentity();
-			world *= invView;
+			world *= SHADER.getInverseView();
 			world *= XMMatrixTranslation(pos.x, pos.y, pos.z);
 			SHADER.setWorldMatrix(world);
 			SPRITE.drawSpriteIn3D({0.0f, 0.0f, 0.0f}, {32.0f, 32.0f}, tex);
@@ -193,4 +222,41 @@ class ConfirmDialog : public IDialog {
 	private:
 		bool _isConfirm = true;
 		std::function<void()> _callback;
+		std::vector<std::string> _context;
+		int currentContextNum;
+		int currentContextIdx;
+};
+
+class TutorialDialog : public IDialog {
+	public:
+		TutorialDialog() {
+			_pos = { 0.0f, 0.0f };
+			_size = { 800.0f, 500.0f };
+			_margin.y = 80.0f;
+			_margin.x = 150.0f;
+			pic2DTex = TEXTURE.loadTexture("./assets/tutorial/2D.png");
+			pic3DTex = TEXTURE.loadTexture("./assets/tutorial/3D.png");
+			arrowTex = TEXTURE.loadTexture("./assets/UI/arrow.png");
+			backspaceTex = TEXTURE.loadTexture("./assets/tutorial/backspace.png");
+		}
+		void update() override {
+			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
+				_isEnd = true;
+			}
+		}
+		void draw() override {
+			IDialog::drawMessageBox();
+			IDialog::drawStr(_pos, "を押して、2Dと3D世界の切り替えができる！");
+			SPRITE.drawSprite2D({ -310.0f, 150.0f }, { 106.0f, 60.0f }, backspaceTex);
+			SPRITE.drawSprite2D({ -200.0f, -50.0f }, { 320.0f, 180.0f }, pic2DTex);
+			SPRITE.drawSprite2D({ 200.0f, -50.0f }, { 320.0f, 180.0f }, pic3DTex);
+			SPRITE.drawSprite2D({ 0.0f, 80.0f }, { 94.0f, 34.0f }, arrowTex);
+			SPRITE.drawSprite2DRotate({ 0.0f, 180.0f }, { 94.0f, 34.0f }, arrowTex, PI, { 0.0f, 0.0f });
+		}
+
+	private:
+		unsigned int pic2DTex;
+		unsigned int pic3DTex;
+		unsigned int arrowTex;
+		unsigned int backspaceTex;
 };
