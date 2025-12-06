@@ -53,21 +53,30 @@ class Block : public ActivableGameObj {
 
 class MovingFloor : public Block {
 	public:
-		MovingFloor(Float3 pos, Float3 scale, Float4 color, Float3 vel) : Block(pos, scale, color) {
-			_vel = vel;
+		MovingFloor(Float3 startPos, Float3 endPos, Float3 scale, Float4 color) :
+			Block(startPos, scale, color), _startPos(startPos), _endPos(endPos) {
+			float dx = endPos.x - startPos.x;
+			float dy = endPos.y - startPos.y;
+			float dz = endPos.z - startPos.z;
+			_distance = sqrtf(dx * dx + dy * dy + dz * dz);
+			_tag = ObjTag::MOVING_FLOOR;
 		}
 		void update() override {
-			if (count == 300) {
-				_vel.x = -_vel.x;
-				count = 0;
+			Block::update();
+			_pos = MathTool::lerp<Float3>(_startPos, _endPos, count / (_distance * 10));
+			_vel = _pos - _oldPos;
+			if (count == 0 || count == (int)_distance * 10) {
+				countAdd = -countAdd;
 			}
-			count++;
-
-			_pos += _vel;
+			count += countAdd;
 		}
 	
 	private:
+		Float3 _startPos;
+		Float3 _endPos;
 		int count = 0;
+		int countAdd = -1;
+		float _distance;
 };
 
 class MovableBox : public Block {

@@ -17,10 +17,10 @@ void Field::load() {
 	CSVParser parser;
 	const std::vector<BlockInfo> map = parser.loadCSV(filePath);
 	Float4 layerColor[4] = {
-		Color::white,
 		Color::lightRed,
 		Color::lightGreen,
 		Color::lightBlue,
+		Color::white,
 	};
 	for (BlockInfo block : map) {
 		const int layerIdx = block.pos.w;

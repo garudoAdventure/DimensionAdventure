@@ -3,13 +3,14 @@
 #include "PlayerIdle.h"
 #include "PlayerClimb.h"
 #include "PlayerHurt.h"
+#include "PlayerEvent.h"
 #include "Shader.h"
 #include "MathTool.h"
 #include "ShowDialogEvent.h"
 #include "Dialog.h"
 
 Player::Player(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
-	_pos = MathTool::getCoordPos({ 5.0f, 1.1f, 5.0f });
+	_pos = MathTool::getCoordPos({ 29.0f, 1.1f, 5.0f });
 	_size = { 2.0f, 3.5f, 2.0f };
 	_color = { 1.0f, 1.0f, 1.0f, 0.8f };
 	_tag = ObjTag::PLAYER_TAG;
@@ -189,13 +190,19 @@ void Player::autoRecoverEnergy() {
 
 void Player::getDimensionAbility() {
 	_hasDimensionAbility = true;
-	_gameEvent->addEvent(new ShowDialogEvent(
-		new TutorialDialog()
-	));
 }
 
 void Player::addCrystalNum() {
 	_crystalNum += 1;
+}
+
+void Player::setToEventState(bool isEventState) {
+	if (isEventState) {
+		setState(new PlayerEvent());
+	}
+	else {
+		setState(new PlayerIdle());
+	}
 }
 
 void Player::hitObj(GameObj* gameObj, bool isStatic) {

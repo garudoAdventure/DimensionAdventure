@@ -9,6 +9,7 @@ class IGameEventHandler {
 		virtual void setNewField(int fieldID, Float3 doorPos, Float3 playerInitPos) = 0;
 		virtual void transformDimension() = 0;
 		virtual void transformLayer() = 0;
+		virtual void updatePlayerAct() = 0;
 		virtual Float3& getCameraPos() = 0;
-		virtual void setFourGodCorrect(int idx, bool correct) = 0;
+		virtual void setCameraVibration(bool isSet) = 0;
 };

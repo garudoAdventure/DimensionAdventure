@@ -3,15 +3,20 @@
 #include "Item.h"
 #include "GetItemEvent.h"
 #include "Player.h"
+#include "TrapEvent.h"
+#include "GreenCrystalEvent.h"
 
 class RedCrystal : public Item {
 	public:
 		RedCrystal(Float3 pos, IGameEventHandler* gameEvent) : Item(pos, gameEvent) {
 		}
 		void getItem() override {
-			_gameEvent->addEvent(new GetItemEvent(this, []() {
+			_gameEvent->addEvent(new GetItemEvent(this, [=]() {
 				PLAYER.addCrystalNum();
-				PLAYER.setLayer(1);
+				if (!PLAYER.is2D()) {
+					PLAYER.convertDimension();
+				}
+				_gameEvent->addEvent(new TrapEvent(_gameEvent));
 			}));
 		}
 		std::string getName() override {
@@ -27,8 +32,12 @@ class GreenCrystal : public Item {
 		GreenCrystal(Float3 pos, IGameEventHandler* gameEvent) : Item(pos, gameEvent) {
 		}
 		void getItem() override {
-			_gameEvent->addEvent(new GetItemEvent(this, []() {
+			_gameEvent->addEvent(new GetItemEvent(this, [=]() {
 				PLAYER.addCrystalNum();
+				//if (!PLAYER.is2D()) {
+				//	PLAYER.convertDimension();
+				//}
+				//_gameEvent->addEvent(new GreenCrystalEvent());
 			}));
 		}
 		std::string getName() override {
@@ -44,7 +53,7 @@ class BlueCrystal : public Item {
 		BlueCrystal(Float3 pos, IGameEventHandler* gameEvent) : Item(pos, gameEvent) {
 		}
 		void getItem() override {
-			_gameEvent->addEvent(new GetItemEvent(this, []() {
+			_gameEvent->addEvent(new GetItemEvent(this, [=]() {
 				PLAYER.addCrystalNum();
 			}));
 		}

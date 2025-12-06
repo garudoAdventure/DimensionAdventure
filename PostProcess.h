@@ -38,10 +38,11 @@ class PostProcess {
 
 		void update() {      
       SHADER.begin();
+      SHADER.setPS(PS::NORMAL);
       _offscreenCopyTex->setTargetView();
       _offscreenCopyTex->clear();
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex());
-
+      
       //_luminanceTex->setTargetView();
       //_luminanceTex->clear();
       //SHADER.setPS(PS::LUMINANCE);
@@ -73,13 +74,12 @@ class PostProcess {
         DX3D.getDeviceContext()->PSSetConstantBuffers(1, 1, &pixelConstBuffer);
         SPRITE.drawSprite2D({ 0.0f, 0.0f }, { pc.width, pc.height }, blurVTex[i]->getTex(), pc.width, pc.height);
       }
+      DX3D.setViewport(1280.0f, 720.0f);
       SHADER.setSamplerState(SamplerState::WRAP);
 		}
 
     void draw() {
       DX3D.setBlendMode(BlendMode::ADD_ALPHA);
-      // SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[4]->getTex());
-      // SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[3]->getTex());
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[2]->getTex());
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[1]->getTex());
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[0]->getTex());

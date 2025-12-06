@@ -22,22 +22,18 @@ class GameMain : public GameState, public IGameEventHandler {
 		void setNewField(int fieldID, Float3 doorPos, Float3 playerInitPos) override;
 		void transformDimension() override;
 		void transformLayer() override;
+		void updatePlayerAct() override;
 		Float3& getCameraPos() override;
-		void setFourGodCorrect(int idx, bool correct) override;
+		virtual void setCameraVibration(bool isSet) override;
 
 	private:
 		Camera* camera;
-		Float3 _playerInitPos = { 0.0f, 0.0f, 0.0f };
-		Field* newField;
 		Field* currentField;
 		FieldManager* fieldManager;
 		StatusUI statusUI;
 		ItemList itemList;
 		LayerScreen layerScreen;
 		std::vector<IGameEvent*> gameEventQueue;
-		bool fourGodCorrect[4] = { false, false, false, false };
 		PostProcess* postProcess;
 		RenderTexture* offscreenTex;
-		
-		void changeField();
 };

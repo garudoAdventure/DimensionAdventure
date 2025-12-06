@@ -29,6 +29,7 @@ class Player : public GameObj {
 		void convertDimension();
 		void getDimensionAbility();
 		void addCrystalNum();
+		void setToEventState(bool isEventState);
 		
 		Model* getModel() {
 			return _model;
@@ -99,7 +100,7 @@ class Player : public GameObj {
 		bool _isInvincible = false;
 		bool _isAttackMode = false;
 		bool _hasDimensionAbility = true;
-		int _crystalNum = 0;
+		int _crystalNum = 1;
 
 		void changeState();
 		void convertLayer();

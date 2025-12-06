@@ -7,7 +7,6 @@
 #include "IGameEventHandler.h"
 #include "Player.h"
 #include "ShowDialogEvent.h"
-#include "FieldFadeOutEvent.h"
 
 class Door : public ActivableGameObj {
   public:

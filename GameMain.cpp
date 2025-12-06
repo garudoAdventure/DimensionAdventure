@@ -1,8 +1,7 @@
 #include "GameMain.h"
 #include "Player.h"
 #include "GetItemEvent.h"
-#include "FieldFadeInEvent.h"
-#include "FieldFadeOutEvent.h"
+#include "ChangeFieldEvent.h"
 #include "TransformDimensionEvent.h"
 #include "TransformLayerEvent.h"
 
@@ -10,7 +9,7 @@ GameMain::GameMain() {
   Player::CreateInstance(this);
   camera = new Camera();
   fieldManager = new FieldManager(this);
-  currentField = newField = fieldManager->getField(0);
+  currentField = fieldManager->getField(54);
 
   offscreenTex = new RenderTexture(1280, 720);
   postProcess = new PostProcess(offscreenTex);
@@ -28,12 +27,7 @@ void GameMain::update() {
     return;
   }
 
-  changeField();
-
-  currentField->update(PLAYER.getCurrentLayer());
-  PLAYER.update();
-
-  currentField->collisionCheck(camera->is2D());
+  updatePlayerAct();
 
   camera->moveCamera();
 
@@ -74,34 +68,22 @@ void GameMain::draw() {
   // itemList.draw();
 }
 
-void GameMain::changeField() {
-  if (currentField != newField) {
-    currentField = newField;
-    PLAYER.setPos(_playerInitPos);
-    PLAYER.getSpirit()->setPos(_playerInitPos);
-    camera->set2DPos({ _playerInitPos.x, _playerInitPos.y });
-    gameEventQueue.emplace_back(new FieldFadeInEvent({
-      _playerInitPos.x - camera->get2DPos().x,
-      _playerInitPos.y - camera->get2DPos().y
-    }));
-  }
-}
-
 void GameMain::addEvent(IGameEvent* gameEvent) {
   gameEventQueue.emplace_back(gameEvent);
 }
 
 void GameMain::setNewField(int fieldID, Float3 doorPos, Float3 playerInitPos) {
   Field* field = fieldManager->getField(fieldID);
-  newField = field;
-  _playerInitPos = playerInitPos;
   if (!PLAYER.is2D()) {
     PLAYER.convertDimension();
   }
-  gameEventQueue.emplace_back(new FieldFadeOutEvent({
+  gameEventQueue.emplace_back(new ChangeFieldEvent(camera, {
     doorPos.x - camera->get2DPos().x,
     doorPos.y - camera->get2DPos().y
-  }));
+    }, playerInitPos, [=]() {
+      currentField = field;
+    }
+  ));
 }
 
 void GameMain::transformDimension() {
@@ -117,6 +99,12 @@ Float3& GameMain::getCameraPos() {
   return camera->getPos();
 }
 
-void GameMain::setFourGodCorrect(int idx, bool correct) {
-  fourGodCorrect[idx] = correct;
+void GameMain::setCameraVibration(bool isSet) {
+  camera->setVibration(isSet);
+}
+
+void GameMain::updatePlayerAct() {
+  currentField->update(PLAYER.getCurrentLayer());
+  PLAYER.update();
+  currentField->collisionCheck(camera->is2D());
 }

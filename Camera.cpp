@@ -47,6 +47,17 @@ void Camera::moveCamera() {
 	_focus = MathTool::lerp<Float3>(_focus, _newFocus, 0.1f);
 }
 
+void Camera::setVibration(bool isSet) {
+	static int time = 0;
+	if (!isSet) {
+		_eye.x = _focus.x;
+	}
+	else {
+		_eye.x += sinf(time) * 2;
+		time++;
+	}
+}
+
 void Camera::set2DPos(Float2 pos) {
 	_eye.x = pos.x;
 	_eye.x = MathTool::clamp(_eye.x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
@@ -65,7 +76,7 @@ Float2 Camera::get2DPos() {
 	}
 	else {
 		float eyeX = MathTool::clamp(_eye.x + CAMERA_Z_DISTANCE, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
-		return { eyeX, _eye.y };
+		return { eyeX, _eye.y - 5.0f };
 	}
 }
 

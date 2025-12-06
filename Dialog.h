@@ -71,6 +71,7 @@ class MessageDialog : public IDialog {
 			spiritIconTex = TEXTURE.loadTexture("./assets/UI/spiritIcon.png");
 		}
 		void update() override {
+			if (_isEnd) return;
 			if (openDialogAnimCount <= 10) {
 				_size.x = MathTool::lerp<float>(0.0f, 800.0f, openDialogAnimCount / 10.0f);
 				openDialogAnimCount++;
@@ -227,9 +228,43 @@ class ConfirmDialog : public IDialog {
 		int currentContextIdx;
 };
 
-class TutorialDialog : public IDialog {
+class DimensionTutorialDialog : public IDialog {
 	public:
-		TutorialDialog() {
+		DimensionTutorialDialog() {
+			_pos = { 0.0f, 0.0f };
+			_size = { 800.0f, 500.0f };
+			_margin.y = 80.0f;
+			_margin.x = 150.0f;
+			pic2DTex = TEXTURE.loadTexture("./assets/tutorial/2D.png");
+			pic3DTex = TEXTURE.loadTexture("./assets/tutorial/3D.png");
+			arrowTex = TEXTURE.loadTexture("./assets/UI/arrow.png");
+			backspaceTex = TEXTURE.loadTexture("./assets/tutorial/backspace.png");
+		}
+		void update() override {
+			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
+				_isEnd = true;
+			}
+		}
+		void draw() override {
+			IDialog::drawMessageBox();
+			IDialog::drawStr(_pos, "を押して、2Dと3D世界の切り替えができる！");
+			SPRITE.drawSprite2D({ -310.0f, 150.0f }, { 106.0f, 60.0f }, backspaceTex);
+			SPRITE.drawSprite2D({ -200.0f, -50.0f }, { 320.0f, 180.0f }, pic2DTex);
+			SPRITE.drawSprite2D({ 200.0f, -50.0f }, { 320.0f, 180.0f }, pic3DTex);
+			SPRITE.drawSprite2D({ 0.0f, 80.0f }, { 94.0f, 34.0f }, arrowTex);
+			SPRITE.drawSprite2DRotate({ 0.0f, 180.0f }, { 94.0f, 34.0f }, arrowTex, PI, { 0.0f, 0.0f });
+		}
+
+	private:
+		unsigned int pic2DTex;
+		unsigned int pic3DTex;
+		unsigned int arrowTex;
+		unsigned int backspaceTex;
+};
+
+class LayerTutorialDialog : public IDialog {
+	public:
+		LayerTutorialDialog() {
 			_pos = { 0.0f, 0.0f };
 			_size = { 800.0f, 500.0f };
 			_margin.y = 80.0f;

@@ -18,6 +18,7 @@ class Camera {
 		void draw();
 		void moveCamera();
 		void transformDimension();
+		void setVibration(bool isSet);
 		void set2DPos(Float2 pos);
 		Float2 get2DPos();
 		Float3& getPos();
