@@ -1,16 +1,9 @@
-#include "Model.h"
+﻿#include "Model.h"
 #include "Texture.h"
 #include "Shader.h"
 
 Model::Model(const std::string fileName) {
-	_aiScene = aiImportFile(fileName.c_str(),
-		aiProcess_Triangulate
-		//aiProcess_JoinIdenticalVertices |
-		//aiProcess_LimitBoneWeights |
-		//aiProcess_ImproveCacheLocality |
-		//aiProcessPreset_TargetRealtime_MaxQuality |
-		//aiProcess_ConvertToLeftHanded
-	);
+	_aiScene = aiImportFile(fileName.c_str(), aiProcess_Triangulate);
 	_rootNode = _aiScene->mRootNode;
 	_globalInverseTransform = _rootNode->mChildren[0]->mTransformation.Inverse();
 
@@ -101,12 +94,6 @@ void Model::updateNode(int frame, aiNode* node, aiMatrix4x4 parentTransform) {
 	}
 
 	aiMatrix4x4 globalTransform = parentTransform * nodeTransform;
-	if (nodeName == "NurbsPath.001") {
-		for (int i = 0; i < node->mNumMeshes; i++) {
-			Mesh* mesh = _meshes[node->mMeshes[i]];
-			mesh->updateNodeTransform(_globalInverseTransform * globalTransform);
-		}
-	}	
 	for (int i = 0; i < _meshes.size(); i++) {
 		 _meshes[i]->updateBoneTransform(node, _globalInverseTransform * globalTransform);
 	}
@@ -115,7 +102,7 @@ void Model::updateNode(int frame, aiNode* node, aiMatrix4x4 parentTransform) {
 	}
 }
 
-void Model::draw(Float3 pos, Float3 radian) {
+void Model::draw(Float3 pos, Float3 radian, Float3 scale) {
 	DX3D.setDepthEnable(true);
 	TEXTURE.setTexture(-1);
 	for (int i = 0; i < _meshes.size(); i++) {
@@ -128,7 +115,7 @@ void Model::draw(Float3 pos, Float3 radian) {
 			TEXTURE.setTexture(0);
 			DX3D.getDeviceContext()->PSSetShaderResources(0, 1, &_texture[texName.data]);
 		}
-		mesh->draw(pos, radian);
+		mesh->draw(pos, radian, scale);
 	}
 }
 

@@ -1,38 +1,54 @@
-#include "Field.h"
+﻿#include "Field.h"
 #include "MathTool.h"
 #include "Texture.h"
+#include "ModelManager.h"
 #include "Block.h"
-#include "FloorBase.h"
+#include "Wall.h"
 #include "CSVParser.h"
-#include "Color.h"
 
 Field::Field(const char* file) : filePath(file) {
 	_layer[0] = new Layer();
 	_layer[1] = new Layer();
 	_layer[2] = new Layer();
 	_layer[3] = new Layer();
+
+	// Air wall
+	for (int i = 0; i < 4; i++) {
+		_layer[i]->addGameObj(new Wall(
+			MathTool::getCoordPos({ 20.0f, 10.0f, 11.0f }),
+			{ 40.0f * 3, 20.0f * 3, 1.0f * 3 }
+		));
+		_layer[i]->addGameObj(new Wall(
+			MathTool::getCoordPos({ 20.0f, 10.0f, -1.0f }),
+			{ 40.0f * 3, 20.0f * 3, 1.0f * 3 }
+		));
+		_layer[i]->addGameObj(new Wall(
+			MathTool::getCoordPos({ -1.0f, 10.0f, 5.0f }),
+			{ 1.0f * 3, 20.0f * 3, 10.0f * 3 }
+		));
+		_layer[i]->addGameObj(new Wall(
+			MathTool::getCoordPos({ 40.0f, 10.0f, 5.0f }),
+			{ 1.0f * 3, 20.0f * 3, 10.0f * 3 }
+		));
+	}
 }
 
 void Field::load() {
 	CSVParser parser;
 	const std::vector<BlockInfo> map = parser.loadCSV(filePath);
-	Float4 layerColor[4] = {
-		Color::lightRed,
-		Color::lightGreen,
-		Color::lightBlue,
-		Color::white,
-	};
 	for (BlockInfo block : map) {
 		const int layerIdx = block.pos.w;
 		const Float3 pos = MathTool::getCoordPos({
-			(float)block.pos.x, (float)block.pos.y, (float)block.pos.z
+			(float)block.pos.x + ((int)block.scale.x % 2 == 0 ? 0.5f : 0.0f),
+			(float)block.pos.y + ((int)block.scale.y % 2 == 0 ? 0.5f : 0.0f),
+			(float)block.pos.z + ((int)block.scale.z % 2 == 0 ? 0.5f : 0.0f)
 		});
 		switch (block.type) {
 			// Floor
 			case 1:
 			case 2:
 			case 3:
-				_layer[layerIdx]->addGameObj(new Block(pos, block.scale, layerColor[layerIdx]));
+				_layer[layerIdx]->addGameObj(new Block(pos, block.scale, layerColor[layerIdx], MODEL.loadModel("./assets/model/transposeBox.fbx")));
 				break;
 		}
 	}

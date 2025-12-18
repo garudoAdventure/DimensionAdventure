@@ -12,12 +12,15 @@ struct VSOutput
 
 float4 main(VSOutput In) : SV_Target0
 {
+    float4 outColor;
     if (!hasTexture)
     {
-        return In.col;
+        outColor = In.col;
     }
     else
     {
-        return In.col * g_texture.Sample(g_sampler, In.tex);
+        outColor = In.col * g_texture.Sample(g_sampler, In.tex);
     }
+    
+    return outColor;
 }

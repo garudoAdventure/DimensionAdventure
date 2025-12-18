@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Model.h"
 
@@ -30,6 +30,12 @@ class ModelManager {
 		}
 	private:
 		ModelManager() = default;
+		~ModelManager() {
+			for (auto it = modelMap.begin(); it != modelMap.end(); it++) {
+				delete it->second;
+			}
+			modelMap.clear();
+		}
 		static inline ModelManager* s_instance;
 };
 

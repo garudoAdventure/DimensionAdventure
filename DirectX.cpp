@@ -145,8 +145,8 @@ IDXGISwapChain* Direct3D::getSwapChain() {
   return _swapChain;
 }
 
-void Direct3D::clear() {
-  float clearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+void Direct3D::clear(XMFLOAT4 color) {
+  float clearColor[4] = { color.x, color.y, color.z, color.w };
   _deviceContext->ClearRenderTargetView(_rtv, clearColor);
   _deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Texture.h"
 
@@ -28,12 +28,11 @@ Texture::Texture() {
 int Texture::loadTexture(const std::string& fileName) {
   for (int i = 0; i < textureDataCount; i++) {
     if (textureData[i].filename == fileName) {
-      return i; // ‚·‚Å‚É“Ç‚Ýž‚Ü‚ê‚Ä‚¢‚½‚Ì‚Åid‚ð‚í‚½‚·
+      return i;
     }
   }
 
-  // ƒeƒNƒXƒ`ƒƒ“Ç‚Ýž‚Ý
-  // setlocale(LC_CTYPE, "jpn");
+  // ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
   wchar_t wFileName[256];
   size_t ret;
   mbstowcs_s(&ret, wFileName, fileName.c_str(), 256);

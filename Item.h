@@ -1,17 +1,18 @@
-#pragma once
+﻿#pragma once
 
 #include "GameObj.h"
 #include "Texture.h"
 #include "Sprite.h"
 #include "MathStruct.h"
 #include "Model.h"
+#include "ModelManager.h"
 #include "IGameEventHandler.h"
 #include <string>
 
 enum class ItemTag {
-	KEY,
-	BANGLE,
+	RING,
 	CRYSTAL,
+	REMOTE_CONTROL
 };
 
 class Item : public GameObj {
@@ -19,12 +20,12 @@ class Item : public GameObj {
 		Item(Float3 pos, IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 			_pos = pos;
 			_color = { 1.0f, 1.0f, 1.0f, 1.0f };
-			_model = new Model("./assets/model/cube.fbx");
+			_model = MODEL.loadModel("./assets/model/cube.fbx");
 			_size = _model->getSize();
 		}
 		void update() override {
-			_pos.y += cosf(passTime * 0.05f) * 0.02f;
-			passTime++;
+			_pos.y += cosf(_passTime * 0.05f) * 0.02f;
+			_passTime++;
 		}
 		void draw() override {
 			_model->draw(_pos, { 0.0f, 0.0f, 0.0f });
@@ -37,14 +38,14 @@ class Item : public GameObj {
 			}
 		}
 		virtual ItemTag getTag() = 0;
-		virtual std::string getName() = 0;
+		virtual std::wstring getName() = 0;
 		virtual void getItem() = 0;
 
 	protected:
 		IGameEventHandler* _gameEvent;
-		unsigned int texID;
+		unsigned int _texID;
 		Model* _model;
 
 	private:
-		int passTime = 0;
+		int _passTime = 0;
 };

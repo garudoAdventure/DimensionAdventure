@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Field.h"
 #include "IGameEventHandler.h"
@@ -20,7 +20,10 @@ class FieldManager {
 			_fields[6] = new Field06(gameEvent);
 		}
 		~FieldManager() {
-			
+			for (auto it = _fields.begin(); it != _fields.end(); it++) {
+				delete it->second;
+			}
+			_fields.clear();
 		}
 		Field* getField(int id) {
 			return _fields[id];

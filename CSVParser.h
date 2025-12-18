@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <fstream>
@@ -17,6 +17,7 @@ class CSVParser {
 				std::istringstream iStream(line);
 				std::string cell;
 				std::vector<std::string> row;
+				row.reserve(5);
 				for (int i = 0; i < 5; i++) {
 					std::getline(iStream, cell, ',');
 					row.emplace_back(cell);
@@ -24,12 +25,12 @@ class CSVParser {
 				std::getline(iStream, cell);
 				row.emplace_back(cell);
 
-				int x = parseToInt(row[0]);
-				int y = parseToInt(row[1]);
-				int z = parseToInt(row[2]);
-				int w = parseToInt(row[3]);
-				int val = parseToInt(row[4]);
-				Float3 size = parseToFloat3(row[5]);
+				int x = parseToInt(row.at(0));
+				int y = parseToInt(row.at(1));
+				int z = parseToInt(row.at(2));
+				int w = parseToInt(row.at(3));
+				int val = parseToInt(row.at(4));
+				Float3 size = parseToFloat3(row.at(5));
 				
 				BlockInfo info;
 				info.pos = { x, y, z, w };

@@ -1,7 +1,6 @@
-#include "PlayerJump.h"
+﻿#include "PlayerJump.h"
 #include "PlayerIdle.h"
 #include "PlayerWalk.h"
-#include "PlayerTeleport.h"
 
 PlayerJump::PlayerJump() {
 }
@@ -21,11 +20,7 @@ void PlayerJump::update() {
 			player->setState(new PlayerIdle());
 		}
 	}
-	if (player->getEnergy() > 0 && Keyboard_IsKeyTrigger(KK_X)) {
-		player->setState(new PlayerTeleport());
-	}
 }
 
 void PlayerJump::draw() {
-	CUBE_RENDERER.drawCube(player->getBox(), { 0.2f, 1.0f, 0.2f, 0.8f }, -1);
 }

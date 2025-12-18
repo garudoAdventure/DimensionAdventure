@@ -21,7 +21,7 @@ class Model {
 		Model(const std::string fileName);
 		~Model();
 		void update();
-		void draw(Float3 pos, Float3 radian);
+		void draw(Float3 pos, Float3 radian, Float3 scale = {1.0f, 1.0f, 1.0f});
 		void loadAnim(int animIdx);
 		void updateNode(int frame, aiNode* node, aiMatrix4x4 parentTransform);
 		void updateColor(Float4 color);

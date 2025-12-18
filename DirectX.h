@@ -23,7 +23,7 @@ class Direct3D {
 		ID3D11DeviceContext* getDeviceContext();
 		IDXGISwapChain* getSwapChain();
 
-		void clear();
+		void clear(XMFLOAT4 color = { 0.2f, 0.2f, 0.2f, 1.0f });
 		void present();
 		void setTargetView();
 		void setDepthEnable(bool depthEnable);

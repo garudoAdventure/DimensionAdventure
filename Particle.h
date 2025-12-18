@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "MathStruct.h"
 #include "Shader.h"
@@ -27,7 +27,7 @@ class Particle {
 			world *= SHADER.getInverseView();
 			world *= XMMatrixTranslation(_pos.x, _pos.y, _pos.z);
 			SHADER.setWorldMatrix(world);
-			SPRITE.drawSpriteIn3D({ 0.0f, 0.0f, 0.0f }, { 16.0f, 16.0f }, tex, color);
+			SPRITE.drawSpriteIn3D({ 16.0f, 16.0f }, tex, color);
 		}
 		int getLifeTime() {
 			return lifeTime;
@@ -45,23 +45,30 @@ class Particle {
 class Emitter {
 	public:
 		Emitter() {
-			tex = TEXTURE.loadTexture("./assets/elf.png");
+			_tex = TEXTURE.loadTexture("./assets/elf.png");
+			_particles.reserve(150);
+		}
+		~Emitter() {
+			for (Particle* particle : _particles) {
+				delete particle;
+			}
+			_particles.clear();
 		}
 		void update(Float3 pos) {
 			_pos = pos;
-			for (int i = 0; i < particles.size(); i++){
-				Particle* particle = particles[i];
+			for (int i = 0; i < _particles.size(); i++){
+				Particle* particle = _particles.at(i);
 				particle->update();
 				if (particle->getLifeTime() == 0) {
 					delete particle;
-					particles.erase(particles.begin() + i);
+					_particles.erase(_particles.begin() + i);
 				}
 			}
-			if (time % 20 == 0) {
-				particles.emplace_back(new Particle(_pos));
+			if (_time % 20 == 0) {
+				_particles.emplace_back(new Particle(_pos));
 			}
-			_color = MathTool::lerp<Float4>(Color::gray, Color::white, (sinf(time * 0.05f) + 1) * 0.5f);
-			time++;
+			_color = MathTool::lerp<Float4>(Color::gray, Color::white, (sinf(_time * 0.05f) + 1) * 0.5f);
+			_time++;
 		}
 		void draw(Float3 pos) {
 			SHADER.begin();
@@ -69,9 +76,9 @@ class Emitter {
 			world *= SHADER.getInverseView();
 			world *= XMMatrixTranslation(pos.x, pos.y, pos.z);
 			SHADER.setWorldMatrix(world);
-			SPRITE.drawSpriteIn3D({ 0.0f, 0.0f, 0.0f }, { 64.0f, 64.0f }, tex, _color);
+			SPRITE.drawSpriteIn3D({ 64.0f, 64.0f }, _tex, _color);
 
-			for (Particle* particle : particles) {
+			for (Particle* particle : _particles) {
 				particle->draw();
 			}
 		}
@@ -79,7 +86,7 @@ class Emitter {
 	private:
 		Float3 _pos = { 0.0f, 0.0f, 0.0f };
 		Float4 _color = Color::white;
-		unsigned int tex;
-		std::vector<Particle*> particles;
-		int time = 0;
+		unsigned int _tex;
+		std::vector<Particle*> _particles;
+		int _time = 0;
 };

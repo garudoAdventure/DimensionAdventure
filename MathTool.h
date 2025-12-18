@@ -18,6 +18,12 @@ class MathTool {
 			return xCollide && yCollide && (is2DMode || zCollide);
 		}
 
+		static float clamp(float num, float min, float max) {
+			if (num < min) return min;
+			if (num > max) return max;
+			return num;
+		}
+
 		template<class T>
 		static T lerp(T start, T end, float step) {
 			return start - (start - end) * step;
@@ -39,15 +45,5 @@ class MathTool {
 				-12.0f + 3.0f * coord.y,
 				-15.0f + 3.0f * coord.z
 			};
-		}
-
-		static float clamp(float num, float min, float max) {
-			if (num < min) {
-				return min;
-			}
-			if (num > max) {
-				return max;
-			}
-			return num;
 		}
 };

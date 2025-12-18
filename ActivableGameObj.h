@@ -1,14 +1,13 @@
-#pragma once
+﻿#pragma once
 
 #include "GameObj.h"
-#include "Dialog.h"
 #include "Player.h"
 #include "MathTool.h"
 
 class ActivableGameObj : public GameObj {
 	public:
 		ActivableGameObj() {
-			_hintDialog = new HintDialog();
+			_buttonTex = TEXTURE.loadTexture("./assets/keyEnter.png");
 		}
 		virtual void update() override {
 			_isTrigger = false;
@@ -20,10 +19,14 @@ class ActivableGameObj : public GameObj {
 		}
 		void drawHint(Float3 pos) {
 			if (_isTrigger) {
-				_hintDialog->draw(pos);
+				XMMATRIX world = XMMatrixIdentity();
+				world *= SHADER.getInverseView();
+				world *= XMMatrixTranslation(pos.x, pos.y, pos.z);
+				SHADER.setWorldMatrix(world);
+				SPRITE.drawSpriteIn3D({ 64.0f, 32.0f }, _buttonTex);
 			}
 		}
-		void trigger(GameObj* obj, bool is2D) {
+		virtual void trigger(GameObj* obj, bool is2D) {
 			Cube triggerCube = { _pos, _triggerSize };
 			if (MathTool::checkCollision(obj->getBox(), triggerCube, is2D)) {
 				_isTrigger = true;
@@ -34,8 +37,8 @@ class ActivableGameObj : public GameObj {
 
 	protected:
 		Float3 _triggerSize = { 0.0f, 0.0f, 0.0f };
+		bool _isTrigger = false;
 
 	private:
-		bool _isTrigger = false;
-		IDialog* _hintDialog = nullptr;
+		unsigned int _buttonTex;
 };

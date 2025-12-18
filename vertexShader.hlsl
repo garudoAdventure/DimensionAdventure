@@ -14,6 +14,7 @@ cbuffer Light : register(b2)
 {
     bool lightEnable;
     float3 lightDirection;
+    float4 ambientColor;
 }
 
 struct VSOutput
@@ -57,7 +58,7 @@ VSOutput main(
         VSOut.col.rgb = saturate(-dot(lightDirection, nor)) * color;
         VSOut.col.a = 1.0f;
         
-        VSOut.col.rgb += float3(0.4f, 0.4f, 0.4f);
+        VSOut.col.rgb += float3(ambientColor.r, ambientColor.g, ambientColor.b);
     }
     
     VSOut.tex = tex;

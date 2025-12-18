@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Texture.h"
 #include "DirectX.h"
@@ -6,10 +6,10 @@
 
 class RenderTexture {
 	public:
-    RenderTexture(float w, float h) : width(w), height(h) {
+    RenderTexture(float w, float h, Float4 clearColor = { 0.0f, 0.0f, 0.0f, 0.0f }) : _width(w), _height(h), _clearColor(clearColor) {
       D3D11_TEXTURE2D_DESC txDesc = {};
-      txDesc.Width = width;
-      txDesc.Height = height;
+      txDesc.Width = _width;
+      txDesc.Height = _height;
       txDesc.MipLevels = 1;
       txDesc.ArraySize = 1;
       txDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -56,7 +56,7 @@ class RenderTexture {
       SAFE_RELEASE(_depthStencilView);
     }
     void clear() {
-      float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+      float clearColor[4] = { _clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a};
       DX3D.getDeviceContext()->ClearRenderTargetView(_renderTargetView, clearColor);
       DX3D.getDeviceContext()->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     }
@@ -65,8 +65,9 @@ class RenderTexture {
     }
 
 	private:
-    float width;
-    float height;
+    float _width;
+    float _height;
+    Float4 _clearColor;
     ID3D11Texture2D* _renderTargetTex;
     ID3D11Texture2D* _depthStencilTex;
     ID3D11RenderTargetView* _renderTargetView;

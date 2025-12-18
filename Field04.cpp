@@ -1,72 +1,66 @@
-#include "Field.h"
+﻿#include "Field.h"
 #include "Door.h"
 #include "Block.h"
 #include "Color.h"
 #include "Crystal.h"
+#include "Epigraph.h"
+#include "PlayerFallPoint.h"
 
-Field04::Field04(IGameEventHandler* gameEvent) : Field("./map/map4.csv") {
+Field04::Field04(IGameEventHandler* gameEvent) : Field("./map/map4.csv") , _gameEvent(gameEvent) {
 	for (int i = 0; i < 4; i++) {
 		Door* door = new OpenedDoor(
-			MathTool::getCoordPos({ 5.0f, 1.5f, 10.0f }), 3, gameEvent,
-			MathTool::getCoordPos({ 55.0f, 1.1f, 5.0f })
+			MathTool::getCoordPos({ 2.0f, 1.5f, 10.0f }), 3, gameEvent,
+			MathTool::getCoordPos({ 3.0f, 1.1f, 5.0f })
 		);
 		_layer[i]->addGameObj(door);
 	}
 
-	_layer[3]->addGameObj(new MovingFloor(
-		MathTool::getCoordPos({ 12.0f, 0.0f, 5.0f }),
-		MathTool::getCoordPos({ 18.0f, 0.0f, 5.0f }),
-		{ 3.0f, 1.0f, 3.0f },
-		Color::white
-	));
-	_layer[3]->addGameObj(new MovingFloor(
-		MathTool::getCoordPos({ 28.0f, 0.0f, 8.0f }),
-		MathTool::getCoordPos({ 18.0f, 0.0f, 8.0f }),
-		{ 3.0f, 1.0f, 3.0f },
-		Color::white
-	));
-	_layer[3]->addGameObj(new MovingFloor(
-		MathTool::getCoordPos({ 39.0f, 0.0f, 1.0f }),
-		MathTool::getCoordPos({ 31.0f, 0.0f, 1.0f }),
-		{ 3.0f, 1.0f, 3.0f },
-		Color::white
-	));
-	_layer[3]->addGameObj(new MovingFloor(
-		MathTool::getCoordPos({ 43.0f, 0.0f, 5.0f }),
-		MathTool::getCoordPos({ 43.0f, 5.0f, 5.0f }),
-		{ 3.0f, 1.0f, 3.0f },
-		Color::white
-	));
+	Model* floorModel = MODEL.loadModel("./assets/model/transposeBox.fbx");
+	for (int i = 0; i < 4; i++) {
+		_layer[i]->addGameObj(new MovingFloor(
+			MathTool::getCoordPos({ 15.0f, 0.0f, 5.0f }),
+			MathTool::getCoordPos({ 10.0f, 0.0f, 5.0f }),
+			{ 3.0f, 1.0f, 3.0f },
+			layerColor[i], floorModel
+		));
+		_layer[i]->addGameObj(new MovingFloor(
+			MathTool::getCoordPos({ 15.0f, 0.0f, 8.0f }),
+			MathTool::getCoordPos({ 20.0f, 0.0f, 8.0f }),
+			{ 3.0f, 1.0f, 3.0f },
+			layerColor[i], floorModel
+		));
+		_layer[i]->addGameObj(new MovingFloor(
+			MathTool::getCoordPos({ 28.0f, 0.0f, 1.0f }),
+			MathTool::getCoordPos({ 23.0f, 0.0f, 1.0f }),
+			{ 3.0f, 1.0f, 3.0f },
+			layerColor[i], floorModel
+		));
+		_layer[i]->addGameObj(new MovingFloor(
+			MathTool::getCoordPos({ 31.0f, 0.0f, 5.0f }),
+			MathTool::getCoordPos({ 31.0f, 5.0f, 5.0f }),
+			{ 3.0f, 1.0f, 3.0f },
+			layerColor[i], floorModel
+		));
+	}
 
-	_layer[0]->addGameObj(new MovingFloor(
-		MathTool::getCoordPos({ 12.0f, 0.0f, 5.0f }),
-		MathTool::getCoordPos({ 18.0f, 0.0f, 5.0f }),
-		{ 3.0f, 1.0f, 3.0f },
-		Color::lightRed
-	));
-	_layer[0]->addGameObj(new MovingFloor(
-		MathTool::getCoordPos({ 28.0f, 0.0f, 8.0f }),
-		MathTool::getCoordPos({ 18.0f, 0.0f, 8.0f }),
-		{ 3.0f, 1.0f, 3.0f },
-		Color::lightRed
-	));
-	_layer[0]->addGameObj(new MovingFloor(
-		MathTool::getCoordPos({ 39.0f, 0.0f, 1.0f }),
-		MathTool::getCoordPos({ 31.0f, 0.0f, 1.0f }),
-		{ 3.0f, 1.0f, 3.0f },
-		Color::lightRed
-	));
-	_layer[0]->addGameObj(new MovingFloor(
-		MathTool::getCoordPos({ 43.0f, 0.0f, 5.0f }),
-		MathTool::getCoordPos({ 43.0f, 5.0f, 5.0f }),
-		{ 3.0f, 1.0f, 3.0f },
-		Color::lightRed
-	));
-
-	_layer[3]->addGameObj(new RedCrystal(
-		MathTool::getCoordPos({ 55.0f, 2.5f, 5.0f }),
+	_layer[LayerType::WHITE]->addGameObj(new RedCrystal(
+		MathTool::getCoordPos({ 39.0f, 3.5f, 5.0f }),
 		gameEvent
 	));
+
+	_layer[LayerType::WHITE]->addGameObj(new Epigraph(gameEvent,
+		MathTool::getCoordPos({ 7.0f, 2.0f, 10.0f }),
+		Color::lightRed,
+		L"お宝は奥にあると書いている"
+	));
+
+	for (int i = 0; i < 4; i++) {
+		_layer[i]->addGameObj(new PlayerFallPoint(
+			MathTool::getCoordPos({ 29.0f, -15.0f, 5.0f }),
+			{ 58.0f * 3.0f, 1.0f * 3.0f, 10.0f * 3.0f },
+			MathTool::getCoordPos({ 7.0f, 1.1f, 5.0f })
+		));
+	}
 	
 	Field::load();
 }

@@ -1,8 +1,9 @@
-#pragma once
+ï»¿#pragma once
 
 #include "MathStruct.h"
 #include "d2d1.h"
 #include <dwrite.h>
+#include <dwrite_3.h>
 #include <string>
 
 enum class Font {
@@ -13,24 +14,24 @@ enum class Font {
 
 namespace {
 	const WCHAR* FontList[] {
-		L"ƒƒCƒŠƒI",
+		L"ãƒ¡ã‚¤ãƒªã‚ª",
 		L"Arial",
 		L"Meiryo UI"
 	};
 }
 
 struct FontData {
-	Font font;					// ƒtƒHƒ“ƒg–¼
-	IDWriteFontCollection* fontCollection;		// ƒtƒHƒ“ƒgƒRƒŒƒNƒVƒ‡ƒ“
-	DWRITE_FONT_WEIGHT fontWeight;			// ƒtƒHƒ“ƒg‚Ì‘¾‚³
-	DWRITE_FONT_STYLE fontStyle;			// ƒtƒHƒ“ƒgƒXƒ^ƒCƒ‹
-	DWRITE_FONT_STRETCH fontStretch;		// ƒtƒHƒ“ƒg‚Ì•
-	FLOAT fontSize;					// ƒtƒHƒ“ƒgƒTƒCƒY
-	WCHAR const* localeName;			// ƒƒP[ƒ‹–¼
-	DWRITE_TEXT_ALIGNMENT textAlignment;		// ƒeƒLƒXƒg‚Ì”z’u
-	D2D1_COLOR_F Color;				// ƒtƒHƒ“ƒg‚ÌF
+	Font font;					// ãƒ•ã‚©ãƒ³ãƒˆå
+	IDWriteFontCollection* fontCollection;		// ãƒ•ã‚©ãƒ³ãƒˆã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³
+	DWRITE_FONT_WEIGHT fontWeight;			// ãƒ•ã‚©ãƒ³ãƒˆã®å¤ªã•
+	DWRITE_FONT_STYLE fontStyle;			// ãƒ•ã‚©ãƒ³ãƒˆã‚¹ã‚¿ã‚¤ãƒ«
+	DWRITE_FONT_STRETCH fontStretch;		// ãƒ•ã‚©ãƒ³ãƒˆã®å¹…
+	FLOAT fontSize;					// ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
+	WCHAR const* localeName;			// ãƒ­ã‚±ãƒ¼ãƒ«å
+	DWRITE_TEXT_ALIGNMENT textAlignment;		// ãƒ†ã‚­ã‚¹ãƒˆã®é…ç½®
+	D2D1_COLOR_F Color;				// ãƒ•ã‚©ãƒ³ãƒˆã®è‰²
 
-	// ƒfƒtƒHƒ‹ƒgİ’è
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®š
 	FontData() {
 		font = Font::Meiryo;
 		fontCollection = nullptr;
@@ -47,7 +48,8 @@ struct FontData {
 class DirectWrite {
 	public:
 		void setFont(FontData* data);
-		void drawString(std::string str, Float2 pos);
+		void drawString(std::wstring wstr, Float2 pos);
+		void drawString(std::wstring wstr, D2D1_RECT_F rect);
 
 	private:
 		ID2D1Factory* _factory = NULL;
@@ -57,6 +59,11 @@ class DirectWrite {
 		ID2D1RenderTarget* _rt = NULL;
 		ID2D1SolidColorBrush* _solidBrush = NULL;
 		IDXGISurface* _backBuffer = NULL;
+
+		IDWriteFactory5* _fontFactory = NULL;
+		IDWriteFontSetBuilder1* _fontBuilder = NULL;
+		IDWriteFontFile* _fontFile = NULL;
+		IDWriteFontCollection1* _fontCollection = NULL;
 
 		FontData* fontSetting = new FontData();
 

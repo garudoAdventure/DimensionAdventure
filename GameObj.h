@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "MathStruct.h"
 
@@ -7,11 +7,13 @@ enum class ObjTag {
 	PLAYER_TAG,
 	ITEM,
 	LADDER,
-	MOVING_FLOOR
+	MOVING_FLOOR,
+	PLAYER_FALL_POINT
 };
 
 class GameObj {
 	public:
+		virtual ~GameObj() = default;
 		virtual void update();
 		virtual void draw();
 		virtual void collide(GameObj* obj, bool is2D);

@@ -2,16 +2,23 @@
 using namespace DirectX;
 #include "Directx.h"
 #include "MathStruct.h"
-
-#pragma comment(lib, "d3dcompiler.lib")
+#include <fstream>
 
 Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   _device = device;
   _deviceContext = deviceContext;
 
-  ID3DBlob* compiledVS;
-  D3DCompileFromFile(L"./vertexShader.hlsl", nullptr, nullptr, "main", "vs_5_0", 0, 0, &compiledVS, nullptr);
-  _device->CreateVertexShader(compiledVS->GetBufferPointer(), compiledVS->GetBufferSize(), nullptr, &_vertexShader);
+  std::ifstream ifs_vs("vertexShader.cso", std::ios::binary);
+  ifs_vs.seekg(0, std::ios::end); // ファイルポインタを末尾に移動
+  std::streamsize filesize = ifs_vs.tellg(); // ファイルポインタの位置を取得（つまりファイルサイズ）
+  ifs_vs.seekg(0, std::ios::beg); // ファイルポインタを先頭に戻す
+
+  // バイナリデータを格納するためのバッファを確保
+  unsigned char* vsbinary_pointer = new unsigned char[filesize];
+  ifs_vs.read((char*)vsbinary_pointer, filesize); // バイナリデータを読み込む
+  ifs_vs.close(); // ファイルを閉じる
+
+  _device->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &_vertexShader);
 
   D3D11_INPUT_ELEMENT_DESC layout[] = {
     { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -21,30 +28,71 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
     { "BONE_IDX", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
     { "BONE_WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
   };
-  _device->CreateInputLayout(&layout[0], 6, compiledVS->GetBufferPointer(), compiledVS->GetBufferSize(), &_inputLayout);
+  _device->CreateInputLayout(&layout[0], 6, vsbinary_pointer, filesize, &_inputLayout);
   _deviceContext->IASetInputLayout(_inputLayout);
 
-  compiledVS->Release();
+  delete[] vsbinary_pointer; // バイナリデータのバッファを解放
 
   {
-    ID3DBlob* compiledPS;
-    D3DCompileFromFile(L"./pixelShader.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &compiledPS, nullptr);
-    _device->CreatePixelShader(compiledPS->GetBufferPointer(), compiledPS->GetBufferSize(), nullptr, &_pixelShader);
-    compiledPS->Release();
+    std::ifstream ifs_vs("outlineVS.cso", std::ios::binary);
+    ifs_vs.seekg(0, std::ios::end);
+    std::streamsize filesize = ifs_vs.tellg();
+    ifs_vs.seekg(0, std::ios::beg);
+
+    vsbinary_pointer = new unsigned char[filesize];
+    ifs_vs.read((char*)vsbinary_pointer, filesize);
+    ifs_vs.close();
+    _device->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &_outlineVS);
+    delete[] vsbinary_pointer;
   }
   {
-    ID3DBlob* compiledPS;
-    D3DCompileFromFile(L"./blurPS.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &compiledPS, nullptr);
-    _device->CreatePixelShader(compiledPS->GetBufferPointer(), compiledPS->GetBufferSize(), nullptr, &_blurShader);
-    compiledPS->Release();
+    std::ifstream ifs_ps("pixelShader.cso", std::ios::binary);
+    ifs_ps.seekg(0, std::ios::end);
+    filesize = ifs_ps.tellg();
+    ifs_ps.seekg(0, std::ios::beg);
+    unsigned char* psbinary_pointer = new unsigned char[filesize];
+    ifs_ps.read((char*)psbinary_pointer, filesize);
+    ifs_ps.close();
+
+    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_pixelShader);
+    delete[] psbinary_pointer;
   }
   {
-    ID3DBlob* compiledPS;
-    D3DCompileFromFile(L"./getLuminancePS.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &compiledPS, nullptr);
-    _device->CreatePixelShader(compiledPS->GetBufferPointer(), compiledPS->GetBufferSize(), nullptr, &_luminanceShader);
-    compiledPS->Release();
+    std::ifstream ifs_ps("blurPS.cso", std::ios::binary);
+    ifs_ps.seekg(0, std::ios::end);
+    filesize = ifs_ps.tellg();
+    ifs_ps.seekg(0, std::ios::beg);
+    unsigned char* psbinary_pointer = new unsigned char[filesize];
+    ifs_ps.read((char*)psbinary_pointer, filesize);
+    ifs_ps.close();
+
+    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_blurShader);
+    delete[] psbinary_pointer;
   }
-  
+  {
+    std::ifstream ifs_ps("glitchPS.cso", std::ios::binary);
+    ifs_ps.seekg(0, std::ios::end);
+    filesize = ifs_ps.tellg();
+    ifs_ps.seekg(0, std::ios::beg);
+    unsigned char* psbinary_pointer = new unsigned char[filesize];
+    ifs_ps.read((char*)psbinary_pointer, filesize);
+    ifs_ps.close();
+
+    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_glitchShader);
+    delete[] psbinary_pointer;
+  }
+  {
+    std::ifstream ifs_ps("outlinePS.cso", std::ios::binary);
+    ifs_ps.seekg(0, std::ios::end);
+    filesize = ifs_ps.tellg();
+    ifs_ps.seekg(0, std::ios::beg);
+    unsigned char* psbinary_pointer = new unsigned char[filesize];
+    ifs_ps.read((char*)psbinary_pointer, filesize);
+    ifs_ps.close();
+
+    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_outlinePS);
+    delete[] psbinary_pointer;
+  }
   
   _deviceContext->VSSetShader(_vertexShader, NULL, 0);
   _deviceContext->PSSetShader(_pixelShader, NULL, 0);
@@ -100,6 +148,8 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
 
 Shader::~Shader() {
   SAFE_RELEASE(_pixelShader);
+  SAFE_RELEASE(_blurShader);
+  SAFE_RELEASE(_glitchShader);
   SAFE_RELEASE(_matrixBuffer);
   SAFE_RELEASE(_lightBuffer);
   SAFE_RELEASE(_inputLayout);
@@ -128,6 +178,17 @@ void Shader::begin() {
   _worldMatrix = XMMatrixIdentity();
 }
 
+void Shader::setVS(VS vs) {
+  switch (vs) {
+  case VS::NORMAL:
+    _deviceContext->VSSetShader(_vertexShader, NULL, 0);
+    break;
+  case VS::OUTLINE:
+    _deviceContext->VSSetShader(_outlineVS, NULL, 0);
+    break;
+  }
+}
+
 void Shader::setPS(PS ps) {
   switch (ps) {
     case PS::NORMAL:
@@ -136,8 +197,11 @@ void Shader::setPS(PS ps) {
     case PS::BLUR:
       _deviceContext->PSSetShader(_blurShader, nullptr, 0);
       break;
-    case PS::LUMINANCE:
-      _deviceContext->PSSetShader(_luminanceShader, nullptr, 0);
+    case PS::GLITCH:
+      _deviceContext->PSSetShader(_glitchShader, nullptr, 0);
+      break;
+    case PS::OUTLINE:
+      _deviceContext->PSSetShader(_outlinePS, nullptr, 0);
       break;
   }
 }

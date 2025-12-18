@@ -1,38 +1,49 @@
 #include "GameMain.h"
 #include "Player.h"
-#include "GetItemEvent.h"
 #include "ChangeFieldEvent.h"
 #include "TransformDimensionEvent.h"
 #include "TransformLayerEvent.h"
+#include "StartEvent.h"
+#include "GameEnd.h"
 
 GameMain::GameMain() {
   Player::CreateInstance(this);
   camera = new Camera();
   fieldManager = new FieldManager(this);
-  currentField = fieldManager->getField(54);
+  currentField = fieldManager->getField(0);
+  PLAYER.setPos(MathTool::getCoordPos({ 1.0f, 1.1f, 5.0f }));
 
   offscreenTex = new RenderTexture(1280, 720);
   postProcess = new PostProcess(offscreenTex);
+
+  gameEventQueue.reserve(5);
+  gameEventQueue.emplace_back(new StartEvent(this));
 }
 
 GameMain::~GameMain() {
+  delete postProcess;
+  delete offscreenTex;
   delete fieldManager;
   delete camera;
   Player::DeleteInstance();
 }
 
-void GameMain::update() {  
+void GameMain::update() {
   if (gameEventQueue.size() != 0) {
-    gameEventQueue[0]->update();
+    gameEventQueue.at(0)->update();
     return;
+  }
+
+  if (!isTriggerEntryField) {
+    isTriggerEntryField = true;
+    currentField->onEntryField();
   }
 
   updatePlayerAct();
 
-  camera->moveCamera();
+  moveCamera(PLAYER.getPos());
 
   statusUI.update();
-  itemList.update();
 }
 
 void GameMain::draw() {
@@ -52,20 +63,19 @@ void GameMain::draw() {
   postProcess->draw();
   currentField->draw(PLAYER.getCurrentLayer());
   PLAYER.draw();
+  PLAYER.getSpirit()->drawHint();
 
   // Game Event
   if (gameEventQueue.size() != 0) {
-    gameEventQueue[0]->draw();
-
-    if (gameEventQueue[0]->isEnd()) {
-      delete gameEventQueue[0];
+    gameEventQueue.at(0)->draw();
+    if (gameEventQueue.at(0)->isEnd()) {
+      delete gameEventQueue.at(0);
       gameEventQueue.erase(gameEventQueue.begin());
     }
   }
 
   // UI
   statusUI.draw();
-  // itemList.draw();
 }
 
 void GameMain::addEvent(IGameEvent* gameEvent) {
@@ -82,6 +92,7 @@ void GameMain::setNewField(int fieldID, Float3 doorPos, Float3 playerInitPos) {
     doorPos.y - camera->get2DPos().y
     }, playerInitPos, [=]() {
       currentField = field;
+      isTriggerEntryField = false;
     }
   ));
 }
@@ -91,20 +102,40 @@ void GameMain::transformDimension() {
 }
 
 void GameMain::transformLayer() {
-  layerScreen.update(camera, currentField);
+  layerScreen.drawScreen(camera, currentField);
   gameEventQueue.emplace_back(new TransformLayerEvent(&layerScreen));
+}
+
+void GameMain::moveCamera(Float3 targetPos) {
+  camera->moveCamera(targetPos);
 }
 
 Float3& GameMain::getCameraPos() {
   return camera->getPos();
 }
 
-void GameMain::setCameraVibration(bool isSet) {
-  camera->setVibration(isSet);
+void GameMain::cameraVibration(bool isSet) {
+  camera->vibration(isSet);
 }
 
 void GameMain::updatePlayerAct() {
   currentField->update(PLAYER.getCurrentLayer());
   PLAYER.update();
   currentField->collisionCheck(camera->is2D());
+}
+
+RenderTexture* GameMain::getScreenTex() {
+  return offscreenTex;
+}
+
+void GameMain::setGameEnd() {
+  game->setState(new GameEnd());
+}
+
+void GameMain::setCheckpoint(CheckPoint checkPoint) {
+  currentCheckpoint = checkPoint;
+}
+
+CheckPoint GameMain::getCheckpoint() {
+  return currentCheckpoint;
 }

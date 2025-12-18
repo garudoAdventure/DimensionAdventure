@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IGameEvent.h"
 #include "Dialog.h"

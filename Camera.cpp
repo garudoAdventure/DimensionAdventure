@@ -4,50 +4,50 @@
 #include "MathTool.h"
 
 Camera::Camera() {
-	projMatrix = SHADER.getOrthoMatrix();
-	cameraController2D = new CameraController2D();
-	cameraController3D = new CameraController3D();
-	cameraController = cameraController2D;
+	_projMatrix = SHADER.getOrthoMatrix();
+	_cameraController2D = new CameraController2D();
+	_cameraController3D = new CameraController3D();
+	_cameraController = _cameraController2D;
 }
 
 Camera::~Camera() {
-	delete cameraController2D;
-	delete cameraController3D;
+	delete _cameraController2D;
+	delete _cameraController3D;
 }
 
 void Camera::draw() {
 	SHADER.setView(_eye, _focus);
-	SHADER.setProjection(projMatrix);
+	SHADER.setProjection(_projMatrix);
 }
 
 void Camera::transformDimension() {
 	if (!_isTransforming) {
-		count = 1;
+		_count = 1;
 		_isTransforming = true;
 		return;
 	}
 	const int maxCount = 30;
-	float step = (float)count / maxCount;
+	float step = (float)_count / maxCount;
 
-	cameraController->rotate(_eye, _focus, projMatrix, step);
+	_cameraController->transform(_eye, _focus, _projMatrix, step);
 
-	if (count < maxCount) {
-		count++;
+	if (_count < maxCount) {
+		_count++;
 	}
 	else {
 		_is2DMode = !_is2DMode;
 		_isTransforming = false;
-		cameraController = _is2DMode ? cameraController2D : cameraController3D;
+		_cameraController = _is2DMode ? _cameraController2D : _cameraController3D;
 	}
 }
 
-void Camera::moveCamera() {
-	cameraController->move(_newEye, _newFocus);
+void Camera::moveCamera(Float3 targetPos) {
+	_cameraController->move(targetPos, _newEye, _newFocus);
 	_eye = MathTool::lerp<Float3>(_eye, _newEye, 0.1f);
 	_focus = MathTool::lerp<Float3>(_focus, _newFocus, 0.1f);
 }
 
-void Camera::setVibration(bool isSet) {
+void Camera::vibration(bool isSet) {
 	static int time = 0;
 	if (!isSet) {
 		_eye.x = _focus.x;
@@ -65,7 +65,7 @@ void Camera::set2DPos(Float2 pos) {
 	_newEye.x = _eye.x;
 
 	_eye.y = pos.y;
-	_eye.y = MathTool::clamp(_eye.y, 0.0f, 20.0f);
+	_eye.y = MathTool::clamp(_eye.y, 0.0f, CAMERA_MAX_Y);
 	_focus.y = _eye.y;
 	_newEye.y = _eye.y;
 }
@@ -84,31 +84,31 @@ Float3& Camera::getPos() {
 	return _eye;
 }
 
-void CameraController2D::move(Float3& eye, Float3& focus) {
-	eye.x = PLAYER.getPos().x;
+void CameraController2D::move(Float3 targetPos, Float3& eye, Float3& focus) {
+	eye.x = targetPos.x;
 	eye.x = MathTool::clamp(eye.x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
 	focus.x = eye.x;
 
-	eye.y = PLAYER.getPos().y;
-	eye.y = MathTool::clamp(eye.y, 0.0f, 20.0f);
+	eye.y = targetPos.y;
+	eye.y = MathTool::clamp(eye.y, 0.0f, CAMERA_MAX_Y);
 	focus.y = eye.y;
 
 	eye.z = -CAMERA_Z_DISTANCE;
 }
 
-void CameraController3D::move(Float3& eye, Float3& focus) {
-	focus.x = PLAYER.getPos().x;
+void CameraController3D::move(Float3 targetPos, Float3& eye, Float3& focus) {
+	focus.x = targetPos.x;
 	focus.x = MathTool::clamp(focus.x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
 	eye.x = focus.x - CAMERA_Z_DISTANCE;
 
-	focus.y = PLAYER.getPos().y;
-	focus.y = MathTool::clamp(focus.y, 0.0f, 20.0f);
+	focus.y = targetPos.y;
+	focus.y = MathTool::clamp(focus.y, 0.0f, CAMERA_MAX_Y);
 	eye.y = focus.y + 5.0f;
 
 	eye.z = 0.0f;
 }
 
-void CameraController2D::rotate(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
+void CameraController2D::transform(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
 	const float srcEyePosX = MathTool::clamp(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
 	const float destEyePosX = MathTool::clamp(PLAYER.getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
 	eye.x = MathTool::lerp(srcEyePosX, destEyePosX, step);
@@ -124,7 +124,7 @@ void CameraController2D::rotate(Float3& eye, Float3& focus, XMMATRIX& projMat, f
 	projMat = MathTool::easeInQuad<XMMATRIX>(ortho, perspective, step);
 }
 
-void CameraController3D::rotate(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
+void CameraController3D::transform(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
 	const float srcEyePosX = MathTool::clamp(PLAYER.getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
 	const float destEyePosX = MathTool::clamp(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
 	eye.x = MathTool::lerp(srcEyePosX, destEyePosX, step);

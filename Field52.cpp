@@ -1,23 +1,30 @@
-#include "Field.h"
+﻿#include "Field.h"
 #include "Door.h"
+#include "Epigraph.h"
 
 Field52::Field52(IGameEventHandler* gameEvent) : Field("./map/map5.csv") {
 	for (int i = 0; i < 4; i++) {
 		_layer[i]->addGameObj(new OpenedDoor(
-			MathTool::getCoordPos({ 55.0f, 1.5f, 10.0f }), 3, gameEvent,
-			MathTool::getCoordPos({ 5.0f, 1.1f, 5.0f })
+			MathTool::getCoordPos({ 3.0f, 1.5f, 10.0f }), 3, gameEvent,
+			MathTool::getCoordPos({ 35.0f, 1.1f, 5.0f })
 		));
 	}
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			_layer[0]->addGameObj(new OpenedDoor(
-				MathTool::getCoordPos({ 29.0f + 3 * i, 1.5f, 10.0f - 3 * j }),
+			_layer[LayerType::RED]->addGameObj(new MazeDoor(
+				MathTool::getCoordPos({ 20.0f + 3 * i, 1.5f, 10.0f - 3 * j }),
 				(i == 0 && j == 0 ? 53 : 5), gameEvent,
-				MathTool::getCoordPos({ 29.0f + 3 * i, 1.1f, 10.0f - 3 * j - 1.0f })
+				MathTool::getCoordPos({ 20.0f + 3 * i, 1.1f, 10.0f - 3 * j - 1.0f })
 			));
 		}
 	}
+
+	_layer[LayerType::RED]->addGameObj(new Epigraph(gameEvent,
+		MathTool::getCoordPos({ 16.0f, 2.0f, 10.0f }),
+		Color::lightGreen,
+		L"正しい順番で正しいドアに入れば道が開くと書いている"
+	));
 
 	Field::load();
 }

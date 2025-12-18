@@ -3,14 +3,13 @@
 #include "GameState.h"
 #include "Camera.h"
 #include "Field.h"
-#include "StatusUI.h"
-#include "ItemList.h"
 #include "FieldManager.h"
+#include "StatusUI.h"
 #include "IGameEvent.h"
 #include "IGameEventHandler.h"
 #include "LayerScreen.h"
-#include <vector>
 #include "PostProcess.h"
+#include <vector>
 
 class GameMain : public GameState, public IGameEventHandler {
 	public:
@@ -23,17 +22,23 @@ class GameMain : public GameState, public IGameEventHandler {
 		void transformDimension() override;
 		void transformLayer() override;
 		void updatePlayerAct() override;
+		void moveCamera(Float3 targetPos) override;
 		Float3& getCameraPos() override;
-		virtual void setCameraVibration(bool isSet) override;
+		void cameraVibration(bool isSet) override;
+		RenderTexture* getScreenTex() override;
+		void setGameEnd() override;
+		void setCheckpoint(CheckPoint checkPoint) override;
+		CheckPoint getCheckpoint() override;
 
 	private:
 		Camera* camera;
 		Field* currentField;
 		FieldManager* fieldManager;
 		StatusUI statusUI;
-		ItemList itemList;
 		LayerScreen layerScreen;
-		std::vector<IGameEvent*> gameEventQueue;
 		PostProcess* postProcess;
 		RenderTexture* offscreenTex;
+		CheckPoint currentCheckpoint = CheckPoint::JUMP;
+		std::vector<IGameEvent*> gameEventQueue;
+		bool isTriggerEntryField = false;
 };

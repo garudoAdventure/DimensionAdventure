@@ -1,19 +1,31 @@
-#pragma once
+﻿#pragma once
 
 #include "Texture.h"
 #include "Sprite.h"
 #include "Player.h"
-#include "Enemy.h"
 #include "MathTool.h"
 #include "IStagePuzzle.h"
 #include "Shader.h"
 
+enum LayerType {
+	WHITE,
+	RED,
+	GREEN,
+	BLUE
+};
+
 class Layer {
 	public:
-		Layer() = default;
+		Layer() {
+			_gameObjs.reserve(500);
+			_stagePuzzles.reserve(3);
+		}
 		~Layer() {
 			for (GameObj* obj : _gameObjs) {
 				delete obj;
+			}
+			for (IStagePuzzle* puzzle : _stagePuzzles) {
+				delete puzzle;
 			}
 		}
 		void update() {
@@ -22,22 +34,15 @@ class Layer {
 					gameObj->update();
 				}
 			}
-			for (Enemy* enemy : _enemies) {
-				enemy->update();
-			}
 			for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
 				stagePuzzle->update();
 			}
 		}
 		void draw() {
-			// SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, bgTex);
 			for (GameObj* gameObj : _gameObjs) {
 				if (gameObj->isActive()) {
 					gameObj->draw();
 				}
-			}
-			for (Enemy* enemy : _enemies) {
-				enemy->draw();
 			}
 			for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
 				stagePuzzle->draw();
@@ -48,29 +53,18 @@ class Layer {
 				if (!gameObj->isActive()) continue;
 				gameObj->collide(&PLAYER, is2D);
 			}
-			//for (Enemy* enemy : _enemies) {
-			//	enemy->collide(&PLAYER, is2D);
-			//}
-			//for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
-			//	stagePuzzle->collide(&PLAYER, is2D);
-			//}
-		}
-		void setBg(const char* path) {
-			bgTex = TEXTURE.loadTexture(path);
+			for (IStagePuzzle* stagePuzzle : _stagePuzzles) {
+				stagePuzzle->collide(&PLAYER, is2D);
+			}
 		}
 		void addGameObj(GameObj* gameObj) {
 			_gameObjs.emplace_back(gameObj);
-		}
-		void addEnemy(Enemy* enemy) {
-			_enemies.emplace_back(enemy);
 		}
 		void addStagePuzzle(IStagePuzzle* stagePuzzle) {
 			_stagePuzzles.emplace_back(stagePuzzle);
 		}
 
 	private:
-		int bgTex = -1;
-		std::vector<IStagePuzzle*> _stagePuzzles;
 		std::vector<GameObj*> _gameObjs;
-		std::vector<Enemy*> _enemies;
+		std::vector<IStagePuzzle*> _stagePuzzles;
 };

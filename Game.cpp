@@ -1,28 +1,32 @@
 #include "Game.h"
-#include "GameMain.h"
+#include "GameTitle.h"
 
 Game::Game() {
-	setState(new GameMain());
+	setState(new GameTitle());
+}
+
+Game::~Game() {
+	delete _state;
 }
 
 void Game::update() {
 	changeState();
-	state->update();
+	_state->update();
 }
 
 void Game::draw() {
-	state->draw();
+	_state->draw();
 }
 
 void Game::setState(GameState* state) {
-	newState = state;
+	_newState = state;
 }
 
 void Game::changeState() {
-	if (newState != state) {
-		delete state;
-		state = newState;
-		state->game = this;
+	if (_newState != _state) {
+		delete _state;
+		_state = _newState;
+		_state->game = this;
 	}
 }
 

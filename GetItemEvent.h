@@ -1,19 +1,17 @@
-#pragma once
+ï»¿#pragma once
 
 #include "IGameEvent.h"
 #include "Item.h"
-#include "Dialog.h"
-#include <sstream>
+#include "SystemDialog.h"
 #include <functional>
 
 class GetItemEvent : public IGameEvent {
 	public:
 		GetItemEvent(Item* item, std::function<void()> callback) : _item(item), _callback(callback) {
-			std::stringstream ss;
-			std::string context;
-			ss << item->getName() << "‚ðƒQƒbƒgI";
-			ss >> context;
-			_dialog = new GetItemDialog({context});
+			_dialog = new SystemDialog({ item->getName() });
+		}
+		~GetItemEvent() {
+			delete _dialog;
 		}
 		void update() override {
 			if (count == 180) {

@@ -1,10 +1,6 @@
 #pragma once
 
 #include "Player.h"
-#include "Keyboard.h"
-#include "CubeRenderer.h"
-
-#define JUMP_FORCE  (0.7f)
 
 class Player;
 

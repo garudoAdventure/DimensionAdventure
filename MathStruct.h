@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "DirectX.h"
 
@@ -11,8 +11,18 @@ struct Float2 {
   Float2 operator+(const Float2& r) {
 	  return { x + r.x, y + r.y };
   }
+  Float2& operator+=(const Float2& r) {
+    x += r.x;
+    y += r.y;
+    return *this;
+  }
   Float2 operator-(const Float2& r) {
 	  return { x - r.x, y - r.y };
+  }
+  Float2& operator-=(const Float2& r) {
+    x -= r.x;
+    y -= r.y;
+    return *this;
   }
   Float2 operator*(const float r) {
     return { x * r, y * r };
@@ -25,6 +35,29 @@ struct Float2 {
 struct Int2 {
   int x;
   int y;
+
+  Int2 operator+(const Int2& r) {
+    return { x + r.x, y + r.y };
+  }
+  Int2& operator+=(const Int2& r) {
+    x += r.x;
+    y += r.y;
+    return *this;
+  }
+  Int2 operator-(const Int2& r) {
+    return { x - r.x, y - r.y };
+  }
+  Int2& operator-=(const Int2& r) {
+    x -= r.x;
+    y -= r.y;
+    return *this;
+  }
+  Int2 operator*(const int r) {
+    return { x * r, y * r };
+  }
+  Int2 operator/(const int r) {
+    return { x / r, y / r };
+  }
 };
 
 struct Float3 {
@@ -62,13 +95,31 @@ struct Int3 {
   int x;
   int y;
   int z;
-};
 
-struct Int4 {
-  int x;
-  int y;
-  int z;
-  int w;
+  Int3 operator+(const Int3& r) {
+    return { x + r.x, y + r.y, z + r.z };
+  }
+  Int3& operator+=(const Int3& r) {
+    x += r.x;
+    y += r.y;
+    z += r.z;
+    return *this;
+  }
+  Int3 operator-(const Int3& r) {
+    return { x - r.x, y - r.y, z - r.z };
+  }
+  Int3& operator-=(const Int3& r) {
+    x -= r.x;
+    y -= r.y;
+    z -= r.z;
+    return *this;
+  }
+  Int3 operator*(const int r) {
+    return { x * r, y * r, z * r };
+  }
+  Int3 operator/(const int r) {
+    return { x / r, y / r, z / r };
+  }
 };
 
 struct Float4 {
@@ -77,11 +128,65 @@ struct Float4 {
   float b;
   float a;
 
-  Float4 operator-(const Float4& f) {
-    return { r - f.r, g - f.g, b - f.b, a - f.a };
+  Float4 operator+(const Float4& s) {
+    return { r + s.r, g + s.g, b + s.b, a + s.a };
   }
-  Float4 operator*(const float n) {
-    return { r * n, g * n, b * n, a * n };
+  Float4& operator+=(const Float4& s) {
+    r += s.r;
+    g += s.g;
+    b += s.b;
+    a += s.a;
+    return *this;
+  }
+  Float4 operator-(const Float4& s) {
+    return { r - s.r, g - s.g, b - s.b, a - s.a };
+  }
+  Float4& operator-=(const Float4& s) {
+    r -= s.r;
+    g -= s.g;
+    b -= s.b;
+    a -= s.a;
+    return *this;
+  }
+  Float4 operator*(const float s) {
+    return { r * s, g * s, b * s, a * s };
+  }
+  Float4 operator/(const float s) {
+    return { r / s, g / s, b / s, a / s };
+  }
+};
+
+struct Int4 {
+  int x;
+  int y;
+  int z;
+  int w;
+
+  Int4 operator+(const Int4& r) {
+    return { x + r.x, y + r.y, z + r.z, w + r.w };
+  }
+  Int4& operator+=(const Int4& r) {
+    x += r.x;
+    y += r.y;
+    z += r.z;
+    w += r.w;
+    return *this;
+  }
+  Int4 operator-(const Int4& r) {
+    return { x - r.x, y - r.y, z - r.z, w - r.w };
+  }
+  Int4& operator-=(const Int4& r) {
+    x -= r.x;
+    y -= r.y;
+    z -= r.z;
+    w -= r.w;
+    return *this;
+  }
+  Int4 operator*(const int r) {
+    return { x * r, y * r, z * r, w * r };
+  }
+  Int4 operator/(const int r) {
+    return { x / r, y / r, z / r, w / r };
   }
 };
 
@@ -121,41 +226,5 @@ struct Transpose {
 struct Light {
   BOOL enable;
   XMFLOAT3 direction;
-};
-
-template<class T>
-class Cell;
-
-template <class T>
-struct TreeObject {
-  TreeObject(T* o) : obj(o) {}
-  Cell<T>* pCell = nullptr;
-  T* obj = nullptr;
-  TreeObject<T>* preNode = nullptr;
-  TreeObject<T>* nextNode = nullptr;
-};
-
-template<class T>
-class Cell {
-  public:
-    Cell() = default;
-    bool push(TreeObject<T>* treeObj) {
-	    if (treeObj == nullptr) return false;
-	    if (treeObj->pCell == this) return false;
-	    if (firstNode == nullptr) {
-	      firstNode = treeObj;
-	    }
-	    else {
-	      treeObj->nextNode = firstNode;
-	      firstNode->preNode = treeObj;
-	      firstNode = treeObj;
-	    }
-	    treeObj->pCell = this;
-    }
-    TreeObject<T>* getFirstNode() {
-	    return firstNode;
-    }
-
-  private:
-    TreeObject<T>* firstNode = nullptr;
+  XMFLOAT4 ambient = { 0.4f, 0.4f, 0.4f ,1.0f };
 };

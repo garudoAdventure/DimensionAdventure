@@ -1,4 +1,4 @@
-#include "Mesh.h"
+﻿#include "Mesh.h"
 #include "Shader.h"
 
 Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
@@ -25,23 +25,23 @@ Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
 		}
 		_vertexData.emplace_back(vertex);
 
-		if (vertex.postion.x > maxVertex.x) {
-			maxVertex.x = vertex.postion.x;
+		if (vertex.postion.x > _maxVertex.x) {
+			_maxVertex.x = vertex.postion.x;
 		}
-		if (vertex.postion.y > maxVertex.y) {
-			maxVertex.y = vertex.postion.y;
+		if (vertex.postion.y > _maxVertex.y) {
+			_maxVertex.y = vertex.postion.y;
 		}
-		if (vertex.postion.z > maxVertex.z) {
-			maxVertex.z = vertex.postion.z;
+		if (vertex.postion.z > _maxVertex.z) {
+			_maxVertex.z = vertex.postion.z;
 		}
-		if (vertex.postion.x < minVertex.x) {
-			minVertex.x = vertex.postion.x;
+		if (vertex.postion.x < _minVertex.x) {
+			_minVertex.x = vertex.postion.x;
 		}
-		if (vertex.postion.y < minVertex.y) {
-			minVertex.y = vertex.postion.y;
+		if (vertex.postion.y < _minVertex.y) {
+			_minVertex.y = vertex.postion.y;
 		}
-		if (vertex.postion.z < minVertex.z) {
-			minVertex.z = vertex.postion.z;
+		if (vertex.postion.z < _minVertex.z) {
+			_minVertex.z = vertex.postion.z;
 		}
 	}
 
@@ -151,18 +151,18 @@ bool Mesh::updateBoneTransform(aiNode* node, aiMatrix4x4 globalTransform) {
 }
 
 void Mesh::updateNodeTransform(aiMatrix4x4 globalTransform) {
-	nodeTransform = globalTransform;
+	_nodeTransform = globalTransform;
 }
 
-void Mesh::draw(Float3 pos, Float3 radian) {
-	aiMatrix4x4 mat = nodeTransform;
+void Mesh::draw(Float3 pos, Float3 radian, Float3 scale) {
+	aiMatrix4x4 mat = _nodeTransform;
 	XMMATRIX world = XMMATRIX(
 		(float)mat.a1, (float)mat.b1, (float)mat.c1, (float)mat.d1,
 		(float)mat.a2, (float)mat.b2, (float)mat.c2, (float)mat.d2,
 		(float)mat.a3, (float)mat.b3, (float)mat.c3, (float)mat.d3,
 		(float)mat.a4, (float)mat.b4, (float)mat.c4, (float)mat.d4
 	);
-	world *= XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	world *= XMMatrixScaling(scale.x, scale.y, scale.z);
 	world *= XMMatrixRotationRollPitchYaw(radian.x, radian.y, radian.z);
 	world *= XMMatrixTranslation(pos.x, pos.y, pos.z);
 

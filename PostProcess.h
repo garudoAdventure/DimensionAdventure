@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "DirectX.h"
 #include "RenderTexture.h"
@@ -12,18 +12,16 @@ struct PixelConst {
 	BOOL isVertical;
 	float width;
 	float height;
-	float dummy3;
+	float dummy;
 };
 
 class PostProcess {
 	public:
 		PostProcess(RenderTexture* offscreenTex) : _offscreenTex(offscreenTex) {
       _offscreenCopyTex = new RenderTexture(1280, 720);
-      _luminanceTex = new RenderTexture(1280, 720);
       for (int i = 0; i < 5; i++) {
-        Float4 clearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
-        blurVTex[i] = new RenderTexture(1280 >> i, 720 >> i);
-        blurTex[i] = new RenderTexture(1280 >> i, 720 >> i);
+        _blurVTex[i] = new RenderTexture(1280 >> i, 720 >> i);
+        _blurTex[i] = new RenderTexture(1280 >> i, 720 >> i);
 			}
 
 			D3D11_BUFFER_DESC desc = {};
@@ -33,8 +31,17 @@ class PostProcess {
 			desc.MiscFlags = 0;
 			desc.StructureByteStride = 0;
 			desc.CPUAccessFlags = 0;
-			DX3D.getDevice()->CreateBuffer(&desc, NULL, &pixelConstBuffer);
+			DX3D.getDevice()->CreateBuffer(&desc, NULL, &_pixelConstBuffer);
 		}
+
+    ~PostProcess() {
+      SAFE_RELEASE(_pixelConstBuffer);
+      delete _offscreenCopyTex;
+      for (int i = 0; i < 5; i++) {
+        delete _blurVTex[i];
+        delete _blurTex[i];
+      }
+    }
 
 		void update() {      
       SHADER.begin();
@@ -43,36 +50,31 @@ class PostProcess {
       _offscreenCopyTex->clear();
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex());
       
-      //_luminanceTex->setTargetView();
-      //_luminanceTex->clear();
-      //SHADER.setPS(PS::LUMINANCE);
-      //SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenCopyTex->getTex());
-
       DX3D.setBlendMode(BlendMode::NORMAL);
       SHADER.setPS(PS::BLUR);
       SHADER.setSamplerState(SamplerState::CLAMP);
       PixelConst pc;
       for (int i = 0; i < 5; i++) {
-        blurVTex[i]->setTargetView();
-        blurVTex[i]->clear();
+        _blurVTex[i]->setTargetView();
+        _blurVTex[i]->clear();
         pc.isVertical = true;
         pc.width = 1280 >> i;
         pc.height = 720 >> i;
         DX3D.setViewport(pc.width, pc.height);
-        DX3D.getDeviceContext()->UpdateSubresource(pixelConstBuffer, 0, NULL, &pc, 0, 0);
-        DX3D.getDeviceContext()->PSSetConstantBuffers(1, 1, &pixelConstBuffer);
+        DX3D.getDeviceContext()->UpdateSubresource(_pixelConstBuffer, 0, NULL, &pc, 0, 0);
+        DX3D.getDeviceContext()->PSSetConstantBuffers(1, 1, &_pixelConstBuffer);
         SPRITE.drawSprite2D(
           { 0.0f, 0.0f }, { pc.width, pc.height },
-          (i == 0 ? _offscreenCopyTex->getTex() : blurTex[i - 1]->getTex()),
+          (i == 0 ? _offscreenCopyTex->getTex() : _blurTex[i - 1]->getTex()),
           pc.width, pc.height
         );
 
-        blurTex[i]->setTargetView();
-        blurTex[i]->clear();
+        _blurTex[i]->setTargetView();
+        _blurTex[i]->clear();
         pc.isVertical = false;
-        DX3D.getDeviceContext()->UpdateSubresource(pixelConstBuffer, 0, NULL, &pc, 0, 0);
-        DX3D.getDeviceContext()->PSSetConstantBuffers(1, 1, &pixelConstBuffer);
-        SPRITE.drawSprite2D({ 0.0f, 0.0f }, { pc.width, pc.height }, blurVTex[i]->getTex(), pc.width, pc.height);
+        DX3D.getDeviceContext()->UpdateSubresource(_pixelConstBuffer, 0, NULL, &pc, 0, 0);
+        DX3D.getDeviceContext()->PSSetConstantBuffers(1, 1, &_pixelConstBuffer);
+        SPRITE.drawSprite2D({ 0.0f, 0.0f }, { pc.width, pc.height }, _blurVTex[i]->getTex(), pc.width, pc.height);
       }
       DX3D.setViewport(1280.0f, 720.0f);
       SHADER.setSamplerState(SamplerState::WRAP);
@@ -80,17 +82,23 @@ class PostProcess {
 
     void draw() {
       DX3D.setBlendMode(BlendMode::ADD_ALPHA);
-      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[2]->getTex());
-      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[1]->getTex());
-      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, blurTex[0]->getTex());
+      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[2]->getTex());
+      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[1]->getTex());
+      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[0]->getTex());
+      DX3D.setBlendMode(BlendMode::NORMAL);
+    }
+
+    void drawBlurBloom() {
+      DX3D.setBlendMode(BlendMode::ADD_ALPHA);
+      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[4]->getTex());
+      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[3]->getTex());
       DX3D.setBlendMode(BlendMode::NORMAL);
     }
 
 	private:
-		ID3D11Buffer* pixelConstBuffer;
+		ID3D11Buffer* _pixelConstBuffer;
     RenderTexture* _offscreenTex;
     RenderTexture* _offscreenCopyTex;
-    RenderTexture* _luminanceTex;
-		RenderTexture* blurVTex[5];
-		RenderTexture* blurTex[5];
+		RenderTexture* _blurVTex[5];
+		RenderTexture* _blurTex[5];
 };

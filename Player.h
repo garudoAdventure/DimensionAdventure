@@ -5,12 +5,11 @@
 #include "PlayerState.h"
 #include "PlayerController.h"
 #include "IGameEventHandler.h"
-#include "Enemy.h"
 #include "Model.h"
 #include "Spirit.h"
 
 #define MOVE_VEL		(0.2f)
-#define JUMP_FORCE  (0.7f)
+#define JUMP_FORCE  (0.75f)
 #define GRAVITY			(0.03f)
 
 class PlayerState;
@@ -23,9 +22,6 @@ class Player : public GameObj {
 
 		void hitObj(GameObj* obj, bool isStatic = true) override;
 		void jump();
-		void climb(GameObj* climableObj);
-		void hurt(int damage);
-		void attackEnemy(Enemy* enemy);
 		void convertDimension();
 		void getDimensionAbility();
 		void addCrystalNum();
@@ -33,12 +29,6 @@ class Player : public GameObj {
 		
 		Model* getModel() {
 			return _model;
-		}
-		int getHp() const {
-			return _hp;
-		}
-		int getEnergy() const {
-			return _energy;
 		}
 		void setPos(Float3 pos) {
 			_pos = pos;
@@ -52,6 +42,9 @@ class Player : public GameObj {
 		PlayerController* getPlayerController() const {
 			return _playerController;
 		}
+		Spirit* getSpirit() {
+			return _spirit;
+		}
 		void setJump(bool isJump) {
 			_isJump = isJump;
 		}
@@ -61,9 +54,6 @@ class Player : public GameObj {
 		bool is2D() const {
 			return _is2D;
 		}
-		void setIsClimbing(bool isClimbing) {
-			_isOnClimbableObj = isClimbing;
-		}
 		void setLayer(int layerIdx) {
 			_currentLayer = layerIdx;
 			_isConvertLayer = false;
@@ -71,42 +61,38 @@ class Player : public GameObj {
 		int getCurrentLayer() const {
 			return _currentLayer;
 		}
-		void setAttackMode(bool isAttackMode) {
-			_isAttackMode = isAttackMode;
-		}
 		int getCrystalNum() {
 			return _crystalNum;
 		}
-		Spirit* getSpirit() {
-			return _spirit;
+		bool hasDimensionRing() {
+			return _hasDimensionAbility;
+		}
+		void getRemoteControl() {
+			_hasRemoteControl = true;
+		}
+		bool hasRemoteControl() {
+			return _hasRemoteControl;
 		}
 
   private:
 		Spirit* _spirit;
 		Model* _model;
 		Float3 _dir = { 1.0f, 0.0f, 0.0f };
-		PlayerState* currentState = nullptr;
-		PlayerState* newState = nullptr;
+		PlayerState* _currentState = nullptr;
+		PlayerState* _newState = nullptr;
 		PlayerController* _playerController = nullptr;
 		IGameEventHandler* _gameEvent = nullptr;
-		int _hp = 5;
-		int _energy = 5;
-		int _recoverEnergyCount = 0;
 		bool _isJump = false;
 		bool _is2D = true;
 		int _currentLayer = 0;
 		bool _isConvertLayer = false;
-		bool _isOnClimbableObj = false;
-		bool _isInvincible = false;
-		bool _isAttackMode = false;
 		bool _hasDimensionAbility = true;
-		int _crystalNum = 1;
+		bool _hasRemoteControl = false;
+		int _crystalNum = 3;
+		int _keydownTime = 0;
 
 		void changeState();
 		void convertLayer();
-		void autoRecoverEnergy();
-		void invincibleUpdate();
-		void attackModeUpdate();
 
 	public:
 		static void CreateInstance(IGameEventHandler* gameEvent) {
@@ -123,7 +109,7 @@ class Player : public GameObj {
 
 	private:
 		Player(IGameEventHandler* gameEvent);
-		~Player() {}
+		~Player();
 		static inline Player* s_instance;
 };
 

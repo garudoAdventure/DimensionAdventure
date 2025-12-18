@@ -5,10 +5,16 @@
 #include <DirectXMath.h>
 #include "MathStruct.h"
 
+enum class VS {
+	NORMAL,
+	OUTLINE
+};
+
 enum class PS {
 	NORMAL,
 	BLUR,
-	LUMINANCE
+	GLITCH,
+	OUTLINE
 };
 
 enum class SamplerState {
@@ -19,6 +25,7 @@ enum class SamplerState {
 class Shader {
   public:
 		void begin();
+		void setVS(VS vs);
 		void setPS(PS ps);
 		void setSamplerState(SamplerState state);
 		void setWorldMatrix(XMMATRIX& world);
@@ -40,7 +47,9 @@ class Shader {
 		ID3D11VertexShader* _vertexShader = nullptr;
 		ID3D11PixelShader* _pixelShader = nullptr;
 		ID3D11PixelShader* _blurShader = nullptr;
-		ID3D11PixelShader* _luminanceShader = nullptr;
+		ID3D11PixelShader* _glitchShader = nullptr;
+		ID3D11VertexShader* _outlineVS = nullptr;
+		ID3D11PixelShader* _outlinePS = nullptr;
 		ID3D11InputLayout* _inputLayout = nullptr;
 		ID3D11Buffer* _matrixBuffer = nullptr;
 		ID3D11Buffer* _lightBuffer = nullptr;
