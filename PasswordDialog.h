@@ -20,6 +20,7 @@ class PasswordDialog : public IDialog {
 			_currentContentNum = _context.length();
 			_numberTex = TEXTURE.loadTexture("./assets/number.png");
 			_triangleTex = TEXTURE.loadTexture("./assets/triangle.png");
+			_cursorMoveSE = SOUND.loadSound("./assets/sound/cursorMove.wav");
 		}
 
 		void dialogUpdate() override {
@@ -27,9 +28,11 @@ class PasswordDialog : public IDialog {
 				_contentIdx = std::min(_currentContentNum, _contentIdx + 1);
 			}
 			if (Keyboard_IsKeyTrigger(KK_RIGHT)) {
+				SOUND.playSound(_cursorMoveSE, 0);
 				_selectDigit = std::min(3, _selectDigit + 1);
 			}
 			if (Keyboard_IsKeyTrigger(KK_LEFT)) {
+				SOUND.playSound(_cursorMoveSE, 0);
 				_selectDigit = std::max(0, _selectDigit - 1);
 			}
 			if (_pushCount == 10) {
@@ -37,11 +40,13 @@ class PasswordDialog : public IDialog {
 				_isPushDown = false;
 			}
 			if (Keyboard_IsKeyTrigger(KK_UP)) {
+				SOUND.playSound(_cursorMoveSE, 0);
 				_isPushUp = true;
 				_pushCount = 0;
 				_inputPassword[_selectDigit] = std::min(9, _inputPassword[_selectDigit] + 1);
 			}
 			if (Keyboard_IsKeyTrigger(KK_DOWN)) {
+				SOUND.playSound(_cursorMoveSE, 0);
 				_isPushDown = true;
 				_pushCount = 0;
 				_inputPassword[_selectDigit] = std::max(0, _inputPassword[_selectDigit] - 1);
@@ -55,11 +60,12 @@ class PasswordDialog : public IDialog {
 					_inputPassword[3] == 1
 				) {
 					_gameEvent->addEvent(new ExitEvent(_gameEvent));
-					return;
 				}
-				_gameEvent->addEvent(new ShowDialogEvent(
-					new SystemDialog({L"何も反応しない"})
-				));
+				else {
+					_gameEvent->addEvent(new ShowDialogEvent(
+						new SystemDialog({ L"何も起こらなかった" })
+					));
+				}
 			}
 			_time++;
 			_frameCount++;
@@ -99,6 +105,7 @@ class PasswordDialog : public IDialog {
 		IGameEventHandler* _gameEvent;
 		unsigned int _numberTex;
 		unsigned int _triangleTex;
+		unsigned int _cursorMoveSE;
 		int _frameCount = 0;
 		int _time = 0;
 		bool _isPushUp = false;

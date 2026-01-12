@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "GameState.h"
 #include "Camera.h"
@@ -49,5 +49,5 @@ class GameMain : public GameState, public IGameEventHandler {
 		std::vector<IGameEvent*> gameEventQueue;
 		Float3 savePointPos{ 0.0f, 0.0f, 0.0f };
 		bool isTriggerEntryField = false;
-		MazeBg bg;
+		MazeBg* mazeBg;
 };

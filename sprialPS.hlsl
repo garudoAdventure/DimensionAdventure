@@ -9,18 +9,7 @@ struct VSOutput
 };
 
 float4 main(VSOutput In) : SV_Target0
-{
- //   float2 uv = In.tex;
-    
- //   const float PI2THETA = 1 / (3.1415926535 * 2);
-
-	//// UV’l‚ğ‹ÉÀ•WŒn‚É•ÏŠ·
- //   uv = 2 * uv - 1;
- //   float r = 1 - sqrt(uv.x * uv.x + uv.y * uv.y);
- //   float theta = atan2(uv.y, uv.x) * PI2THETA;
-    
- //   return g_texture.Sample(g_sampler, float2(theta, r));
-    
+{    
     float2 uv = In.tex - float2(0.5, 0.5);
     float distanceFromCenter = length(uv);
     float angle = distanceFromCenter * 4 * 3.1415;

@@ -17,6 +17,7 @@ GameMain::GameMain() {
   layerScreen = new LayerScreen(this);
   offscreenTex = new RenderTexture(1280, 720);
   postProcess = new PostProcess(offscreenTex);
+  mazeBg = new MazeBg();
 
   gameEventQueue.reserve(5);
   gameEventQueue.emplace_back(new StartEvent(this));
@@ -26,6 +27,7 @@ GameMain::GameMain() {
 }
 
 GameMain::~GameMain() {
+  delete mazeBg;
   delete postProcess;
   delete offscreenTex;
   delete layerScreen;
@@ -35,8 +37,6 @@ GameMain::~GameMain() {
 }
 
 void GameMain::update() {
-  bg.update();
-
   if (gameEventQueue.size() != 0) {
     gameEventQueue.at(0)->update();
     return;
@@ -109,6 +109,7 @@ void GameMain::transformDimension() {
 
 void GameMain::transformLayer() {
   layerScreen->drawScreen(camera, currentField);
+  SOUND.setVolume(bgm, 0.2f);
   gameEventQueue.emplace_back(new TransformLayerEvent(layerScreen));
 }
 
@@ -125,6 +126,7 @@ void GameMain::cameraVibration(bool isSet) {
 }
 
 void GameMain::updateField() {
+  mazeBg->update();
   currentField->update(PLAYER.getCurrentLayer());
   currentField->collisionCheck(camera->is2D());
 }
@@ -158,7 +160,7 @@ int GameMain::getBgmId() {
 }
 
 void GameMain::drawGameScene(int layerIdx) {
-  bg.draw();
+  mazeBg->draw(layerIdx);
   currentField->draw(layerIdx);
   postProcess->drawBloom(3);
   PLAYER.draw();

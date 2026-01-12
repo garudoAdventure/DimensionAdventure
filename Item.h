@@ -26,6 +26,7 @@ class Item : public GameObj {
 			_pos.y += cosf(_passTime * 0.05f) * 0.02f;
 			_passTime++;
 		}
+		void draw() override {}
 		void collide(GameObj* obj, bool is2D) override {
 			if (obj->getTag() != ObjTag::PLAYER_TAG) return;
 			if (MathTool::checkCollision(this->getBox(), obj->getBox(), is2D)) {

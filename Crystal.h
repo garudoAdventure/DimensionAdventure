@@ -50,14 +50,16 @@ class RedCrystal : public Crystal {
 			_ambientColor = { 0.4f, 0.2f, 0.3f, 1.0f };
 		}
 		void getItem() override {
+			PLAYER.setState(new PlayerFreeze());
+			PLAYER.changeState();
+			unsigned int earthquakeSE = SOUND.loadSound("./assets/sound/earthquake.wav");
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.addCrystalNum();
 				if (!PLAYER.is2D()) {
 					PLAYER.convertDimension();
 				}
-				PLAYER.setState(new PlayerFreeze());
-				_gameEvent->addEvent(new TrapEventFH(_gameEvent));
-				_gameEvent->addEvent(new LayerTrapEvent(_gameEvent));
+				_gameEvent->addEvent(new TrapEventFH(_gameEvent, earthquakeSE));
+				_gameEvent->addEvent(new LayerTrapEvent(_gameEvent, earthquakeSE));
 				_gameEvent->addEvent(new TrapEventSH(_gameEvent));
 				_gameEvent->setCheckpoint(CheckPoint::RED_CRYSTAL);
 			}));
@@ -73,6 +75,8 @@ class GreenCrystal : public Crystal {
 			_ambientColor = { 0.2f, 0.3f, 0.2f, 1.0f };
 		}
 		void getItem() override {
+			PLAYER.setState(new PlayerFreeze());
+			PLAYER.changeState();
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.addCrystalNum();
 				if (!PLAYER.is2D()) {
@@ -94,6 +98,7 @@ class GreenCrystal : public Crystal {
 					})
 				));
 				_gameEvent->setCheckpoint(CheckPoint::GREEN_CRYSTAL);
+				PLAYER.setState(new PlayerIdle());
 			}));
 		}
 		std::wstring getName() override {
@@ -107,6 +112,8 @@ class BlueCrystal : public Crystal {
 			_ambientColor = { 0.2f, 0.2f, 0.5f, 1.0f };
 		}
 		void getItem() override {
+			PLAYER.setState(new PlayerFreeze());
+			PLAYER.changeState();
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.addCrystalNum();
 				_gameEvent->addEvent(new ShowDialogEvent(
@@ -130,6 +137,7 @@ class BlueCrystal : public Crystal {
 				));
 			}));
 			_gameEvent->setCheckpoint(CheckPoint::BLUE_CRYSTAL);
+			PLAYER.setState(new PlayerIdle());
 		}
 		std::wstring getName() override {
 			return L"次元水晶（青）をゲット！";

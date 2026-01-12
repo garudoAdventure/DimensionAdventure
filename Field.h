@@ -22,7 +22,7 @@ class Field {
 	protected:
 		const char* filePath;
 		Layer* _layer[4];
-		Float4 layerColor[4] = {
+		Float4 _layerColor[4] = {
 			Color::white,
 			Color::lightRed,
 			Color::lightGreen,

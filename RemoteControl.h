@@ -9,7 +9,7 @@ class RemoteControl : public Item {
 		RemoteControl(Float3 pos, IGameEventHandler* gameEvent) : Item(pos, gameEvent) {
 			_tex = TEXTURE.loadTexture("./assets/remoteControl.png");
 		}
-		void draw() override {
+		void drawBillboard() override {
 			XMMATRIX world = XMMatrixIdentity();
 			world *= SHADER.getInverseView();
 			world *= XMMatrixTranslation(_pos.x, _pos.y, _pos.z);
@@ -18,8 +18,11 @@ class RemoteControl : public Item {
 			SPRITE.drawSprite3D({ 63.0f, 60.0f }, TEXTURE.getTexture(_tex), Color::white);
 		}
 		void getItem() override {
+			PLAYER.setState(new PlayerFreeze());
+			PLAYER.changeState();
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.getRemoteControl();
+				PLAYER.setState(new PlayerIdle());
 				_gameEvent->setCheckpoint(CheckPoint::REMOTE_CONTROL);
 			}));
 		}

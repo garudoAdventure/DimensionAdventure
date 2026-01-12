@@ -1,5 +1,5 @@
-ï»¿################################################################################
-# ã“ã® .gitignore ãƒ•ã‚¡ã‚¤ãƒ«ã¯ Microsoft(R) Visual Studio ã«ã‚ˆã£ã¦è‡ªå‹•çš„ã«ä½œæˆã•ã‚Œã¾ã—ãŸã€‚
+################################################################################
+# ‚±‚Ì .gitignore ƒtƒ@ƒCƒ‹‚Í Microsoft(R) Visual Studio ‚É‚æ‚Á‚Ä©“®“I‚Éì¬‚³‚ê‚Ü‚µ‚½B
 ################################################################################
 
 /.vs/dimGameProto
@@ -7,7 +7,5 @@
 /dimGameProto/x64/Debug
 /x64/Debug
 /packages/AssimpCpp.5.0.1.6
-/dimGameProto.vcxproj
-/dimGameProto.vcxproj.filters
 /dimGameProto/x64/Release
 /x64

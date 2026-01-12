@@ -10,7 +10,7 @@
 
 class TrapEventFH : public IGameEvent {
 	public:
-		TrapEventFH(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
+		TrapEventFH(IGameEventHandler* gameEvent, unsigned int earthquakeSE) : _gameEvent(gameEvent), _earthquakeSE(earthquakeSE) {
 			_dialog[0] = new MessageDialog({
 				{ Talker::SPIRIT, L"やったな！" },
 				{ Talker::SPIRIT, L"これで残りの水晶は二つだ。" },
@@ -36,6 +36,10 @@ class TrapEventFH : public IGameEvent {
 				case 0:
 					_dialog[0]->update();
 					if (_dialog[0]->isEnd()) {
+						if (_startVibrationCount == 0) {
+							SOUND.stopSound(_gameEvent->getBgmId());
+							SOUND.playSound(_earthquakeSE, -1);
+						}
 						_gameEvent->cameraVibration(true);
 						_startVibrationCount++;
 						if (_startVibrationCount > 120) {
@@ -60,6 +64,7 @@ class TrapEventFH : public IGameEvent {
 	private:
 		IDialog* _dialog[2];
 		IGameEventHandler* _gameEvent;
+		unsigned int _earthquakeSE;
 		int _startVibrationCount = 0;
 		int _eventPhase = 0;
 		int _startCount = 0;
@@ -97,6 +102,7 @@ class TrapEventSH : public IGameEvent {
 			_dialog->update();
 			if (_dialog->isEnd()) {
 				PLAYER.setState(new PlayerIdle());
+				SOUND.playSound(_gameEvent->getBgmId(), -1);
 			}
 		}
 		void draw() override {

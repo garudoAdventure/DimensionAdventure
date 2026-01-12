@@ -20,7 +20,7 @@ class GetItemEvent : public IGameEvent {
 		void update() override {
 			if (_count == 300) {
 				_isEnd = true;
-				SOUND.setVolume(_gameEvent->getBgmId(), 0.5);
+				SOUND.setVolume(_gameEvent->getBgmId(), 0.3);
 				_callback();
 			}
 			else {

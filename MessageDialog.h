@@ -38,9 +38,11 @@ class MessageDialog : public IDialog {
 					_currentSE = _spiritMessageSE;
 					break;
 			}
-			SOUND.playSound(_currentSE, -1);
 		}
 		void dialogUpdate() override {
+			if (_contextIdx == 0 && _contentIdx == 0) {
+				SOUND.playSound(_currentSE, -1);
+			}
 			if (_contentIdx == _currentContentNum && Keyboard_IsKeyTrigger(KK_ENTER)) {
 				_contextIdx += 1;
 				if (_contextIdx == _context.size()) {

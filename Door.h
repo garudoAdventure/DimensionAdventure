@@ -75,13 +75,16 @@ class LockedDoor : public Door {
 class OpenedDoor : public Door {
 	public:
 		OpenedDoor(Float3 pos, int fieldID, IGameEventHandler* gameEvent, Float3 playerInitPos) :
-			Door(pos), _gameEvent(gameEvent), _nextField(fieldID), _playerInitPos(playerInitPos) {
+			Door(pos), _gameEvent(gameEvent), _nextField(fieldID), _playerInitPos(playerInitPos)
+		{
+			_inDoorSE = SOUND.loadSound("./assets/sound/inDoor.wav");
 		}
 		void onTrigger(GameObj* player) override {
 			if (MathTool::checkCollision(player->getBox(), this->getBox(), false)) {
 				player->hitObj(this);
 			}
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
+				SOUND.playSound(_inDoorSE, 0);
 				_gameEvent->setNewField(_nextField, _pos, _playerInitPos);
 				if (_nextField == 5 && _gameEvent->getCheckpoint() == CheckPoint::RED_CRYSTAL) {
 					_gameEvent->setCheckpoint(CheckPoint::GREEN_HINT);
@@ -103,8 +106,9 @@ class OpenedDoor : public Door {
 
 	private:
 		IGameEventHandler* _gameEvent = nullptr;
-		int _nextField;
 		Float3 _playerInitPos;
+		unsigned int _inDoorSE;
+		int _nextField;
 };
 
 class MazeDoor : public Door {

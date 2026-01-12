@@ -22,25 +22,25 @@ Field04::Field04(IGameEventHandler* gameEvent) : Field("./map/map4.csv") , _game
 			MathTool::getCoordPos({ 15.0f, 0.0f, 5.0f }),
 			MathTool::getCoordPos({ 10.0f, 0.0f, 5.0f }),
 			{ 3.0f, 1.0f, 3.0f },
-			layerColor[i], floorModel
+			_layerColor[i], floorModel
 		));
 		_layer[i]->addGameObj(new MovingFloor(
 			MathTool::getCoordPos({ 15.0f, 0.0f, 8.0f }),
 			MathTool::getCoordPos({ 20.0f, 0.0f, 8.0f }),
 			{ 3.0f, 1.0f, 3.0f },
-			layerColor[i], floorModel
+			_layerColor[i], floorModel
 		));
 		_layer[i]->addGameObj(new MovingFloor(
 			MathTool::getCoordPos({ 28.0f, 0.0f, 1.0f }),
 			MathTool::getCoordPos({ 23.0f, 0.0f, 1.0f }),
 			{ 3.0f, 1.0f, 3.0f },
-			layerColor[i], floorModel
+			_layerColor[i], floorModel
 		));
 		_layer[i]->addGameObj(new MovingFloor(
 			MathTool::getCoordPos({ 31.0f, 0.0f, 5.0f }),
 			MathTool::getCoordPos({ 31.0f, 5.0f, 5.0f }),
 			{ 3.0f, 1.0f, 3.0f },
-			layerColor[i], floorModel
+			_layerColor[i], floorModel
 		));
 	}
 

@@ -56,7 +56,7 @@ class StartEvent : public IGameEvent {
 				case 1:
 					_dialog[1]->update();
 					if (_dialog[1]->isEnd()) {
-						SOUND.setVolume(_gameEvent->getBgmId(), 0.5f);
+						SOUND.setVolume(_gameEvent->getBgmId(), 0.3f);
 						SOUND.playSound(_gameEvent->getBgmId(), -1);
 					}
 					break;

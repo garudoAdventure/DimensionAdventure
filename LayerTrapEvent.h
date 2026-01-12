@@ -12,10 +12,11 @@
 
 class LayerTrapEvent : public IGameEvent {
 	public:
-		LayerTrapEvent(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
+		LayerTrapEvent(IGameEventHandler* gameEvent, unsigned int earthquakeSE) : _gameEvent(gameEvent), _earthquakeSE(earthquakeSE){
 			_screenTex = _gameEvent->getScreenTex();
 			_layerTex = new RenderTexture(1280.0f, 720.0f, Color::darkGray);
 			_frameTex = TEXTURE.loadTexture("./assets/UI/frame.png");
+			_trapSE = SOUND.loadSound("./assets/sound/trap.wav");
 		}
 
 		void update() override {
@@ -34,6 +35,7 @@ class LayerTrapEvent : public IGameEvent {
 						int r = rand();
 						_vel.x = cosf(r);
 						_vel.y = sinf(r);
+						SOUND.playSound(_trapSE, 0);
 					}
 					if (time == 180) {
 						phase = 1;
@@ -45,8 +47,10 @@ class LayerTrapEvent : public IGameEvent {
 					if (frame == 300) {
 						PLAYER.setLayer(LayerType::RED);
 						_gameEvent->cameraVibration(false);
+						SOUND.stopSound(_earthquakeSE);
 						_isEnd = true;
 					}
+					SOUND.setVolume(_earthquakeSE, (300 - frame) / 300.0f);
 					frame++;
 					break;
 			}
@@ -132,6 +136,8 @@ class LayerTrapEvent : public IGameEvent {
 		Float2 _pos = { 0.0f, 0.0f };
 		Float2 _vel = { 0.0f, 0.0f };;
 		Float3 _eye = { 0.0f, 0.0f, 0.0f };
+		unsigned int _trapSE;
+		unsigned int _earthquakeSE;
 		int time = 0;
 		int frame = 0;
 		int eyeTransformCount = 0;

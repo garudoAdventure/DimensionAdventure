@@ -6,6 +6,7 @@
 PlayerJump::PlayerJump() {
 	jumpSE = SOUND.loadSound("./assets/sound/jump.wav");
 	SOUND.playSound(jumpSE, 0);
+	SOUND.setVolume(jumpSE, 0.5f);
 }
 
 void PlayerJump::init() {

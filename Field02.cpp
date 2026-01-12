@@ -23,7 +23,7 @@ Field02::Field02(IGameEventHandler* gameEvent) : Field("./map/map2.csv") {
 	};
 	for (int i = 0; i < 4; i++) {
 		_layer[i]->addGameObj(new HintBlock(
-			MathTool::getCoordPos({ 14.0f, 3.0f, 5.0f }), { 1.0f, 1.0f, 1.0f }, layerColor[i],
+			MathTool::getCoordPos({ 14.0f, 3.0f, 5.0f }), { 1.0f, 1.0f, 1.0f }, _layerColor[i],
 			hintWall[i]
 		));
 	}

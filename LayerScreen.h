@@ -33,6 +33,8 @@ public:
 			_postProcess[i]->update(false);
 		}
 		_dialog = new SystemDialog({ L"ホワイトレイヤーを発見した！" });
+		_changeLayerSE = SOUND.loadSound("./assets/sound/changeLayer.wav");
+		_confirmLayerSE = SOUND.loadSound("./assets/sound/confirmLayer.wav");
 	}
 
 	~LayerScreen() {
@@ -137,6 +139,7 @@ public:
 				_transformOutCount = 1;
 				_startEffect = true;
 				_startEffectCount = 0;
+				SOUND.setVolume(_gameEvent->getBgmId(), 0.5f);
 				return false;
 			}
 			return true;
@@ -149,6 +152,7 @@ public:
 		_isSelectFront = false;
 		_isSelectBack = false;
 		if (Keyboard_IsKeyTrigger(KK_RIGHT)) {
+			SOUND.playSound(_changeLayerSE, 0);
 			_isSelectFront = true;
 			_oldLayerIdx += 1;
 			if (_oldLayerIdx > _layerNum - 1) {
@@ -156,6 +160,7 @@ public:
 			}
 		}
 		if (Keyboard_IsKeyTrigger(KK_LEFT)) {
+			SOUND.playSound(_changeLayerSE, 0);
 			_isSelectBack = true;
 			_oldLayerIdx -= 1;
 			if (_oldLayerIdx < 0) {
@@ -163,6 +168,7 @@ public:
 			}
 		}
 		if (Keyboard_IsKeyTrigger(KK_ENTER)) {
+			SOUND.playSound(_confirmLayerSE, 0);
 			_currentLayer = (_layerIdx + 1) % 4;
 			_startTransformOut = true;
 			_correctCommandNum = 0;
@@ -181,6 +187,8 @@ private:
 	float _posZ = 2.5f;
 	const float _offsetY = 3.0f;
 	const float _offsetZ = 10.0f;
+	unsigned int _changeLayerSE;
+	unsigned int _confirmLayerSE;
 	int _layerNum = 0;
 	int _oldLayerIdx = 0;
 	int _layerIdx = 0;
