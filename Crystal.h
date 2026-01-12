@@ -55,6 +55,7 @@ class RedCrystal : public Crystal {
 				if (!PLAYER.is2D()) {
 					PLAYER.convertDimension();
 				}
+				PLAYER.setState(new PlayerFreeze());
 				_gameEvent->addEvent(new TrapEventFH(_gameEvent));
 				_gameEvent->addEvent(new LayerTrapEvent(_gameEvent));
 				_gameEvent->addEvent(new TrapEventSH(_gameEvent));

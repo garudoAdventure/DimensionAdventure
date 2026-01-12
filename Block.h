@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "GameObj.h"
 #include "ActivableGameObj.h"
@@ -60,8 +60,10 @@ class HintBlock : public Block {
 			Block::update();
 		}
 		void draw() override {
-			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 			Block::draw();
+		}
+		void drawBillboard() override {
+			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 		}
 		void onTrigger(GameObj* player) override {
 			Block::onTrigger(player);

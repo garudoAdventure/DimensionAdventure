@@ -30,7 +30,7 @@ class TrapEventFH : public IGameEvent {
 			delete _dialog[1];
 		}
 		void update() override {
-			PLAYER.setState(new PlayerFreeze());
+			PLAYER.update();
 			_gameEvent->updateField();
 			switch (_eventPhase) {
 				case 0:
@@ -89,6 +89,7 @@ class TrapEventSH : public IGameEvent {
 		}
 		void update() override {
 			PLAYER.update();
+			_gameEvent->updateField();
 			if (startCount < 120) {
 				startCount++;
 				return;

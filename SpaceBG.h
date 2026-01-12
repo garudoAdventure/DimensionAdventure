@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Sprite.h"
 #include "Trail.h"
@@ -48,7 +48,7 @@ class SpaceBG {
 			for (int i = 0; i < BEAM_NUM; i++) {
 				trail[i]->draw();
 			}
-			postProcess->update();
+			postProcess->update(false);
 		}
 		void draw() {
 			DX3D.setTargetView();

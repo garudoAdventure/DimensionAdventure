@@ -19,6 +19,7 @@ class LayerTrapEvent : public IGameEvent {
 		}
 
 		void update() override {
+			PLAYER.update();
 			_gameEvent->updateField();
 			_gameEvent->cameraVibration(true);
 			switch (phase) {

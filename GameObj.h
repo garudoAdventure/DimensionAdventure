@@ -16,6 +16,7 @@ class GameObj {
 		virtual ~GameObj() = default;
 		virtual void update();
 		virtual void draw();
+		virtual void drawBillboard() {}
 		virtual void collide(GameObj* obj, bool is2D);
 		virtual void hitObj(GameObj* obj, bool isStatic = true);
 		void setPos(Float3 pos);

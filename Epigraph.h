@@ -17,9 +17,11 @@ class Epigraph : public ActivableGameObj {
 			_color = color;
 		}
 		void draw() override {
-			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 			_model->updateColor(_color);
 			_model->draw(_pos, {0.0f, 0.0f, 0.0f});
+		}
+		void drawBillboard() {
+			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 		}
 		void onTrigger(GameObj* player) override {
 			if (MathTool::checkCollision(player->getBox(), this->getBox(), false)) {

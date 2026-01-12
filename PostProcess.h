@@ -12,7 +12,7 @@ struct PixelConst {
 	BOOL isVertical;
 	float width;
 	float height;
-	float dummy;
+	int bloomPower;
 };
 
 class PostProcess {
@@ -43,9 +43,15 @@ class PostProcess {
       }
     }
 
-		void update() {      
+		void update(bool clipLuminance) {
       SHADER.begin();
-      SHADER.setPS(PS::LUMINANCE);
+      
+      if (clipLuminance) {
+        SHADER.setPS(PS::LUMINANCE);
+      }
+      else {
+        SHADER.setPS(PS::GENERAL);
+      }
       _offscreenCopyTex->setTargetView();
       _offscreenCopyTex->clear();
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex(), Color::white);
@@ -83,6 +89,11 @@ class PostProcess {
 
     void drawBloom(int bloomPower = 3) {
       bloomPower = MathTool::clamp(bloomPower, 1, 5);
+
+      PixelConst pc;
+      pc.bloomPower = bloomPower;
+      DX3D.getDeviceContext()->UpdateSubresource(_pixelConstBuffer, 0, NULL, &pc, 0, 0);
+      DX3D.getDeviceContext()->PSSetConstantBuffers(0, 1, &_pixelConstBuffer);
 
       DX3D.setBlendMode(BlendMode::REND_TEX);
       SHADER.setPS(PS::BLOOM);

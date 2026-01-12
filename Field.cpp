@@ -62,6 +62,10 @@ void Field::draw(int currentLayer) {
 	_layer[currentLayer]->draw();
 }
 
+void Field::drawBillboard(int currentLayer) {
+	_layer[currentLayer]->drawBillboard();
+}
+
 void Field::collisionCheck(bool is2D) {
 	_layer[PLAYER.getCurrentLayer()]->collisionCheck(is2D);
 }

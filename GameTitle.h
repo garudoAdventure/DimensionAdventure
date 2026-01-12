@@ -42,7 +42,7 @@ class GameTitle : public GameState {
 		}
 		void update() override {
 			_rotate += !_isStart ? 0.01f : 0.05f;
-			_postProcess->update();
+			_postProcess->update(false);
 			updateColor();
 
 			if (!_isShowTitle) {

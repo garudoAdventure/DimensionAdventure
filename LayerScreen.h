@@ -30,7 +30,7 @@ public:
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1267.0f, 713.0f }, TEXTURE.getTexture(frameTex), layerColor[i]);
 
 			_postProcess[i] = new PostProcess(frameEffectTex);
-			_postProcess[i]->update();
+			_postProcess[i]->update(false);
 		}
 		_dialog = new SystemDialog({ L"ホワイトレイヤーを発見した！" });
 	}

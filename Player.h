@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "GameObj.h"
 #include "MathStruct.h"
@@ -85,9 +85,9 @@ class Player : public GameObj {
 		bool _is2D = true;
 		int _currentLayer = 0;
 		bool _isConvertLayer = false;
-		bool _hasDimensionAbility = true;
+		bool _hasDimensionAbility = false;
 		bool _hasRemoteControl = false;
-		int _crystalNum = 3;
+		int _crystalNum = 0;
 		int _keydownTime = 0;
 
 		void convertLayer();

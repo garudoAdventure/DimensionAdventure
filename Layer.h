@@ -48,6 +48,13 @@ class Layer {
 				stagePuzzle->draw();
 			}
 		}
+		void drawBillboard() {
+			for (GameObj* gameObj : _gameObjs) {
+				if (gameObj->isActive()) {
+					gameObj->drawBillboard();
+				}
+			}
+		}
 		void collisionCheck(bool is2D) {
 			for (GameObj* gameObj : _gameObjs) {
 				if (!gameObj->isActive()) continue;

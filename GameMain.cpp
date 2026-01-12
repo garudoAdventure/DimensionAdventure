@@ -35,6 +35,8 @@ GameMain::~GameMain() {
 }
 
 void GameMain::update() {
+  bg.update();
+
   if (gameEventQueue.size() != 0) {
     gameEventQueue.at(0)->update();
     return;
@@ -51,8 +53,6 @@ void GameMain::update() {
   moveCamera(PLAYER.getPos());
 
   statusUI.update();
-
-  bg.update();
 }
 
 void GameMain::draw() {
@@ -66,6 +66,7 @@ void GameMain::draw() {
   DX3D.setViewport(1280.0f, 720.0f);
 
   drawGameScene(PLAYER.getCurrentLayer());
+  currentField->drawBillboard(PLAYER.getCurrentLayer());
   PLAYER.getSpirit()->drawHint();
 
   // Game Event
@@ -159,8 +160,8 @@ int GameMain::getBgmId() {
 void GameMain::drawGameScene(int layerIdx) {
   bg.draw();
   currentField->draw(layerIdx);
+  postProcess->drawBloom(3);
   PLAYER.draw();
-  postProcess->drawBloom();
 }
 
 void GameMain::drawOffscreen(int layerIdx) {
@@ -168,5 +169,5 @@ void GameMain::drawOffscreen(int layerIdx) {
   offscreenTex->clear();
   currentField->draw(layerIdx);
   PLAYER.getSpirit()->draw();
-  postProcess->update();
+  postProcess->update(true);
 }

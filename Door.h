@@ -22,9 +22,11 @@ class Door : public ActivableGameObj {
 			_triggerSize = { _size.x, _size.y, _size.z + 0.5f };
 		}
 		virtual void draw() {
-			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 			_model->updateColor(_color);
 			_model->draw(_pos, { 0.0f, 0.0f, 0.0f });
+		}
+		virtual void drawBillboard() {
+			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 		}
 
 	protected:

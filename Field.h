@@ -14,6 +14,7 @@ class Field {
 		virtual ~Field();
 		void update(int currentLayer);
 		void draw(int currentLayer);
+		void drawBillboard(int currentLayer);
 		void load();
 		void collisionCheck(bool is2D);
 		virtual void onEntryField() { }
