@@ -1,10 +1,12 @@
-#pragma once
+﻿#pragma once
 
 #include "MathStruct.h"
 #include "Layer.h"
 #include "IGameEventHandler.h"
 #include "Color.h"
 #include "CameraFocusEvent.h"
+#include "Player.h"
+#include "PlayerFreeze.h"
 
 class Field {
   public:
@@ -14,13 +16,12 @@ class Field {
 		void draw(int currentLayer);
 		void load();
 		void collisionCheck(bool is2D);
-		virtual void onEntryField() {
-		}
+		virtual void onEntryField() { }
 
 	protected:
 		const char* filePath;
 		Layer* _layer[4];
-		const Float4 layerColor[4] = {
+		Float4 layerColor[4] = {
 			Color::white,
 			Color::lightRed,
 			Color::lightGreen,
@@ -54,6 +55,7 @@ class Field04 : public Field {
 		void onEntryField() override {
 			if (!isLookRedCrystal) {
 				isLookRedCrystal = true;
+				PLAYER.setState(new PlayerFreeze());
 				_gameEvent->addEvent(new CameraFocusEvent(_gameEvent,
 					MathTool::getCoordPos({ 39.0f, 3.5f, 5.0f })
 				));
@@ -91,6 +93,7 @@ class Field54 : public Field {
 		void onEntryField() override {
 			if (!isLookGreenCrystal) {
 				isLookGreenCrystal = true;
+				PLAYER.setState(new PlayerFreeze());
 				_gameEvent->addEvent(new CameraFocusEvent(_gameEvent,
 					MathTool::getCoordPos({ 39.0f, 4.5f, 5.0f })
 				));

@@ -1,8 +1,11 @@
 ﻿#include "PlayerJump.h"
 #include "PlayerIdle.h"
 #include "PlayerWalk.h"
+#include "Sound.h"
 
 PlayerJump::PlayerJump() {
+	jumpSE = SOUND.loadSound("./assets/sound/jump.wav");
+	SOUND.playSound(jumpSE, 0);
 }
 
 void PlayerJump::init() {

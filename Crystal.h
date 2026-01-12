@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Item.h"
 #include "GetItemEvent.h"
@@ -19,11 +19,12 @@ class Crystal : public Item {
 		void update() override {
 			Item::update();
 			rotate += 0.01f;
+			_model->updateColor({_ambientColor.x, _ambientColor.y, _ambientColor.z, _ambientColor.w });
 		}
 		void draw() override {
 			Light light;
 			light.enable = true;
-			light.ambient = ambientColor;
+			light.ambient = _ambientColor;
 			XMVECTOR direction = { 0.5f, -1.0f, 0.5f };
 			direction = XMVector3Normalize(direction);
 			XMStoreFloat3(&light.direction, direction);
@@ -36,7 +37,8 @@ class Crystal : public Item {
 		}
 
 	protected:
-		XMFLOAT4 ambientColor;
+		Model* _model;
+		XMFLOAT4 _ambientColor;
 
 	private:
 		float rotate = 0.0f;
@@ -45,11 +47,10 @@ class Crystal : public Item {
 class RedCrystal : public Crystal {
 	public:
 		RedCrystal(Float3 pos, IGameEventHandler* gameEvent) : Crystal(pos, gameEvent) {
-			_model->updateColor({ 1.0f, 0.43f, 0.54f, 1.0f });
-			ambientColor = { 0.8f, 0.4f, 0.4f, 1.0f };
+			_ambientColor = { 0.4f, 0.2f, 0.3f, 1.0f };
 		}
 		void getItem() override {
-			_gameEvent->addEvent(new GetItemEvent(this, [=]() {
+			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.addCrystalNum();
 				if (!PLAYER.is2D()) {
 					PLAYER.convertDimension();
@@ -61,72 +62,75 @@ class RedCrystal : public Crystal {
 			}));
 		}
 		std::wstring getName() override {
-			return L"ŸŒ³…»iÔj‚ğƒQƒbƒgI";
+			return L"æ¬¡å…ƒæ°´æ™¶ï¼ˆèµ¤ï¼‰ã‚’ã‚²ãƒƒãƒˆï¼";
 		}
 };
 
 class GreenCrystal : public Crystal {
 	public:
 		GreenCrystal(Float3 pos, IGameEventHandler* gameEvent) : Crystal(pos, gameEvent) {
-			_model->updateColor(Color::lightGreen);
-			ambientColor = { 0.4f, 0.8f, 0.4f, 1.0f };
+			_ambientColor = { 0.2f, 0.3f, 0.2f, 1.0f };
 		}
 		void getItem() override {
-			_gameEvent->addEvent(new GetItemEvent(this, [=]() {
+			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.addCrystalNum();
 				if (!PLAYER.is2D()) {
 					PLAYER.convertDimension();
 				}
-				_gameEvent->addEvent(new GreenCrystalEvent());
+				_gameEvent->addEvent(new ShowDialogEvent(
+					new MessageDialog({
+						{ Talker::SPIRIT, L"ã“ã‚Œã§äºŒã¤ç›®ã®æ°´æ™¶ã‚‚æ‰‹ã«ã„ã‚Œã ãªã€‚" },
+						{ Talker::SPIRIT, L"ä»Šãªã‚‰ã€åˆ¥ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¸åˆ‡ã‚Šæ›¿ãˆã‚‰ã‚Œã‚‹ã¯ãšã ã€‚" },
+					})
+				));
 				_gameEvent->addEvent(new ShowDialogEvent(new LayerTutorialDialog()));
 				_gameEvent->addEvent(new ShowDialogEvent(
 					new MessageDialog({
-						{ Talker::SPIRIT, L"‚»‚ê‚¼‚ê‚ÌƒŒƒCƒ„[‹óŠÔ‚ÍA‘å‘Ì“¯‚¶‚¾‚¯‚ÇAÀ‚Í”÷–­‚Ì·‚ª‚ ‚é‚ñ‚Å‚·" },
-						{ Talker::SPIRIT, L"‚±‚ÌƒŒƒCƒ„[‚Ås‚¯‚È‚¢êŠ‚ÍA‘¼‚ÌƒŒƒCƒ„[‚Ås‚¯‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ" },
-						{ Talker::SPIRIT, L"¢‚Á‚½‚Í‘¼‚ÌƒŒƒCƒ„[‚É’Tõ‚µ‚Ä‚à‚¢‚¢" },
-						{ Talker::SELF, L"‚í‚©‚Á‚½AÅŒã‚Ì…»‚ğ’T‚µ‚Äs‚±‚¤" }
+						{ Talker::SPIRIT, L"ãã‚Œãã‚Œã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ç©ºé–“ã¯ã€å¤§ä½“åŒã˜ã ãŒã€å®Ÿã¯å¾®å¦™ã®é•ã„ãŒã‚ã‚‹ã‚“ã ã€‚" },
+						{ Talker::SPIRIT, L"ä»Šã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã§ã¯è¡Œã‘ãªã„å ´æ‰€ã¯ã€ä»–ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãªã‚‰è¡Œã‘ã‚‹ã‹ã‚‚ã—ã‚Œãªã„ã€‚" },
+						{ Talker::SPIRIT, L"å›°ã£ãŸæ™‚ã¯ã€ä»–ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’æ¢ç´¢ã—ã¦ã¿ã‚‹ã¨ã„ã„ã€‚" },
+						{ Talker::SELF, L"ã‚ã‹ã‚Šã¾ã—ãŸã€‚æœ€å¾Œã®æ°´æ™¶ã‚’æ¢ã—ã«è¡Œãã¾ã—ã‚‡ã†ã€‚" }
 					})
 				));
 				_gameEvent->setCheckpoint(CheckPoint::GREEN_CRYSTAL);
 			}));
 		}
 		std::wstring getName() override {
-			return L"ŸŒ³…»i—Îj‚ğƒQƒbƒgI";
+			return L"æ¬¡å…ƒæ°´æ™¶ï¼ˆç·‘ï¼‰ã‚’ã‚²ãƒƒãƒˆï¼";
 		}
 };
 
 class BlueCrystal : public Crystal {
 	public:
 		BlueCrystal(Float3 pos, IGameEventHandler* gameEvent) : Crystal(pos, gameEvent) {
-			_model->updateColor(Color::lightBlue);
-			ambientColor = { 0.4f, 0.4f, 0.8f, 1.0f };
+			_ambientColor = { 0.2f, 0.2f, 0.5f, 1.0f };
 		}
 		void getItem() override {
-			_gameEvent->addEvent(new GetItemEvent(this, [=]() {
+			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.addCrystalNum();
 				_gameEvent->addEvent(new ShowDialogEvent(
 					new MessageDialog({
-						{ Talker::SPIRIT, L"O‚Â‚Ì…»‚ğ‘S•”‘µ‚Á‚½‚Ë" },
-						{ Talker::SELF, L"‚Å‚Í‚Ç‚¤‚â‚Á‚ÄƒzƒƒCƒgƒŒƒCƒ„[‚É–ß‚ê‚éH" },
-						{ Talker::SPIRIT, L"BBBBBB" },
-						{ Talker::SELF, L"‚¶‚¢‚³‚ñH" },
-						{ Talker::SPIRIT, L"‚¶‚¢‚³‚ñŒ¾‚¤‚ÈI" },
-						{ Talker::SPIRIT, L"BBBBBB" },
-						{ Talker::SPIRIT, L"Šm‚©‚É“Á’è‚Èó‘Ô‚Å“Á’è‚Ès“®‚ğ‚·‚é‚Æ–ß‚ê‚é" },
-						{ Talker::SELF, L"“Á’è‚Èó‘Ô‚Å“Á’è‚Ès“®H" },
-						{ Talker::SPIRIT, L"BBBBBB" },
-						{ Talker::SPIRIT, L"‚²‚ß‚ñA–Y‚ê‚Ä‚½A‚¦‚Ö(EƒÖ<)" },
-						{ Talker::SELF, L"BBBBBB" },
-						{ Talker::SPIRIT, L"‚ÅBBB‚Å‚àAè‚ª‚©‚è‚Í‚«‚Á‚Æ‚Ç‚±‚©‚É‚ ‚é‚Í‚¸I" },
-						{ Talker::SPIRIT, L"O‚Â‚Ì…»‚ğ‘µ‚¦‚½ƒLƒ~‚È‚çŒ©‚Â‚¯‚é‚Í‚¸‚Å‚·I" },
-						{ Talker::SPIRIT, L"ƒS[ƒS[I" },
-						{ Talker::SELF, L"‚Í[A‚í‚©‚Á‚½‚æ" },
+						{ Talker::SPIRIT, L"ä¸‰ã¤ã®æ°´æ™¶ã‚’å…¨éƒ¨æƒã£ãŸãªã€‚" },
+						{ Talker::SELF, L"ã˜ã‚ƒã‚ã€ã©ã†ã‚„ã£ã¦ãƒ›ãƒ¯ã‚¤ãƒˆãƒ¬ã‚¤ãƒ¤ãƒ¼ã«æˆ»ã‚Œã‚‹ã‚“ã§ã™ã‹ï¼Ÿ" },
+						{ Talker::SPIRIT, L"......" },
+						{ Talker::SELF, L"ã˜ã„ã•ã‚“ï¼Ÿ" },
+						{ Talker::SPIRIT, L"ã˜ã„ã•ã‚“è¨€ã†ãªï¼" },
+						{ Talker::SPIRIT, L"......" },
+						{ Talker::SPIRIT, L"ç¢ºã‹ã€ç‰¹å®šã®çŠ¶æ…‹ã§ç‰¹å®šã®è¡Œå‹•ã‚’ã™ã‚‹ã¨æˆ»ã‚Œã‚‹ã¯ãšã ã€‚" },
+						{ Talker::SELF, L"ç‰¹å®šãªçŠ¶æ…‹ã§ã€ç‰¹å®šãªè¡Œå‹•ï¼Ÿ" },
+						{ Talker::SPIRIT, L"......" },
+						{ Talker::SPIRIT, L"ã™ã¾ã‚“ã€å¿˜ã‚Œã¦ãŸã€‚ãˆã¸(ãƒ»Ï‰<)" },
+						{ Talker::SELF, L"......" },
+						{ Talker::SPIRIT, L"ã§......ã§ã‚‚ã€æ‰‹ãŒã‹ã‚Šã¯ãã£ã¨ã©ã“ã‹ã«ã‚ã‚‹ã¯ãšã ï¼" },
+						{ Talker::SPIRIT, L"ä¸‰ã¤ã®æ°´æ™¶ã‚’æƒãˆãŸå›ãªã‚‰ã€è¦‹ã¤ã‘ã‚‰ã‚Œã‚‹ã¯ãšã ï¼" },
+						{ Talker::SPIRIT, L"ã‚´ãƒ¼ã‚´ãƒ¼ï¼" },
+						{ Talker::SELF, L"ã¯ã......ã‚ã‹ã‚Šã¾ã—ãŸã‚ˆã€‚" },
 					})
 				));
 			}));
 			_gameEvent->setCheckpoint(CheckPoint::BLUE_CRYSTAL);
 		}
 		std::wstring getName() override {
-			return L"ŸŒ³…»iÂj‚ğƒQƒbƒgI";
+			return L"æ¬¡å…ƒæ°´æ™¶ï¼ˆé’ï¼‰ã‚’ã‚²ãƒƒãƒˆï¼";
 		}
 };

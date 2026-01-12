@@ -52,7 +52,7 @@ class Spirit {
 				_gameEvent->addEvent(new ShowDialogEvent(
 					new MessageDialog({
 						{ Talker::SPIRIT, getSpiritHint() }
-						})
+					})
 				));
 			}
 		}
@@ -61,15 +61,16 @@ class Spirit {
 				XMMATRIX world = XMMatrixIdentity();
 				world *= SHADER.getInverseView();
 				world *= XMMatrixTranslation(_pos.x, _pos.y + 2.0f, _pos.z);
-				SHADER.setWorldMatrix(world);
-				SPRITE.drawSpriteIn3D({ 28.0f, 28.0f }, _buttonTex);
+				SHADER.setWorld(world);
+				SHADER.setMatrix();
+				SPRITE.drawSprite3D({ 28.0f, 28.0f }, TEXTURE.getTexture(_buttonTex), Color::white);
 			}
 		}
 		void introHintBlock() {
 			_gameEvent->addEvent(new ShowDialogEvent(
 				new MessageDialog({
-					{ Talker::SPIRIT, L"これはヒントの壁です"},
-					{ Talker::SPIRIT, L"この迷宮内で謎解きをする時、必要な情報はこの壁に現れるらしいです"}
+					{ Talker::SPIRIT, L"これはヒントの壁だ。"},
+					{ Talker::SPIRIT, L"この迷宮で謎を解くための情報が、この壁に示されるらしい。"},
 				})
 			));
 		}
@@ -86,21 +87,29 @@ class Spirit {
 		std::wstring getSpiritHint() {
 			switch (_gameEvent->getCheckpoint()) {
 				case CheckPoint::JUMP:
-					return L"ジャンプはＺキーだよ";
+					return L"ジャンプはＺキーだよ。";
 				case CheckPoint::FIND_FIRST_CRYSTAL:
-					return L"今は赤い水晶を探して行こう";
+					return L"まずは赤い水晶を探しに行こう。";
 				case CheckPoint::RED_CRYSTAL:
-					return L"今は行ける場所を探していこう";
+					return L"今なら、行ける場所が増えているはずだ。";
 				case CheckPoint::GREEN_HINT:
-					return L"このままでは解けないらしいです、ヒントの壁を見て行きましょう";
+					return L"このままでは解けなさそうだ。ヒントの壁を見に行こう。";
 				case CheckPoint::GREEN_CRYSTAL:
-					return L"最後の水晶は上方にあるの気がする";
+					return L"最後の水晶は、上の方にありそうな気がする。";
 				case CheckPoint::BLUE_HINT:
-					return L"困ったら、ヒントの壁を見て行きましょう";
+					return L"困った時は、ヒントの壁を確認してみよう。";
 				case CheckPoint::BLUE_CRYSTAL:
-					return L"ホワイトレイヤーに戻る方法の手がかりはきっとどこにあるはず！";
+					return L"ホワイトレイヤーに戻る方法の手がかりは、きっとどこかにあるはずだ！";
+				case CheckPoint::WHITE_LAYER:
+					return L"石碑に記されたメッセージによれば、部屋の奥に何があるはずだ。";
+				case CheckPoint::REMOTE_CONTROL:
+					return L"最初の部屋にもどりましょう。";
 				case CheckPoint::WHITE_DOOR:
-					return L"パスワードの手がかりはこの空間のどこかで見た気がします。。。";
+					return L"出口の扉を起動しましょう。";
+				case CheckPoint::PASSWORD:
+					return L"この部屋のどこかで、パスワードの手がかりを見た気がする......";
+				case CheckPoint::FINAL:
+					return L"他の場所に行く必要はなさそうだ。";
 			}
 		}
 };

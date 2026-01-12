@@ -1,4 +1,4 @@
-#include <sdkddkver.h>
+Ôªø#include <sdkddkver.h>
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
@@ -10,15 +10,16 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Sprite.h"
+#include "Sound.h"
 #include "ModelManager.h"
 #include "CubeRenderer.h"
 #include "Keyboard.h"
 #include "Game.h"
 
 int g_countFPS;
-char g_debugStr[2048] = "ÉEÉCÉìÉhÉEï\é¶";
+char g_debugStr[2048] = "„Ç¶„Ç§„É≥„Éâ„Ç¶Ë°®Á§∫";
 static constexpr char WINDOW_CLASS[] = "GameWindow";
-static constexpr char TITLE[] = "ÉEÉCÉìÉhÉEï\é¶";
+static constexpr char TITLE[] = "„Ç¶„Ç§„É≥„Éâ„Ç¶Ë°®Á§∫";
 
 void Initialize(HWND hwnd);
 void Update();
@@ -124,7 +125,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	  break;
 
     case WM_CLOSE:
-	    if (IDOK == MessageBox(hWnd, "ÉQÅ[ÉÄÇèIóπÇµÇ‹Ç∑Ç™ÅH", "ÉQÅ[ÉÄèIóπ", MB_OKCANCEL | MB_ICONQUESTION)) {
+	    if (IDOK == MessageBox(hWnd, "„Ç≤„Éº„É†„ÇíÁµÇ‰∫Ü„Åó„Åæ„Åô„ÅåÔºü", "„Ç≤„Éº„É†ÁµÇ‰∫Ü", MB_OKCANCEL | MB_ICONQUESTION)) {
 	      DestroyWindow(hWnd);
 	    }
 	    break;
@@ -139,6 +140,7 @@ void Initialize(HWND hWnd) {
   CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
   Keyboard_Initialize();
   Direct3D::CreateInstance(hWnd);
+  Sound::CreateInstance(hWnd);
   DirectWrite::CreateInstance();
   Shader::CreateInstance(DX3D.getDevice(), DX3D.getDeviceContext());
   Texture::CreateInstance();
@@ -167,5 +169,6 @@ void Finalize() {
   CubeRenderer::DeleteInstance();
   Shader::DeleteInstance();
   DirectWrite::DeleteInstance();
+  Sound::DeleteInstance();
   Direct3D::DeleteInstance();
 }

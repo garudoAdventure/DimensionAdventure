@@ -1,4 +1,4 @@
-ï»¿#pragma once
+#pragma once
 
 #include "Texture.h"
 
@@ -13,16 +13,6 @@ Texture::Texture() {
     textureData[i].srv = NULL;
   }
   textureDataCount = 0;
-
-  D3D11_BUFFER_DESC hasTexCbDesc = {};
-  hasTexCbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-  hasTexCbDesc.ByteWidth = 16;
-  hasTexCbDesc.Usage = D3D11_USAGE_DEFAULT;
-  hasTexCbDesc.CPUAccessFlags = 0;
-  hasTexCbDesc.MiscFlags = 0;
-  hasTexCbDesc.StructureByteStride = 0;
-
-  DX3D.getDevice()->CreateBuffer(&hasTexCbDesc, NULL, &hasTexBuffer);
 }
 
 int Texture::loadTexture(const std::string& fileName) {
@@ -32,7 +22,7 @@ int Texture::loadTexture(const std::string& fileName) {
     }
   }
 
-  // ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
+  // ƒeƒNƒXƒ`ƒƒ“Ç‚Ýž‚Ý
   wchar_t wFileName[256];
   size_t ret;
   mbstowcs_s(&ret, wFileName, fileName.c_str(), 256);
@@ -52,23 +42,8 @@ int Texture::loadTexture(const std::string& fileName) {
   return textureDataCount++;
 }
 
-void Texture::setTexture(int texId) {
-  if (texId == -1) {
-    _hasTex = false;
-  } else {
-    _hasTex = true;
-    ID3D11ShaderResourceView* tex = TEXTURE.getTexture(texId);
-    DX3D.getDeviceContext()->PSSetShaderResources(0, 1, &tex);
-  }
-  DX3D.getDeviceContext()->UpdateSubresource(hasTexBuffer, 0, NULL, &_hasTex, 0, 0);
-  DX3D.getDeviceContext()->PSSetConstantBuffers(0, 1, &hasTexBuffer);
-}
-
 void Texture::setTexture(ID3D11ShaderResourceView* tex) {
-  _hasTex = true;
   DX3D.getDeviceContext()->PSSetShaderResources(0, 1, &tex);
-  DX3D.getDeviceContext()->UpdateSubresource(hasTexBuffer, 0, NULL, &_hasTex, 0, 0);
-  DX3D.getDeviceContext()->PSSetConstantBuffers(0, 1, &hasTexBuffer);
 }
 
 ID3D11ShaderResourceView* Texture::getTexture(int texID) {

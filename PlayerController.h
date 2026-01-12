@@ -1,10 +1,11 @@
-#pragma once
+﻿#pragma once
 
 #include "MathStruct.h"
 #include "Keyboard.h"
 
 class PlayerController {
 	public:
+		static constexpr float MOVE_VEL = 0.2f;
 		virtual bool isMove() = 0;
 		virtual void move(Float3& vel) = 0;
 };
@@ -19,10 +20,10 @@ class PlayerController2D : public PlayerController {
 		}
 		void move(Float3& vel) override {
 			if (Keyboard_IsKeyDown(KK_RIGHT)) {
-				vel.x = 0.2f;
+				vel.x = MOVE_VEL;
 			}
 			if (Keyboard_IsKeyDown(KK_LEFT)) {
-				vel.x = -0.2f;
+				vel.x = -MOVE_VEL;
 			}
 		}
 };
@@ -39,16 +40,16 @@ class PlayerController3D : public PlayerController {
 		}
 		void move(Float3& vel) override {
 			if (Keyboard_IsKeyDown(KK_RIGHT)) {
-				vel.z = -0.2f;
+				vel.z = -MOVE_VEL;
 			}
 			if (Keyboard_IsKeyDown(KK_LEFT)) {
-				vel.z = 0.2f;
+				vel.z = MOVE_VEL;
 			}
 			if (Keyboard_IsKeyDown(KK_UP)) {
-				vel.x = 0.2f;
+				vel.x = MOVE_VEL;
 			}
 			if (Keyboard_IsKeyDown(KK_DOWN)) {
-				vel.x = -0.2f;
+				vel.x = -MOVE_VEL;
 			}
 		}
 };

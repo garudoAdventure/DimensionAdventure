@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "DirectX.h"
 #include "Texture.h"
@@ -6,10 +6,10 @@
 #include "Camera.h"
 #include "Shader.h"
 
-#define TRAIL_LEN	(5)
-
 class Trail {
 public:
+	static constexpr int TRAIL_LEN = 5;
+
 	Trail(Float3 initPos) {
 		D3D11_BUFFER_DESC desc = {};
 		desc.Usage = D3D11_USAGE_DEFAULT;

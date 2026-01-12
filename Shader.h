@@ -6,15 +6,18 @@
 #include "MathStruct.h"
 
 enum class VS {
-	NORMAL,
-	OUTLINE
+	GENERAL,
 };
 
 enum class PS {
-	NORMAL,
+	GENERAL,
+	NO_TEX,
+	LUMINANCE,
 	BLUR,
+	BLOOM,
 	GLITCH,
-	OUTLINE
+	NOISE,
+	SPIRAL
 };
 
 enum class SamplerState {
@@ -28,13 +31,11 @@ class Shader {
 		void setVS(VS vs);
 		void setPS(PS ps);
 		void setSamplerState(SamplerState state);
-		void setWorldMatrix(XMMATRIX& world);
-		void setWorldMatrix(Float3 pos, Float3 rotate = { 0.0f, 0.0f, 0.0f }, Float3 scale = { 1.0f, 1.0f, 1.0f });
+		void setWorld(XMMATRIX& world);
+		void setView(Float3 e, Float3 f);
 		void set2DMatrix();
-		void set3DMatrix(XMMATRIX view);
 		void setMatrix();
 		void setMatrix(Transpose& mat);
-		void setView(Float3 e, Float3 f);
 		void setProjection(XMMATRIX projMatrix);
 		void setLight(const Light light);
 		XMMATRIX getOrthoMatrix();
@@ -46,10 +47,13 @@ class Shader {
 		ID3D11DeviceContext* _deviceContext = nullptr;
 		ID3D11VertexShader* _vertexShader = nullptr;
 		ID3D11PixelShader* _pixelShader = nullptr;
+		ID3D11PixelShader* _noTexShader = nullptr;
+		ID3D11PixelShader* _luminanceShader = nullptr;
 		ID3D11PixelShader* _blurShader = nullptr;
+		ID3D11PixelShader* _bloomShader = nullptr;
 		ID3D11PixelShader* _glitchShader = nullptr;
-		ID3D11VertexShader* _outlineVS = nullptr;
-		ID3D11PixelShader* _outlinePS = nullptr;
+		ID3D11PixelShader* _noiseShader = nullptr;
+		ID3D11PixelShader* _spiralShader = nullptr;
 		ID3D11InputLayout* _inputLayout = nullptr;
 		ID3D11Buffer* _matrixBuffer = nullptr;
 		ID3D11Buffer* _lightBuffer = nullptr;

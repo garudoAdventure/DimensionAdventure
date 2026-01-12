@@ -1,4 +1,4 @@
-#include "DirectX.h"
+﻿#include "DirectX.h"
 
 #pragma comment(lib, "d3d11.lib")
 

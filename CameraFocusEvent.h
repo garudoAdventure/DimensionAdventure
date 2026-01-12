@@ -4,18 +4,18 @@
 #include "MathStruct.h"
 #include "IGameEventHandler.h"
 #include "Player.h"
+#include "PlayerIdle.h"
 
 class CameraFocusEvent : public IGameEvent {
 	public:
 		CameraFocusEvent(IGameEventHandler* gameEvent, Float3 targetPos) : _gameEvent(gameEvent), _targetPos(targetPos) {
-			PLAYER.setToEventState(true);
 		}
 		void update() override {
-			_gameEvent->updatePlayerAct();
+			_gameEvent->updateField();
 			_gameEvent->moveCamera(_targetPos);
 			_count++;
 			if (_count == 180) {
-				PLAYER.setToEventState(false);
+				PLAYER.setState(new PlayerIdle());
 			}
 		}
 		void draw() override {

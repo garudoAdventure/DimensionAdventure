@@ -11,34 +11,25 @@ class SystemDialog : public IDialog {
 		SystemDialog(std::vector<std::wstring> context) {
 			_pos = { 0.0f, 200.0f };
 			_size = { 0.0f, 120.0f };
+			_dialogWidth = 500.0f;
 			_context = context;
-			_currentContextNum = _context[0].length();
+			_currentContentNum = _context[0].length();
 		}
-		void update() override {
-			if (_openDialogAnimCount <= 10) {
-				_size.x = MathTool::lerp<float>(0.0f, 500.0f, _openDialogAnimCount * 0.1f);
-				_openDialogAnimCount++;
-				return;
-			}
+		void dialogUpdate() override {
 			if (_frameCount % 2 == 0) {
-				_currentContextIdx = std::min(_currentContextNum, _currentContextIdx + 1);
+				_contentIdx = std::min(_currentContentNum, _contentIdx + 1);
 			}
-			if (_currentContextIdx == _currentContextNum && Keyboard_IsKeyTrigger(KK_ENTER)) {
+			if (_contentIdx == _currentContentNum && Keyboard_IsKeyTrigger(KK_ENTER)) {
 				_isEnd = true;
 			}
 			_frameCount++;
 		}
-		void draw() override {
-			std::wstring wstr = _context.at(_contextIdx).substr(0, _currentContextIdx);
-			IDialog::drawMessageBox();
+		void dialogDraw() override {
+			std::wstring wstr = _context.at(_contextIdx).substr(0, _contentIdx);
 			IDialog::drawStr(wstr, _pos);
 		}
 
 	private:
 		std::vector<std::wstring> _context;
-		int _contextIdx = 0;
-		int _currentContextNum;
-		int _currentContextIdx = 0;
-		int _openDialogAnimCount = 0;
 		int _frameCount = 0;
 };

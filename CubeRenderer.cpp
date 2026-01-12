@@ -1,4 +1,4 @@
-#include "DirectX.h"
+﻿#include "DirectX.h"
 #include "CubeRenderer.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -92,7 +92,7 @@ void CubeRenderer::drawCube(Cube cube, Float4 color, int texID) {
   }
 
   for (int i = 0; i < 24; i++) {
-    _vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
+    _vertexData[i].color = { color.r, color.g, color.b, color.a };
   }
 
   for (int i = 0; i < 6; i++) {
@@ -111,7 +111,7 @@ void CubeRenderer::drawCube(Cube cube, Float4 color, int texID) {
   DX3D.setDepthEnable(true);
   SHADER.begin();
   SHADER.setMatrix();
-  TEXTURE.setTexture(texID);
+  SHADER.setPS(PS::NO_TEX);
 
   Light light;
   light.enable = false;

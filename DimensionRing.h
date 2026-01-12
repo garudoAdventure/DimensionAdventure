@@ -10,7 +10,7 @@
 class DimensionRing : public Item {
 	public:
 		DimensionRing(Float3 pos, IGameEventHandler* gameEvent) : Item(pos, gameEvent) {
-			_ringTex = TEXTURE.loadTexture("./assets/UI/circleArrow.png");
+			_tex = TEXTURE.loadTexture("./assets/UI/circleArrow.png");
 		}
 		void draw() override {
 			_rotate -= 0.005f;
@@ -18,11 +18,12 @@ class DimensionRing : public Item {
 			world *= SHADER.getInverseView();
 			world *= XMMatrixRotationZ(_rotate);
 			world *= XMMatrixTranslation(_pos.x, _pos.y, _pos.z);
-			SHADER.setWorldMatrix(world);
-			SPRITE.drawSpriteIn3D({ 63.0f, 60.0f }, _ringTex);
+			SHADER.setWorld(world);
+			SHADER.setMatrix();
+			SPRITE.drawSprite3D({ 63.0f, 60.0f }, TEXTURE.getTexture(_tex), Color::white);
 		}
 		void getItem() override {
-			_gameEvent->addEvent(new GetItemEvent(this, [=]() {
+			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.getDimensionAbility();
 				_gameEvent->addEvent(new ShowDialogEvent(
 					new DimensionTutorialDialog()
@@ -37,6 +38,6 @@ class DimensionRing : public Item {
 		}
 
 	private:
-		unsigned int _ringTex;
+		unsigned int _tex;
 		float _rotate = 0.0f;
 };

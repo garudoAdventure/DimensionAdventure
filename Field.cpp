@@ -15,20 +15,20 @@ Field::Field(const char* file) : filePath(file) {
 	// Air wall
 	for (int i = 0; i < 4; i++) {
 		_layer[i]->addGameObj(new Wall(
-			MathTool::getCoordPos({ 20.0f, 10.0f, 11.0f }),
+			MathTool::getCoordPos({ 19.5f, 10.0f, 11.0f }),
 			{ 40.0f * 3, 20.0f * 3, 1.0f * 3 }
 		));
 		_layer[i]->addGameObj(new Wall(
-			MathTool::getCoordPos({ 20.0f, 10.0f, -1.0f }),
+			MathTool::getCoordPos({ 19.5f, 10.0f, -1.0f }),
 			{ 40.0f * 3, 20.0f * 3, 1.0f * 3 }
 		));
 		_layer[i]->addGameObj(new Wall(
 			MathTool::getCoordPos({ -1.0f, 10.0f, 5.0f }),
-			{ 1.0f * 3, 20.0f * 3, 10.0f * 3 }
+			{ 1.0f * 3, 20.0f * 3, 11.0f * 3 }
 		));
 		_layer[i]->addGameObj(new Wall(
 			MathTool::getCoordPos({ 40.0f, 10.0f, 5.0f }),
-			{ 1.0f * 3, 20.0f * 3, 10.0f * 3 }
+			{ 1.0f * 3, 20.0f * 3, 11.0f * 3 }
 		));
 	}
 }

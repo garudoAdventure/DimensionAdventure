@@ -1,26 +1,28 @@
-#pragma once
+ï»¿#pragma once
 
 #include "IGameEventHandler.h"
 #include "IGameEvent.h"
 #include "MessageDialog.h"
 #include "Color.h"
 #include "Player.h"
+#include "PlayerIdle.h"
+#include "PlayerFreeze.h"
 
 class TrapEventFH : public IGameEvent {
 	public:
 		TrapEventFH(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 			_dialog[0] = new MessageDialog({
-				{ Talker::SPIRIT, L"‚â‚Á‚½‚ËI" },
-				{ Talker::SPIRIT, L"‚±‚ê‚ÅŽc‚è‚Ì…»‚Í“ñƒR‚Å‚·B" },
-				{ Talker::SPIRIT, L"‚ ‚ÆŽÀ‚Í‚ËA‚±‚Ì…»‚Í•sŽv‹c‚È—Í‚ª..." },
+				{ Talker::SPIRIT, L"ã‚„ã£ãŸãªï¼" },
+				{ Talker::SPIRIT, L"ã“ã‚Œã§æ®‹ã‚Šã®æ°´æ™¶ã¯äºŒã¤ã ã€‚" },
+				{ Talker::SPIRIT, L"å®Ÿã¯ã“ã®æ°´æ™¶ã«ã¯ã€ä¸æ€è­°ãªåŠ›ãŒ......" },
 			});
 			_dialog[1] = new MessageDialog({
-				{ Talker::SELF, L"‰½‚ª‚ ‚Á‚½HI" },
-				{ Talker::SPIRIT, L"‚±‚ê‚ÍBBBã©‚Å‚·I" },
-				{ Talker::SELF, L"ã©HI" },
-				{ Talker::SPIRIT, L"‚Ü‚³‚©‚±‚±‚ÅŽdŠ|‚¯‚é‚È‚ñ‚ÅBBB" },
-				{ Talker::SPIRIT, L"”ò‚Î‚³‚ê‚éIŽ„‚Ì‹ß‚­‚É‹‚ÄI" },
-				{ Talker::SELF, L"‚¤‚¤‚í‚í‚í‚í‚í‚í‚í‚í‚í‚í‚í" },
+				{ Talker::SELF, L"ä½•ãŒèµ·ããŸï¼ï¼Ÿ" },
+				{ Talker::SPIRIT, L"ã“ã‚Œã¯......ç½ ã ï¼" },
+				{ Talker::SELF, L"ç½ ï¼ï¼Ÿ" },
+				{ Talker::SPIRIT, L"ã¾ã•ã‹ã€ã“ã“ã§ä»•æŽ›ã‘ã¦ãã‚‹ã¨ã¯......" },
+				{ Talker::SPIRIT, L"é£›ã°ã•ã‚Œã‚‹ï¼ç§ã®è¿‘ãã«ã„ã‚ï¼" },
+				{ Talker::SELF, L"ã†ã†ã‚ã‚ã‚ã‚ã‚ã‚ã‚ã‚ã‚ã‚ã‚ï¼ï¼" },
 			});
 		}
 		~TrapEventFH() {
@@ -28,8 +30,8 @@ class TrapEventFH : public IGameEvent {
 			delete _dialog[1];
 		}
 		void update() override {
-			PLAYER.setToEventState(true);
-			_gameEvent->updatePlayerAct();
+			PLAYER.setState(new PlayerFreeze());
+			_gameEvent->updateField();
 			switch (_eventPhase) {
 				case 0:
 					_dialog[0]->update();
@@ -67,33 +69,33 @@ class TrapEventSH : public IGameEvent {
 	public:
 		TrapEventSH(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 			_dialog = new MessageDialog({
-				{ Talker::SELF, L"‚¤‚¤BBB" },
-				{ Talker::SPIRIT, L"‘åä•v‚Å‚·‚©H" },
-				{ Talker::SELF, L"‚±‚±‚ÍBBBH" },
-				{ Talker::SPIRIT, L"‚Ç‚¤‚â‚çƒŒƒbƒhƒŒƒCƒ„[‚É”ò‚Î‚³‚ê‚Ä‚µ‚Ü‚Á‚½‚Ë" },
-				{ Talker::SELF, L"ƒŒƒbƒhƒŒƒCƒ„[BBBH" },
-				{ Talker::SPIRIT, L"‚±‚ÌŽŸŒ³–À‹{‚ÍŽl‚Â‚ÌƒŒƒCƒ„[‚ª‘¶Ý‚µ‚Ä‚¢‚é‚Å‚·" },
-				{ Talker::SPIRIT, L"Ž„‚½‚¿Å‰‚É‹‚½‚Ì‚ÍƒzƒƒCƒgƒŒƒCƒ„[" },
-				{ Talker::SPIRIT, L"‚ ‚»‚±‚Í—BˆêŠO‚ÆŒq‚ª‚éƒŒƒCƒ„[‚Å‚·" },
-				{ Talker::SELF, L"‚Ç‚¤‚·‚ê‚Î–ß‚ê‚é‚Å‚·‚ªH" },
-				{ Talker::SPIRIT, L"æŽè‚É“ü‚ê‚½Ô‚¢…»" },
-				{ Talker::SPIRIT, L"‚ ‚ê‚ÍŽŸŒ³…»‚ÆŒÄ‚Î‚êAƒŒƒCƒ„[‚ÌŠÔ‚ÉŽ©—R‚ÉˆÚ“®‚·‚é—Í‚ªŽ‚Á‚Ä‚¢‚é" },
-				{ Talker::SPIRIT, L"ŽO‚Â‚Ì…»‚ð‘S•”W‚ß‚ê‚ÎAŒ³‚ÌƒŒƒCƒ„[‚É–ß‚ê‚é‚Í‚¸‚Å‚·" },
-				{ Talker::SELF, L"•ª‚©‚Á‚½A‚Æ‚è‚ ‚¦‚¸’T‚µ‚És‚«‚Ü‚µ‚å‚¤" },
+				{ Talker::SELF, L"ã†ã†ã†......" },
+				{ Talker::SPIRIT, L"å¤§ä¸ˆå¤«ã‹ï¼Ÿ" },
+				{ Talker::SELF, L"ã“ã“ã¯.......ï¼Ÿ" },
+				{ Talker::SPIRIT, L"ã©ã†ã‚„ã‚‰ã€ãƒ¬ãƒƒãƒ‰ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«é£›ã°ã•ã‚Œã¦ã—ã¾ã£ãŸã‚ˆã†ã ã€‚" },
+				{ Talker::SELF, L"ãƒ¬ãƒƒãƒ‰ãƒ¬ã‚¤ãƒ¤ãƒ¼......ï¼Ÿ" },
+				{ Talker::SPIRIT, L"ã“ã®æ¬¡å…ƒè¿·å®®ã«ã¯ã€å››ã¤ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã€‚" },
+				{ Talker::SPIRIT, L"ç§ãŸã¡ãŒæœ€åˆã«ã„ãŸã®ã¯ã€ãƒ›ãƒ¯ã‚¤ãƒˆãƒ¬ã‚¤ãƒ¤ãƒ¼ã ã€‚" },
+				{ Talker::SPIRIT, L"ã‚ãã“ã¯ã€å”¯ä¸€å¤–ã®ä¸–ç•Œã¨ç¹‹ãŒã£ã¦ã„ã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼ã ã€‚" },
+				{ Talker::SELF, L"ã©ã†ã™ã‚Œã°æˆ»ã‚Œã‚‹ã‚“ã§ã™ã‹ï¼Ÿ" },
+				{ Talker::SPIRIT, L"å…ˆã»ã©æ‰‹ã«å…¥ã‚ŒãŸèµ¤ã„æ°´æ™¶......ã‚ã‚Œã¯æ¬¡å…ƒæ°´æ™¶ã¨å‘¼ã°ã‚Œã¦ã„ã‚‹ã€‚"},
+				{ Talker::SPIRIT, L"ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®é–“ã‚’è‡ªç”±ã«ç§»å‹•ã™ã‚‹åŠ›ã‚’æŒã£ã¦ã„ã‚‹ã‚“ã ã€‚"},
+				{ Talker::SPIRIT, L"ä¸‰ã¤ã®æ°´æ™¶ã‚’ã™ã¹ã¦é›†ã‚ã‚Œã°ã€å…ƒã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«æˆ»ã‚Œã‚‹ã¯ãšã ã€‚" },
+				{ Talker::SELF, L"ã‚ã‹ã‚Šã¾ã—ãŸã€‚ã¨ã‚Šã‚ãˆãšæŽ¢ã—ã«è¡Œãã¾ã—ã‚‡ã†ã€‚" },
 			});
 		}
 		~TrapEventSH() {
 			delete _dialog;
 		}
 		void update() override {
-			_gameEvent->updatePlayerAct();
+			PLAYER.update();
 			if (startCount < 120) {
 				startCount++;
 				return;
 			}
 			_dialog->update();
 			if (_dialog->isEnd()) {
-				PLAYER.setToEventState(false);
+				PLAYER.setState(new PlayerIdle());
 			}
 		}
 		void draw() override {
@@ -101,6 +103,7 @@ class TrapEventSH : public IGameEvent {
 
 			Float4 coverColor = Color::black;
 			coverColor.a = 1.0f - startCount / 120.0f;
+			SHADER.setPS(PS::NO_TEX);
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, coverColor);
 		}
 		bool isEnd() override {

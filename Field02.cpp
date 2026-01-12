@@ -4,6 +4,7 @@
 #include "DimensionRing.h"
 #include "RemoteControl.h"
 #include "PlayerFallPoint.h"
+#include "SavePoint.h"
 #include "Epigraph.h"
 
 Field02::Field02(IGameEventHandler* gameEvent) : Field("./map/map2.csv") {
@@ -40,14 +41,26 @@ Field02::Field02(IGameEventHandler* gameEvent) : Field("./map/map2.csv") {
 	_layer[LayerType::WHITE]->addGameObj(new Epigraph(gameEvent,
 		MathTool::getCoordPos({ 8.0f, 2.0f, 10.0f }),
 		Color::white,
-		L"三つの水晶を集めれば、奥への道が開かれると書いている"
+		L"「三つの水晶を集めれば、奥への道が開かれる」と記されている。"
 	));
 
 	for (int i = 0; i < 4; i++) {
 		_layer[i]->addGameObj(new PlayerFallPoint(
 			MathTool::getCoordPos({ 29.0f, -15.0f, 5.0f }),
 			{ 58.0f * 3.0f, 1.0f * 3.0f, 10.0f * 3.0f },
-			MathTool::getCoordPos({ 18.0f, 1.1f, 5.0f })
+			gameEvent
+		));
+	}
+	for (int i = 0; i < 4; i++) {
+		_layer[i]->addGameObj(new SavePoint(
+			MathTool::getCoordPos({ 10.0f, 1.5f, 5.0f }),
+			{ 1.0f * 3.0f, 15.0f * 3.0f, 10.0f * 3.0f },
+			gameEvent
+		));
+		_layer[i]->addGameObj(new SavePoint(
+			MathTool::getCoordPos({ 34.0f, 1.5f, 5.0f }),
+			{ 1.0f * 3.0f, 15.0f * 3.0f, 10.0f * 3.0f },
+			gameEvent
 		));
 	}
 	

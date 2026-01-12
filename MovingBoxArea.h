@@ -11,22 +11,22 @@
 #include "Color.h"
 #include <functional>
 
-#define BOX_NUM	(4)
-
 class MovingBoxArea : public IStagePuzzle {
 	public:
+		static constexpr int BOX_NUM = 4;
+
 		MovingBoxArea(IGameEventHandler* gameEvent, std::function<void()> callback) : _gameEvent(gameEvent), _callback(callback) {
 			_boxGrid = MODEL.loadModel("./assets/model/boxGrid.fbx");
-			Model* boxModel[4] = {
+			Model* boxModel[BOX_NUM] = {
 				MODEL.loadModel("./assets/model/boxNum4.fbx"),
 				MODEL.loadModel("./assets/model/boxNum1.fbx"),
 				MODEL.loadModel("./assets/model/boxNum3.fbx"),
 				MODEL.loadModel("./assets/model/boxNum2.fbx"),
 			};
-			const Int2 boxCoord[4] = {
+			const Int2 boxCoord[BOX_NUM] = {
 				{ 3, 0 }, { 2, 1 }, { 1, 2 }, { 0, 3 }
 			};
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < BOX_NUM; i++) {
 				_box[i] = new MovableBox(MathTool::getCoordPos({
 					_startX - boxCoord[i].x * 2, _startY, _startZ + boxCoord[i].y * 2
 				}), { 1.0f, 1.0f, 1.0f }, Color::white, boxModel[i]);

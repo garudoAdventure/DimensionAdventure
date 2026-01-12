@@ -1,4 +1,4 @@
-#include "DirectX.h"
+﻿#include "DirectX.h"
 #include "Sprite.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -16,72 +16,6 @@ Sprite::~Sprite() {
   SAFE_RELEASE(_vertexBuffer);
 }
 
-void Sprite::drawTextureSprite(Float2 size, Float4 color) {
-  Vertex vertexData[4];
-
-  const Float2 resize = {
-    size.x / 1280.0f * 16.0f * 3.0f,
-    size.y / 720.0f * 9.0f * 3.0f,
-  };
-
-  vertexData[0].postion = { -resize.x / 2,  resize.y / 2, 0.0f };
-  vertexData[1].postion = {  resize.x / 2,  resize.y / 2, 0.0f };
-  vertexData[2].postion = { -resize.x / 2, -resize.y / 2, 0.0f };
-  vertexData[3].postion = {  resize.x / 2, -resize.y / 2, 0.0f };
-
-  vertexData[0].texCoord = { 0.0f, 0.0f };
-  vertexData[1].texCoord = { 1.0f, 0.0f };
-  vertexData[2].texCoord = { 0.0f, 1.0f };
-  vertexData[3].texCoord = { 1.0f, 1.0f };
-
-  for (int i = 0; i < 4; i++) {
-    vertexData[i].color = { color.r, color.g, color.b, color.a };
-  }
-
-  vertexData[0].normal = { -1.0f, 1.0f, 0.0f };
-  vertexData[1].normal = { 1.0f, 1.0f, 0.0f };
-  vertexData[2].normal = { -1.0f, -1.0f, 0.0f };
-  vertexData[3].normal = { 1.0f, -1.0f, 0.0f };
-
-  DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
-
-  draw();
-}
-
-void Sprite::drawSpriteIn3D(Float2 size, int texID, Float4 color) {
-  Vertex vertexData[4];
-
-  const Float2 resize = {
-    size.x / 1280.0f * 16.0f * 3.0f,
-    size.y / 720.0f * 9.0f * 3.0f,
-  };
-
-  vertexData[0].postion = { -resize.x / 2,  resize.y / 2, 0.0f };
-  vertexData[1].postion = { resize.x / 2,   resize.y / 2, 0.0f };
-  vertexData[2].postion = { -resize.x / 2, -resize.y / 2, 0.0f };
-  vertexData[3].postion = { resize.x / 2,  -resize.y / 2, 0.0f };
-
-  vertexData[0].texCoord = { 0.0f, 0.0f };
-  vertexData[1].texCoord = { 1.0f, 0.0f };
-  vertexData[2].texCoord = { 0.0f, 1.0f };
-  vertexData[3].texCoord = { 1.0f, 1.0f };
-
-  for (int i = 0; i < 4; i++) {
-    vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
-  }
-  for (int i = 0; i < 4; i++) {
-    vertexData[i].normal = { 0.0f, 0.0f, -1.0f };
-  }
-
-  DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
-
-  DX3D.setDepthEnable(true);
-  SHADER.setMatrix();
-  TEXTURE.setTexture(texID);
-
-  draw();
-}
-
 void Sprite::drawSprite2D(Float2 pos, Float2 size, Float4 color) {
   Vertex vertexData[4];
 
@@ -95,10 +29,10 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, Float4 color) {
     size.y / 720.0f * 9.0f * 3.0f,
   };
   
-  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
-  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
+  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 0.1f };
+  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 0.1f };
+  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 0.1f };
+  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 0.1f };
   
   vertexData[0].texCoord = { 0.0f, 0.0f };
   vertexData[1].texCoord = { 1.0f, 0.0f };
@@ -106,65 +40,21 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, Float4 color) {
   vertexData[3].texCoord = { 1.0f, 1.0f };
 
   for (int i = 0; i < 4; i++) {
-	  vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
+    vertexData[i].color = { color.r, color.g, color.b, color.a };
   }
   for (int i = 0; i < 4; i++) {
-	  vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
+	  vertexData[i].normal = { 0.0f, 0.0f, -1.0f };
   }
 
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
   DX3D.setDepthEnable(false);
   SHADER.set2DMatrix();
-  TEXTURE.setTexture(-1);
 
   draw();
 }
 
-void Sprite::drawSprite2D(Float2 pos, Float2 size, ID3D11ShaderResourceView* tex, Float4 color) {
-  Vertex vertexData[4];
-
-  const Float2 repos = {
-    pos.x / 1280.0f * 16.0f * 3.0f,
-    pos.y / 720.0f * 9.0f * 3.0f,
-  };
-
-  const Float2 resize = {
-    size.x / 1280.0f * 16.0f * 3.0f,
-    size.y / 720.0f * 9.0f * 3.0f,
-  };
-
-  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
-  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
-
-  vertexData[0].texCoord = { 0.0f, 0.0f };
-  vertexData[1].texCoord = { 1.0f, 0.0f };
-  vertexData[2].texCoord = { 0.0f, 1.0f };
-  vertexData[3].texCoord = { 1.0f, 1.0f };
-
-  for (int i = 0; i < 4; i++) {
-    vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
-  }
-
-  vertexData[0].normal = { -1.0f, 1.0f, 0.0f };
-  vertexData[1].normal = { 1.0f, 1.0f, 0.0f };
-  vertexData[2].normal = { -1.0f, -1.0f, 0.0f };
-  vertexData[3].normal = { 1.0f, -1.0f, 0.0f };
-
-  DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
-
-  DX3D.setDepthEnable(false);
-  SHADER.set2DMatrix();
-  if (tex != nullptr) {
-    TEXTURE.setTexture(tex);
-  }
-
-  draw();
-}
-
-void Sprite::drawSprite2D(Float2 pos, Float2 size, ID3D11ShaderResourceView* tex, float width, float height) {
+void Sprite::drawSprite2D(Float2 pos, Float2 size, ID3D11ShaderResourceView* tex, Float4 color, float width, float height) {
   Vertex vertexData[4];
 
   const Float2 repos = {
@@ -177,10 +67,10 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, ID3D11ShaderResourceView* tex
     size.y / height * 9.0f * 3.0f,
   };
 
-  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
-  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
+  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 0.1f };
+  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 0.1f };
+  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 0.1f };
+  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 0.1f };
 
   vertexData[0].texCoord = { 0.0f, 0.0f };
   vertexData[1].texCoord = { 1.0f, 0.0f };
@@ -188,26 +78,22 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, ID3D11ShaderResourceView* tex
   vertexData[3].texCoord = { 1.0f, 1.0f };
 
   for (int i = 0; i < 4; i++) {
-    vertexData[i].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+    vertexData[i].color = { color.r, color.g, color.b, color.a };
   }
-
-  vertexData[0].normal = { -1.0f, 1.0f, 0.0f };
-  vertexData[1].normal = { 1.0f, 1.0f, 0.0f };
-  vertexData[2].normal = { -1.0f, -1.0f, 0.0f };
-  vertexData[3].normal = { 1.0f, -1.0f, 0.0f };
+  for (int i = 0; i < 4; i++) {
+    vertexData[i].normal = { 0.0f, 0.0f, -1.0f };
+  }
 
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
   DX3D.setDepthEnable(false);
   SHADER.set2DMatrix();
-  if (tex != nullptr) {
-    TEXTURE.setTexture(tex);
-  }
+  TEXTURE.setTexture(tex);
 
   draw();
 }
 
-void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID, float alpha) {
+void Sprite::drawSprite2DUV(Float2 pos, Float2 size, ID3D11ShaderResourceView* tex, Float4 color, Float2 uv, Float2 uvSize) {
   Vertex vertexData[4];
 
   const Float2 repos = {
@@ -220,88 +106,10 @@ void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID, float alpha) {
     size.y / 720.0f * 9.0f * 3.0f,
   };
 
-  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
-  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
-
-  vertexData[0].texCoord = { 0.0f, 0.0f };
-  vertexData[1].texCoord = { 1.0f, 0.0f };
-  vertexData[2].texCoord = { 0.0f, 1.0f };
-  vertexData[3].texCoord = { 1.0f, 1.0f };
-
-  for (int i = 0; i < 4; i++) {
-    vertexData[i].color = XMFLOAT4(1.0f, 1.0f, 1.0f, alpha);
-  }
-  for (int i = 0; i < 4; i++) {
-    vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
-  }
-
-  DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
-
-  DX3D.setDepthEnable(false);
-  SHADER.set2DMatrix();
-  TEXTURE.setTexture(texID);
-
-  draw();
-}
-
-void Sprite::drawSprite2D(Float2 pos, Float2 size, int texID, Float4 color) {
-  Vertex vertexData[4];
-
-  const Float2 repos = {
-    pos.x / 1280.0f * 16.0f * 3.0f,
-    pos.y / 720.0f * 9.0f * 3.0f,
-  };
-
-  const Float2 resize = {
-    size.x / 1280.0f * 16.0f * 3.0f,
-    size.y / 720.0f * 9.0f * 3.0f,
-  };
-
-  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
-  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
-
-  vertexData[0].texCoord = { 0.0f, 0.0f };
-  vertexData[1].texCoord = { 1.0f, 0.0f };
-  vertexData[2].texCoord = { 0.0f, 1.0f };
-  vertexData[3].texCoord = { 1.0f, 1.0f };
-
-  for (int i = 0; i < 4; i++) {
-    vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
-  }
-  for (int i = 0; i < 4; i++) {
-    vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
-  }
-
-  DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
-
-  DX3D.setDepthEnable(false);
-  SHADER.set2DMatrix();
-  TEXTURE.setTexture(texID);
-
-  draw();
-}
-
-void Sprite::drawSprite2DUV(Float2 pos, Float2 size, int texID, Float4 color, Float2 uv, Float2 uvSize) {
-  Vertex vertexData[4];
-
-  const Float2 repos = {
-    pos.x / 1280.0f * 16.0f * 3.0f,
-    pos.y / 720.0f * 9.0f * 3.0f,
-  };
-
-  const Float2 resize = {
-    size.x / 1280.0f * 16.0f * 3.0f,
-    size.y / 720.0f * 9.0f * 3.0f,
-  };
-
-  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
-  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
+  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 0.1f };
+  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 0.1f };
+  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 0.1f };
+  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 0.1f };
 
   vertexData[0].texCoord = { uv.x,            uv.y };
   vertexData[1].texCoord = { uv.x + uvSize.x, uv.y };
@@ -309,7 +117,7 @@ void Sprite::drawSprite2DUV(Float2 pos, Float2 size, int texID, Float4 color, Fl
   vertexData[3].texCoord = { uv.x + uvSize.x, uv.y + uvSize.y };
 
   for (int i = 0; i < 4; i++) {
-    vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
+    vertexData[i].color = { color.r, color.g, color.b, color.a };
   }
   for (int i = 0; i < 4; i++) {
     vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
@@ -319,12 +127,13 @@ void Sprite::drawSprite2DUV(Float2 pos, Float2 size, int texID, Float4 color, Fl
 
   DX3D.setDepthEnable(false);
   SHADER.set2DMatrix();
-  TEXTURE.setTexture(texID);
+  TEXTURE.setTexture(tex);
+  SHADER.setPS(PS::GENERAL);
 
   draw();
 }
 
-void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian, Float2 center, Float4 color) {
+void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, ID3D11ShaderResourceView* tex, float radian, Float2 center, Float4 color) {
   Vertex vertexData[4];
 
   const Float2 repos = {
@@ -337,10 +146,10 @@ void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian
     size.y / 720.0f * 9.0f * 3.0f,
   };
 
-  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 5.0f };
-  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 5.0f };
-  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 5.0f };
+  vertexData[0].postion = { repos.x - resize.x / 2, repos.y + resize.y / 2, 0.1f };
+  vertexData[1].postion = { repos.x + resize.x / 2, repos.y + resize.y / 2, 0.1f };
+  vertexData[2].postion = { repos.x - resize.x / 2, repos.y - resize.y / 2, 0.1f };
+  vertexData[3].postion = { repos.x + resize.x / 2, repos.y - resize.y / 2, 0.1f };
 
   for (int i = 0; i < 4; i++) {
     const Float2 resizeCenter = {
@@ -360,22 +169,23 @@ void Sprite::drawSprite2DRotate(Float2 pos, Float2 size, int texID, float radian
   vertexData[3].texCoord = { 1.0f, 1.0f };
 
   for (int i = 0; i < 4; i++) {
-    vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
+    vertexData[i].color = { color.r, color.g, color.b, color.a };
   }
   for (int i = 0; i < 4; i++) {
-    vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
+    vertexData[i].normal = { 0.0f, 0.0f, -1.0f };
   }
 
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
   DX3D.setDepthEnable(false);
   SHADER.set2DMatrix();
-  TEXTURE.setTexture(texID);
+  TEXTURE.setTexture(tex);
+  SHADER.setPS(PS::GENERAL);
 
   draw();
 }
 
-void Sprite::drawSceneCover(Float2 pos, Float2 size, int texID, float scale) {
+void Sprite::drawSceneCover(Float2 pos, Float2 size, ID3D11ShaderResourceView* tex, float scale) {
   Vertex vertexData[4];
 
   const Float2 resize = {
@@ -383,10 +193,10 @@ void Sprite::drawSceneCover(Float2 pos, Float2 size, int texID, float scale) {
     size.y / 720.0f * 9.0f * 3.0f,
   };
 
-  vertexData[0].postion = { -resize.x / 2,  resize.y / 2, 5.0f };
-  vertexData[1].postion = { resize.x / 2,   resize.y / 2, 5.0f };
-  vertexData[2].postion = { -resize.x / 2, -resize.y / 2, 5.0f };
-  vertexData[3].postion = { resize.x / 2,  -resize.y / 2, 5.0f };
+  vertexData[0].postion = { -resize.x / 2,  resize.y / 2, 0.1f };
+  vertexData[1].postion = { resize.x / 2,   resize.y / 2, 0.1f };
+  vertexData[2].postion = { -resize.x / 2, -resize.y / 2, 0.1f };
+  vertexData[3].postion = { resize.x / 2,  -resize.y / 2, 0.1f };
 
   const Float2 repos = {
     pos.x * 1280.0f / 16.0f / 3.0f,
@@ -423,16 +233,50 @@ void Sprite::drawSceneCover(Float2 pos, Float2 size, int texID, float scale) {
     vertexData[i].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
   }
   for (int i = 0; i < 4; i++) {
-    vertexData[i].normal = { 0.0f, 0.0f, 1.0f };
+    vertexData[i].normal = { 0.0f, 0.0f, -1.0f };
   }
 
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
 
-  TEXTURE.setTexture(texID);
+  TEXTURE.setTexture(tex);
+  SHADER.setPS(PS::GENERAL);
 
   DX3D.setDepthEnable(false);
   SHADER.set2DMatrix();
 
+  draw();
+}
+
+void Sprite::drawSprite3D(Float2 size, ID3D11ShaderResourceView* tex, Float4 color) {
+  Vertex vertexData[4];
+
+  const Float2 resize = {
+    size.x / 1280.0f * 16.0f * 3.0f,
+    size.y / 720.0f * 9.0f * 3.0f,
+  };
+
+  vertexData[0].postion = { -resize.x / 2,  resize.y / 2, 0.0f };
+  vertexData[1].postion = {  resize.x / 2,  resize.y / 2, 0.0f };
+  vertexData[2].postion = { -resize.x / 2, -resize.y / 2, 0.0f };
+  vertexData[3].postion = {  resize.x / 2, -resize.y / 2, 0.0f };
+
+  vertexData[0].texCoord = { 0.0f, 0.0f };
+  vertexData[1].texCoord = { 1.0f, 0.0f };
+  vertexData[2].texCoord = { 0.0f, 1.0f };
+  vertexData[3].texCoord = { 1.0f, 1.0f };
+
+  for (int i = 0; i < 4; i++) {
+    vertexData[i].color = { color.r, color.g, color.b, color.a };
+  }
+
+  for (int i = 0; i < 4; i++) {
+    vertexData[i].normal = { 0.0f, 0.0f, -1.0f };
+  }
+
+  DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
+  DX3D.setDepthEnable(false);
+  TEXTURE.setTexture(tex);
+  SHADER.setPS(PS::GENERAL);
   draw();
 }
 

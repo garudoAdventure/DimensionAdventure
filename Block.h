@@ -19,8 +19,7 @@ class Block : public ActivableGameObj {
 			_size.y *= scale.y;
 			_size.z *= scale.z;
 			_triggerSize = { _size.x + 0.1f, _size.y + 0.1f, _size.z + 0.1f };
-			_inactiveColor = Color::white;
-			_inactiveColor.a = 0.3f;
+			_inactiveColor = { 0.3f, 0.3f, 0.3f, 1.0f };
 		}
 		void update() override {
 			GameObj::update();

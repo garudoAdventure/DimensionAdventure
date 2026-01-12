@@ -1,12 +1,19 @@
 ﻿#include "PlayerWalk.h"
 #include "PlayerIdle.h"
 #include "PlayerJump.h"
+#include "Sound.h"
 
 PlayerWalk::PlayerWalk() {
+	walkSE = SOUND.loadSound("./assets/sound/walk.wav");
+}
+
+PlayerWalk::~PlayerWalk() {
+	SOUND.stopSound(walkSE);
 }
 
 void PlayerWalk::init() {
 	player->getModel()->loadAnim(1);
+	SOUND.playSound(walkSE, -1);
 }
 
 void PlayerWalk::update() {

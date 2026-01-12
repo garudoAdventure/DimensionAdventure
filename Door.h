@@ -50,8 +50,8 @@ class LockedDoor : public Door {
 				if (!PLAYER.hasRemoteControl()) {
 					_gameEvent->addEvent(new ShowDialogEvent(
 						new MessageDialog({
-						{ Talker::SELF, L"これが出口か。。。" },
-						{ Talker::SELF, L"でも起動していないの様子だ" },
+						{ Talker::SELF, L"これが出口か......" },
+						{ Talker::SELF, L"でも、まだ起動してないみたいだ。" },
 					})));
 				}
 				else {
@@ -61,7 +61,7 @@ class LockedDoor : public Door {
 							_color = Color::yellow;
 						})
 					));
-					_gameEvent->setCheckpoint(CheckPoint::WHITE_DOOR);
+					_gameEvent->setCheckpoint(CheckPoint::PASSWORD);
 				}
 			}
 		}
@@ -86,6 +86,15 @@ class OpenedDoor : public Door {
 				}
 				if (_nextField == 6 && _gameEvent->getCheckpoint() == CheckPoint::GREEN_CRYSTAL) {
 					_gameEvent->setCheckpoint(CheckPoint::BLUE_HINT);
+				}
+				if (_nextField == 0 && _gameEvent->getCheckpoint() == CheckPoint::REMOTE_CONTROL) {
+					_gameEvent->setCheckpoint(CheckPoint::WHITE_DOOR);
+				}
+				if (_nextField != 0 && _gameEvent->getCheckpoint() == CheckPoint::PASSWORD) {
+					_gameEvent->setCheckpoint(CheckPoint::FINAL);
+				}
+				if (_nextField == 0 && _gameEvent->getCheckpoint() == CheckPoint::FINAL) {
+					_gameEvent->setCheckpoint(CheckPoint::PASSWORD);
 				}
 			}
 		}

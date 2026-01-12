@@ -11,7 +11,7 @@
 class Particle {
 	public:
 		Particle(Float3 pos) {
-			tex = TEXTURE.loadTexture("./assets/elf.png");
+			_tex = TEXTURE.loadTexture("./assets/elf.png");
 			_pos = pos;
 			vel.x = sinf(rand());
 			vel.y = sinf(rand());
@@ -26,15 +26,16 @@ class Particle {
 			XMMATRIX world = XMMatrixIdentity();
 			world *= SHADER.getInverseView();
 			world *= XMMatrixTranslation(_pos.x, _pos.y, _pos.z);
-			SHADER.setWorldMatrix(world);
-			SPRITE.drawSpriteIn3D({ 16.0f, 16.0f }, tex, color);
+			SHADER.setWorld(world);
+			SHADER.setMatrix();
+			SPRITE.drawSprite3D({ 16.0f, 16.0f }, TEXTURE.getTexture(_tex), color);
 		}
 		int getLifeTime() {
 			return lifeTime;
 		}
 
 	private:
-		unsigned int tex;
+		unsigned int _tex;
 		Float3 _pos = { 0.0f, 0.0f, 0.0f };
 		Float3 vel;
 		Float3 size = { 0.5f, 0.5f, 0.5f };
@@ -75,8 +76,9 @@ class Emitter {
 			XMMATRIX world = XMMatrixIdentity();
 			world *= SHADER.getInverseView();
 			world *= XMMatrixTranslation(pos.x, pos.y, pos.z);
-			SHADER.setWorldMatrix(world);
-			SPRITE.drawSpriteIn3D({ 64.0f, 64.0f }, _tex, _color);
+			SHADER.setWorld(world);
+			SHADER.setMatrix();
+			SPRITE.drawSprite3D({ 64.0f, 64.0f }, TEXTURE.getTexture(_tex), _color);
 
 			for (Particle* particle : _particles) {
 				particle->draw();

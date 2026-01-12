@@ -228,3 +228,8 @@ struct Light {
   XMFLOAT3 direction;
   XMFLOAT4 ambient = { 0.4f, 0.4f, 0.4f ,1.0f };
 };
+
+struct PixelTime {
+  float time;
+  Float3 dummy;
+};

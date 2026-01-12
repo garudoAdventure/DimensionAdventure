@@ -15,15 +15,12 @@ struct TextureData {
 class Texture {
   public:
     int loadTexture(const std::string& fileName);
-    void setTexture(int _texId);
     void setTexture(ID3D11ShaderResourceView* tex);
     ID3D11ShaderResourceView* getTexture(int texID);
 
   private:
     TextureData textureData[256];
     int textureDataCount = 0;
-    ID3D11Buffer* hasTexBuffer = nullptr;
-    bool _hasTex = false;
 
   private:
     static inline Texture* s_instance;

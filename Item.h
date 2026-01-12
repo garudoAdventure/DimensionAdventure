@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include "Sprite.h"
 #include "MathStruct.h"
+#include "MathTool.h"
 #include "Model.h"
 #include "ModelManager.h"
 #include "IGameEventHandler.h"
@@ -20,15 +21,10 @@ class Item : public GameObj {
 		Item(Float3 pos, IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 			_pos = pos;
 			_color = { 1.0f, 1.0f, 1.0f, 1.0f };
-			_model = MODEL.loadModel("./assets/model/cube.fbx");
-			_size = _model->getSize();
 		}
 		void update() override {
 			_pos.y += cosf(_passTime * 0.05f) * 0.02f;
 			_passTime++;
-		}
-		void draw() override {
-			_model->draw(_pos, { 0.0f, 0.0f, 0.0f });
 		}
 		void collide(GameObj* obj, bool is2D) override {
 			if (obj->getTag() != ObjTag::PLAYER_TAG) return;
@@ -43,8 +39,6 @@ class Item : public GameObj {
 
 	protected:
 		IGameEventHandler* _gameEvent;
-		unsigned int _texID;
-		Model* _model;
 
 	private:
 		int _passTime = 0;

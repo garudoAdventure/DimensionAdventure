@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <assimp/cimport.h>
 #include <assimp/scene.h>

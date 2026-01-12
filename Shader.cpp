@@ -1,4 +1,4 @@
-#include "Shader.h"
+ï»¿#include "Shader.h"
 using namespace DirectX;
 #include "Directx.h"
 #include "MathStruct.h"
@@ -9,14 +9,14 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   _deviceContext = deviceContext;
 
   std::ifstream ifs_vs("vertexShader.cso", std::ios::binary);
-  ifs_vs.seekg(0, std::ios::end); // ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ð––”ö‚ÉˆÚ“®
-  std::streamsize filesize = ifs_vs.tellg(); // ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ÌˆÊ’u‚ðŽæ“¾i‚Â‚Ü‚èƒtƒ@ƒCƒ‹ƒTƒCƒYj
-  ifs_vs.seekg(0, std::ios::beg); // ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ðæ“ª‚É–ß‚·
+  ifs_vs.seekg(0, std::ios::end); // ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’æœ«å°¾ã«ç§»å‹•
+  std::streamsize filesize = ifs_vs.tellg(); // ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã®ä½ç½®ã‚’å–å¾—ï¼ˆã¤ã¾ã‚Šãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºï¼‰
+  ifs_vs.seekg(0, std::ios::beg); // ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’å…ˆé ­ã«æˆ»ã™
 
-  // ƒoƒCƒiƒŠƒf[ƒ^‚ðŠi”[‚·‚é‚½‚ß‚Ìƒoƒbƒtƒ@‚ðŠm•Û
+  // ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãŸã‚ã®ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
   unsigned char* vsbinary_pointer = new unsigned char[filesize];
-  ifs_vs.read((char*)vsbinary_pointer, filesize); // ƒoƒCƒiƒŠƒf[ƒ^‚ð“Ç‚Ýž‚Þ
-  ifs_vs.close(); // ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
+  ifs_vs.read((char*)vsbinary_pointer, filesize); // ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
+  ifs_vs.close(); // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹
 
   _device->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &_vertexShader);
 
@@ -31,20 +31,8 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   _device->CreateInputLayout(&layout[0], 6, vsbinary_pointer, filesize, &_inputLayout);
   _deviceContext->IASetInputLayout(_inputLayout);
 
-  delete[] vsbinary_pointer; // ƒoƒCƒiƒŠƒf[ƒ^‚Ìƒoƒbƒtƒ@‚ð‰ð•ú
+  delete[] vsbinary_pointer; // ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ã®ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
 
-  {
-    std::ifstream ifs_vs("outlineVS.cso", std::ios::binary);
-    ifs_vs.seekg(0, std::ios::end);
-    std::streamsize filesize = ifs_vs.tellg();
-    ifs_vs.seekg(0, std::ios::beg);
-
-    vsbinary_pointer = new unsigned char[filesize];
-    ifs_vs.read((char*)vsbinary_pointer, filesize);
-    ifs_vs.close();
-    _device->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &_outlineVS);
-    delete[] vsbinary_pointer;
-  }
   {
     std::ifstream ifs_ps("pixelShader.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
@@ -55,6 +43,30 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
     ifs_ps.close();
 
     _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_pixelShader);
+    delete[] psbinary_pointer;
+  }
+  {
+    std::ifstream ifs_ps("noTexPS.cso", std::ios::binary);
+    ifs_ps.seekg(0, std::ios::end);
+    filesize = ifs_ps.tellg();
+    ifs_ps.seekg(0, std::ios::beg);
+    unsigned char* psbinary_pointer = new unsigned char[filesize];
+    ifs_ps.read((char*)psbinary_pointer, filesize);
+    ifs_ps.close();
+
+    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_noTexShader);
+    delete[] psbinary_pointer;
+  }
+  {
+    std::ifstream ifs_ps("luminancePS.cso", std::ios::binary);
+    ifs_ps.seekg(0, std::ios::end);
+    filesize = ifs_ps.tellg();
+    ifs_ps.seekg(0, std::ios::beg);
+    unsigned char* psbinary_pointer = new unsigned char[filesize];
+    ifs_ps.read((char*)psbinary_pointer, filesize);
+    ifs_ps.close();
+
+    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_luminanceShader);
     delete[] psbinary_pointer;
   }
   {
@@ -70,6 +82,18 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
     delete[] psbinary_pointer;
   }
   {
+    std::ifstream ifs_ps("bloomPS.cso", std::ios::binary);
+    ifs_ps.seekg(0, std::ios::end);
+    filesize = ifs_ps.tellg();
+    ifs_ps.seekg(0, std::ios::beg);
+    unsigned char* psbinary_pointer = new unsigned char[filesize];
+    ifs_ps.read((char*)psbinary_pointer, filesize);
+    ifs_ps.close();
+
+    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_bloomShader);
+    delete[] psbinary_pointer;
+  }
+  {
     std::ifstream ifs_ps("glitchPS.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
     filesize = ifs_ps.tellg();
@@ -82,7 +106,7 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
     delete[] psbinary_pointer;
   }
   {
-    std::ifstream ifs_ps("outlinePS.cso", std::ios::binary);
+    std::ifstream ifs_ps("noisePS.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
     filesize = ifs_ps.tellg();
     ifs_ps.seekg(0, std::ios::beg);
@@ -90,7 +114,19 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
     ifs_ps.read((char*)psbinary_pointer, filesize);
     ifs_ps.close();
 
-    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_outlinePS);
+    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_noiseShader);
+    delete[] psbinary_pointer;
+  }
+  {
+    std::ifstream ifs_ps("sprialPS.cso", std::ios::binary);
+    ifs_ps.seekg(0, std::ios::end);
+    filesize = ifs_ps.tellg();
+    ifs_ps.seekg(0, std::ios::beg);
+    unsigned char* psbinary_pointer = new unsigned char[filesize];
+    ifs_ps.read((char*)psbinary_pointer, filesize);
+    ifs_ps.close();
+
+    _device->CreatePixelShader(psbinary_pointer, filesize, nullptr, &_spiralShader);
     delete[] psbinary_pointer;
   }
   
@@ -149,7 +185,11 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
 Shader::~Shader() {
   SAFE_RELEASE(_pixelShader);
   SAFE_RELEASE(_blurShader);
+  SAFE_RELEASE(_bloomShader);
+  SAFE_RELEASE(_luminanceShader);
   SAFE_RELEASE(_glitchShader);
+  SAFE_RELEASE(_noiseShader);
+  SAFE_RELEASE(_spiralShader);
   SAFE_RELEASE(_matrixBuffer);
   SAFE_RELEASE(_lightBuffer);
   SAFE_RELEASE(_inputLayout);
@@ -180,37 +220,39 @@ void Shader::begin() {
 
 void Shader::setVS(VS vs) {
   switch (vs) {
-  case VS::NORMAL:
+  case VS::GENERAL:
     _deviceContext->VSSetShader(_vertexShader, NULL, 0);
-    break;
-  case VS::OUTLINE:
-    _deviceContext->VSSetShader(_outlineVS, NULL, 0);
     break;
   }
 }
 
 void Shader::setPS(PS ps) {
   switch (ps) {
-    case PS::NORMAL:
+    case PS::GENERAL:
       _deviceContext->PSSetShader(_pixelShader, nullptr, 0);
+      break;
+    case PS::NO_TEX:
+      _deviceContext->PSSetShader(_noTexShader, nullptr, 0);
+      break;
+    case PS::LUMINANCE:
+      _deviceContext->PSSetShader(_luminanceShader, nullptr, 0);
       break;
     case PS::BLUR:
       _deviceContext->PSSetShader(_blurShader, nullptr, 0);
       break;
+    case PS::BLOOM:
+      _deviceContext->PSSetShader(_bloomShader, nullptr, 0);
+      break;
     case PS::GLITCH:
       _deviceContext->PSSetShader(_glitchShader, nullptr, 0);
       break;
-    case PS::OUTLINE:
-      _deviceContext->PSSetShader(_outlinePS, nullptr, 0);
+    case PS::NOISE:
+      _deviceContext->PSSetShader(_noiseShader, nullptr, 0);
+      break;
+    case PS::SPIRAL:
+      _deviceContext->PSSetShader(_spiralShader, nullptr, 0);
       break;
   }
-}
-
-void Shader::setView(Float3 e, Float3 f) {
-  XMVECTOR eye = XMVectorSet(e.x, e.y, e.z, 0.0f);
-  XMVECTOR focus = XMVectorSet(f.x, f.y, f.z, 0.0f);
-  XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-  _viewMatrix = XMMatrixLookAtLH(eye, focus, up);
 }
 
 void Shader::setProjection(XMMATRIX projMatrix) {
@@ -225,15 +267,15 @@ XMMATRIX Shader::getPerspectiveMatrix() {
   return _perspectiveMatrix;
 }
 
-void Shader::setWorldMatrix(Float3 pos, Float3 rotate, Float3 scale) {
-  _worldMatrix = XMMatrixIdentity();
-  _worldMatrix *= XMMatrixScaling(scale.x, scale.y, scale.z);
-  _worldMatrix *= XMMatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
-  _worldMatrix *= XMMatrixTranslation(pos.x, pos.y, pos.z);
+void Shader::setWorld(XMMATRIX& world) {
+  _worldMatrix = world;
 }
 
-void Shader::setWorldMatrix(XMMATRIX& world) {
-  _worldMatrix = world;
+void Shader::setView(Float3 e, Float3 f) {
+  XMVECTOR eye = XMVectorSet(e.x, e.y, e.z, 0.0f);
+  XMVECTOR focus = XMVectorSet(f.x, f.y, f.z, 0.0f);
+  XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+  _viewMatrix = XMMatrixLookAtLH(eye, focus, up);
 }
 
 void Shader::set2DMatrix() {
@@ -241,14 +283,6 @@ void Shader::set2DMatrix() {
   mat.world = XMMatrixIdentity();
   mat.view = XMMatrixIdentity();
   mat.projection = getOrthoMatrix();
-  setMatrix(mat);
-}
-
-void Shader::set3DMatrix(XMMATRIX view) {
-  Transpose mat;
-  mat.world = _worldMatrix;
-  mat.view = view;
-  mat.projection = getPerspectiveMatrix();
   setMatrix(mat);
 }
 

@@ -1,4 +1,4 @@
-#define NOMINMAX
+﻿#define NOMINMAX
 #include "Camera.h"
 #include "Shader.h"
 #include "MathTool.h"
@@ -60,12 +60,12 @@ void Camera::vibration(bool isSet) {
 
 void Camera::set2DPos(Float2 pos) {
 	_eye.x = pos.x;
-	_eye.x = MathTool::clamp(_eye.x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
+	_eye.x = MathTool::clamp(_eye.x, _2D_MIN_X, _2D_MAX_X);
 	_focus.x = _eye.x;
 	_newEye.x = _eye.x;
 
 	_eye.y = pos.y;
-	_eye.y = MathTool::clamp(_eye.y, 0.0f, CAMERA_MAX_Y);
+	_eye.y = MathTool::clamp(_eye.y, 0.0f, _MAX_Y);
 	_focus.y = _eye.y;
 	_newEye.y = _eye.y;
 }
@@ -75,7 +75,7 @@ Float2 Camera::get2DPos() {
 		return { _eye.x, _eye.y };
 	}
 	else {
-		float eyeX = MathTool::clamp(_eye.x + CAMERA_Z_DISTANCE, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
+		float eyeX = MathTool::clamp(_eye.x + _Z_DISTANCE, _2D_MIN_X, _2D_MAX_X);
 		return { eyeX, _eye.y - 5.0f };
 	}
 }
@@ -86,37 +86,37 @@ Float3& Camera::getPos() {
 
 void CameraController2D::move(Float3 targetPos, Float3& eye, Float3& focus) {
 	eye.x = targetPos.x;
-	eye.x = MathTool::clamp(eye.x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
+	eye.x = MathTool::clamp(eye.x, Camera::_2D_MIN_X, Camera::_2D_MAX_X);
 	focus.x = eye.x;
 
 	eye.y = targetPos.y;
-	eye.y = MathTool::clamp(eye.y, 0.0f, CAMERA_MAX_Y);
+	eye.y = MathTool::clamp(eye.y, 0.0f, Camera::_MAX_Y);
 	focus.y = eye.y;
 
-	eye.z = -CAMERA_Z_DISTANCE;
+	eye.z = -Camera::_Z_DISTANCE;
 }
 
 void CameraController3D::move(Float3 targetPos, Float3& eye, Float3& focus) {
 	focus.x = targetPos.x;
-	focus.x = MathTool::clamp(focus.x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
-	eye.x = focus.x - CAMERA_Z_DISTANCE;
+	focus.x = MathTool::clamp(focus.x, Camera::_3D_MIN_X + Camera::_Z_DISTANCE, Camera::_3D_MAX_X + Camera::_Z_DISTANCE);
+	eye.x = focus.x - Camera::_Z_DISTANCE;
 
 	focus.y = targetPos.y;
-	focus.y = MathTool::clamp(focus.y, 0.0f, CAMERA_MAX_Y);
+	focus.y = MathTool::clamp(focus.y, 0.0f, Camera::_MAX_Y);
 	eye.y = focus.y + 5.0f;
 
 	eye.z = 0.0f;
 }
 
 void CameraController2D::transform(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
-	const float srcEyePosX = MathTool::clamp(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
-	const float destEyePosX = MathTool::clamp(PLAYER.getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
+	const float srcEyePosX = MathTool::clamp(PLAYER.getPos().x, Camera::_2D_MIN_X, Camera::_2D_MAX_X);
+	const float destEyePosX = MathTool::clamp(PLAYER.getPos().x - Camera::_Z_DISTANCE, Camera::_3D_MIN_X, Camera::_3D_MAX_X);
 	eye.x = MathTool::lerp(srcEyePosX, destEyePosX, step);
 	eye.y += 5.0f / 30.0f;
-	eye.z += CAMERA_Z_DISTANCE / 30.0f;
+	eye.z += Camera::_Z_DISTANCE / 30.0f;
 
-	const float srcFocusPosX = MathTool::clamp(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
-	const float destFocusPosX = MathTool::clamp(PLAYER.getPos().x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
+	const float srcFocusPosX = MathTool::clamp(PLAYER.getPos().x, Camera::_2D_MIN_X, Camera::_2D_MAX_X);
+	const float destFocusPosX = MathTool::clamp(PLAYER.getPos().x, Camera::_3D_MIN_X + Camera::_Z_DISTANCE, Camera::_3D_MAX_X + Camera::_Z_DISTANCE);
 	focus.x = MathTool::lerp(srcFocusPosX, destFocusPosX, step);
 
 	XMMATRIX ortho = SHADER.getOrthoMatrix();
@@ -125,14 +125,14 @@ void CameraController2D::transform(Float3& eye, Float3& focus, XMMATRIX& projMat
 }
 
 void CameraController3D::transform(Float3& eye, Float3& focus, XMMATRIX& projMat, float step) {
-	const float srcEyePosX = MathTool::clamp(PLAYER.getPos().x - CAMERA_Z_DISTANCE, CAMERA_3D_MIN_X, CAMERA_3D_MAX_X);
-	const float destEyePosX = MathTool::clamp(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
+	const float srcEyePosX = MathTool::clamp(PLAYER.getPos().x - Camera::_Z_DISTANCE, Camera::_3D_MIN_X, Camera::_3D_MAX_X);
+	const float destEyePosX = MathTool::clamp(PLAYER.getPos().x, Camera::_2D_MIN_X, Camera::_2D_MAX_X);
 	eye.x = MathTool::lerp(srcEyePosX, destEyePosX, step);
 	eye.y -= 5.0f / 30.0f;
-	eye.z -= CAMERA_Z_DISTANCE / 30.0f;
+	eye.z -= Camera::_Z_DISTANCE / 30.0f;
 
-	const float srcFocusPosX = MathTool::clamp(PLAYER.getPos().x, CAMERA_3D_MIN_X + CAMERA_Z_DISTANCE, CAMERA_3D_MAX_X + CAMERA_Z_DISTANCE);
-	const float destFocusPosX = MathTool::clamp(PLAYER.getPos().x, CAMERA_2D_MIN_X, CAMERA_2D_MAX_X);
+	const float srcFocusPosX = MathTool::clamp(PLAYER.getPos().x, Camera::_3D_MIN_X + Camera::_Z_DISTANCE, Camera::_3D_MAX_X + Camera::_Z_DISTANCE);
+	const float destFocusPosX = MathTool::clamp(PLAYER.getPos().x, Camera::_2D_MIN_X, Camera::_2D_MAX_X);
 	focus.x = MathTool::lerp(srcFocusPosX, destFocusPosX, step);
 
 	XMMATRIX ortho = SHADER.getOrthoMatrix();

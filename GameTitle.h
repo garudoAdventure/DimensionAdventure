@@ -11,15 +11,9 @@
 #include "Color.h"
 #include "PostProcess.h"
 #include "RenderTexture.h"
+#include "MathStruct.h"
 #include "MathTool.h"
 #include "GameMain.h"
-
-#define ColorSpeed	(240)
-
-struct PixelTime {
-	float time;
-	Float3 dummy;
-};
 
 class GameTitle : public GameState {
 	public:
@@ -82,53 +76,54 @@ class GameTitle : public GameState {
 
 			_title->setTargetView();
 			_title->clear();
-			SPRITE.drawSprite2D({ 0.0f, 150.0f }, { 661.0f, 225.0f }, _titleTex);
+			SPRITE.drawSprite2D({ 0.0f, 150.0f }, { 661.0f, 225.0f }, TEXTURE.getTexture(_titleTex), Color::white);
 
 			DX3D.setTargetView();
 			DX3D.clear();
-			_postProcess->drawBlurBloom();
+			_postProcess->drawBloom(5);
 
 			if (_isShowTitle) {
 				SHADER.setPS(PS::GLITCH);
 				PixelTime pt;
 				pt.time = _time;
 				DX3D.getDeviceContext()->UpdateSubresource(_pixelTimeBuffer, 0, NULL, &pt, 0, 0);
-				DX3D.getDeviceContext()->PSSetConstantBuffers(2, 1, &_pixelTimeBuffer);
+				DX3D.getDeviceContext()->PSSetConstantBuffers(1, 1, &_pixelTimeBuffer);
 			}
 
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _title->getTex());
+			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _title->getTex(), Color::white);
 			
-			SHADER.setPS(PS::NORMAL);
+			SHADER.setPS(PS::GENERAL);
 			if (_isShowTitle && _time % 60 > 30) {
-				SPRITE.drawSprite2D({ 0.0f, -150.0f }, { 525.0f, 65.0f }, _titleStartTex);
+				SPRITE.drawSprite2D({ 0.0f, -150.0f }, { 525.0f, 65.0f }, TEXTURE.getTexture(_titleStartTex), Color::white);
 			}
 
+			SHADER.setPS(PS::NO_TEX);
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, { 0.0f, 0.0f, 0.0f, _coverAlpha });
 		}
 
 		void updateColor() {
-			if (_redCount == ColorSpeed && _blueCount == 0) {
-				_greenCount = std::min(ColorSpeed, _greenCount + 1);
+			if (_redCount == colorSpeed && _blueCount == 0) {
+				_greenCount = std::min(colorSpeed, _greenCount + 1);
 			}
-			if (_greenCount == ColorSpeed) {
+			if (_greenCount == colorSpeed) {
 				_redCount = std::max(0, _redCount - 1);
 			}
 			if (_redCount == 0) {
-				_blueCount = std::min(ColorSpeed, _blueCount + 1);
+				_blueCount = std::min(colorSpeed, _blueCount + 1);
 			}
-			if (_blueCount == ColorSpeed) {
+			if (_blueCount == colorSpeed) {
 				_greenCount = std::max(0, _greenCount - 1);
 			}
 			if (_greenCount == 0) {
-				_redCount = std::min(ColorSpeed, _redCount + 1);
+				_redCount = std::min(colorSpeed, _redCount + 1);
 			}
-			if (_redCount == ColorSpeed) {
+			if (_redCount == colorSpeed) {
 				_blueCount = std::max(0, _blueCount - 1);
 			}
 
-			_color.r = MathTool::lerp<float>(0.0f, 1.0f, _redCount / 240.0f);
-			_color.g = MathTool::lerp<float>(0.0f, 1.0f, _greenCount / 240.0f);
-			_color.b = MathTool::lerp<float>(0.0f, 1.0f, _blueCount / 240.0f);
+			_color.r = MathTool::lerp<float>(0.0f, 1.0f, _redCount / 120.0f);
+			_color.g = MathTool::lerp<float>(0.0f, 1.0f, _greenCount / 120.0f);
+			_color.b = MathTool::lerp<float>(0.0f, 1.0f, _blueCount / 120.0f);
 		}
 
 	private:
@@ -139,8 +134,9 @@ class GameTitle : public GameState {
 		unsigned int _titleTex;
 		unsigned int _titleStartTex;
 		ID3D11Buffer* _pixelTimeBuffer;
-		Float4 _color = { 1.0f, 0.0f, 0.0f, 1.0f };
-		int _redCount = ColorSpeed;
+		Float4 _color = { 0.0f, 1.0f, 0.0f, 1.0f };
+		const int colorSpeed = 120;
+		int _redCount = colorSpeed;
 		int _greenCount = 0;
 		int _blueCount = 0;
 		float _rotate = 0.0f;

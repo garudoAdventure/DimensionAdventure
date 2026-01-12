@@ -22,8 +22,9 @@ class ActivableGameObj : public GameObj {
 				XMMATRIX world = XMMatrixIdentity();
 				world *= SHADER.getInverseView();
 				world *= XMMatrixTranslation(pos.x, pos.y, pos.z);
-				SHADER.setWorldMatrix(world);
-				SPRITE.drawSpriteIn3D({ 64.0f, 32.0f }, _buttonTex);
+				SHADER.setWorld(world);
+				SHADER.setMatrix();
+				SPRITE.drawSprite3D({ 64.0f, 32.0f }, TEXTURE.getTexture(_buttonTex), Color::white);
 			}
 		}
 		virtual void trigger(GameObj* obj, bool is2D) {

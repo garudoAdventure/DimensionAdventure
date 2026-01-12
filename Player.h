@@ -8,24 +8,23 @@
 #include "Model.h"
 #include "Spirit.h"
 
-#define MOVE_VEL		(0.2f)
-#define JUMP_FORCE  (0.75f)
-#define GRAVITY			(0.03f)
-
 class PlayerState;
 
 class Player : public GameObj {
   public:
+		static constexpr float JUMP_FORCE = 0.75f;
+		static constexpr float GRAVITY = 0.03f;
+
 		void update() override;
 		void draw() override;
 		void setState(PlayerState* state);
+		void changeState();
 
 		void hitObj(GameObj* obj, bool isStatic = true) override;
 		void jump();
 		void convertDimension();
 		void getDimensionAbility();
 		void addCrystalNum();
-		void setToEventState(bool isEventState);
 		
 		Model* getModel() {
 			return _model;
@@ -91,7 +90,6 @@ class Player : public GameObj {
 		int _crystalNum = 3;
 		int _keydownTime = 0;
 
-		void changeState();
 		void convertLayer();
 
 	public:

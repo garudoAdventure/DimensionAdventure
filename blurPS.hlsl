@@ -1,5 +1,4 @@
 SamplerState g_sampler : register(s0);
-
 Texture2D g_texture : register(t0);
 
 struct VSOutput
@@ -9,7 +8,7 @@ struct VSOutput
     float2 tex : TEXCOORD0;
 };
 
-cbuffer PixelConstBuffer : register(b1)
+cbuffer PixelConstBuffer : register(b0)
 {
     bool isVertical;
     float width;

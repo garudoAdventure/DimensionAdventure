@@ -1,11 +1,8 @@
 ﻿#include "Player.h"
-#include "Keyboard.h"
 #include "PlayerIdle.h"
-#include "PlayerEvent.h"
+#include "Keyboard.h"
 #include "Shader.h"
 #include "MathTool.h"
-#include "ShowDialogEvent.h"
-#include "Dialog.h"
 
 Player::Player(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 	_pos = MathTool::getCoordPos({ 5.0f, 1.1f, 5.0f });
@@ -158,108 +155,78 @@ void Player::addCrystalNum() {
 	_crystalNum += 1;
 }
 
-void Player::setToEventState(bool isEventState) {
-	if (isEventState) {
-		setState(new PlayerEvent());
-	}
-	else {
-		setState(new PlayerIdle());
-	}
-}
-
 void Player::hitObj(GameObj* gameObj, bool isStatic) {
-	if (gameObj->getTag() == ObjTag::PLAYER_FALL_POINT) {
-		return;
-	}
 	const float playerTop = _pos.y + _size.y / 2;
 	const float playerBottom = _pos.y - _size.y / 2;
 	const float playerRight = _pos.x + _size.x / 2;
 	const float playerLeft = _pos.x - _size.x / 2;
 	const float playerFront = _pos.z - _size.z / 2;
 	const float playerBack = _pos.z + _size.z / 2;
-	const float oldPlayerTop = _oldPos.y + _size.y / 2;
-	const float oldPlayerBottom = _oldPos.y - _size.y / 2;
-	const float oldPlayerRight = _oldPos.x + _size.x / 2;
-	const float oldPlayerLeft = _oldPos.x - _size.x / 2;
-	const float oldPlayerFront = _oldPos.z - _size.z / 2;
-	const float oldPlayerBack = _oldPos.z + _size.z / 2;
 	const float objTop = gameObj->getPos().y + gameObj->getSize().y / 2;
 	const float objBottom = gameObj->getPos().y - gameObj->getSize().y / 2;
 	const float objRight = gameObj->getPos().x + gameObj->getSize().x / 2;
 	const float objLeft = gameObj->getPos().x - gameObj->getSize().x / 2;
 	const float objFront = gameObj->getPos().z - gameObj->getSize().z / 2;
 	const float objBack = gameObj->getPos().z + gameObj->getSize().z / 2;
-	if (
-		oldPlayerRight <= objLeft &&
-		playerRight > objLeft &&
-		objTop - playerBottom > 0.031f
-	) {
-		if (!isStatic) {
-			gameObj->setPosX(playerRight + gameObj->getSize().x / 2 + 0.001f);
+	
+	if (objBottom < _pos.y && _pos.y < objTop) {
+		if (_is2D || objFront < _pos.z && _pos.z < objBack) {
+			if (objLeft < playerRight && playerLeft < objRight) {
+				if (_pos.x < gameObj->getPos().x) {
+					if (!isStatic) {
+						gameObj->setPosX(playerRight + gameObj->getSize().x / 2 + 0.001f);
+					}
+					else {
+						_pos.x = objLeft - _size.x / 2 - 0.01f;
+					}
+				}
+				else {
+					if (!isStatic) {
+						gameObj->setPosX(playerLeft - gameObj->getSize().x / 2 - 0.001f);
+					}
+					else {
+						_pos.x = objRight + _size.x / 2 + 0.01f;
+					}
+				}
+			}
 		}
-		else {
-			_pos.x = objLeft - _size.x / 2 - 0.01f;
-		}
-	}
-	if (
-		oldPlayerLeft >= objRight &&
-		playerLeft < objRight &&
-		objTop - playerBottom > 0.031f
-		) {
-		if (!isStatic) {
-			gameObj->setPosX(playerLeft - gameObj->getSize().x / 2 - 0.001f);
-		}
-		else {
-			_pos.x = objRight + _size.x / 2 + 0.01f;
-		}
-	}
-	if (
-		oldPlayerFront >= objBack &&
-		playerFront < objBack &&
-		objTop - playerBottom > 0.031f
-	) {
-		if (!isStatic) {
-			gameObj->setPosZ(playerFront - gameObj->getSize().z / 2 - 0.001f);
-		}
-		else {
-			_vel.z = 0.0f;
-			_pos.z = objBack + _size.z / 2 + 0.01f;
-		}
-	}
-	if (
-		oldPlayerBack <= objFront &&
-		playerBack > objFront &&
-		objTop - playerBottom > 0.031f
-		) {
-		if (!isStatic) {
-			gameObj->setPosZ(playerBack + gameObj->getSize().z / 2 + 0.001f);
-		}
-		else {
-			_vel.z = 0.0f;
-			_pos.z = objFront - _size.z / 2 - 0.01f;
+		else if (objLeft < _pos.x && _pos.x < objRight) {
+			if (!_is2D && objFront < playerBack && playerFront < objBack) {
+				if (_pos.z < gameObj->getPos().z) {
+					if (!isStatic) {
+						gameObj->setPosZ(playerBack + gameObj->getSize().z / 2 + 0.001f);
+					}
+					else {
+						_pos.z = objFront - _size.z / 2 - 0.01f;
+					}
+				}
+				else {
+					if (!isStatic) {
+						gameObj->setPosZ(playerFront - gameObj->getSize().z / 2 - 0.001f);
+					}
+					else {
+						_pos.z = objBack + _size.z / 2 + 0.01f;
+					}
+				}
+			}
 		}
 	}
-	if (
-		oldPlayerTop <= objBottom &&
-		playerTop > objBottom &&
-		std::min(playerRight - objLeft, objRight - playerLeft) > 0.21f &&
-		(_is2D || std::min(playerBack - objFront, objBack - playerFront) > 0.21f)
-	) {
-		_vel.y = 0.0f;
-		_pos.y = objBottom - _size.y / 2;
+	else {
+		if (_is2D || objFront < _pos.z && _pos.z < objBack) {
+			if (objLeft < _pos.x && _pos.x < objRight) {
+				if (objBottom < playerTop && playerBottom < objTop) {
+					if (_pos.y < gameObj->getPos().y) {
+						_pos.y = objBottom - _size.y / 2;
+					}
+					else {
+						_pos.y = objTop + _size.y / 2;
+						_isJump = false;
+					}
+					_vel.y = 0.0f;
+				}
+			}
+		}
 	}
-	if (
-		gameObj->getTag() == ObjTag::MOVING_FLOOR ||
-		oldPlayerBottom >= objTop &&
-		playerBottom < objTop &&
-		std::min(playerRight - objLeft, objRight - playerLeft) > 0.21f &&
-		(_is2D || std::min(playerBack - objFront, objBack - playerFront) > 0.21f)
-	) {
-		_vel.y = 0.0f;
-		_pos.y = objTop + _size.y / 2;
-		_isJump = false;
-	}
-
 	// 慣性
 	_pos += gameObj->getVel();
 }

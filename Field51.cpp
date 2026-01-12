@@ -23,7 +23,7 @@ Field51::Field51(IGameEventHandler* gameEvent) : Field("./map/map5.csv") {
 	_layer[LayerType::RED]->addGameObj(new Epigraph(gameEvent,
 		MathTool::getCoordPos({ 16.0f, 2.0f, 10.0f }),
 		Color::lightGreen,
-		L"正しい順番で正しいドアに入れば道が開くと書いている"
+		L"「正しい順番で正しいドアに入れば、道は開かれる」と記されている。"
 	));
 
 	Field::load();

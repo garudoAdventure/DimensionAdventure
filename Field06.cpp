@@ -18,6 +18,7 @@ Field06::Field06(IGameEventHandler* gameEvent) : Field("./map/map5.csv") {
 			_layer[LayerType::GREEN]->addGameObj(new BlueCrystal(
 				MathTool::getCoordPos({ 39.0f, 4.5f, 5.0f }), gameEvent
 			));
+			PLAYER.setState(new PlayerFreeze());
 			gameEvent->addEvent(new CameraFocusEvent(gameEvent,
 				MathTool::getCoordPos({ 39.0f, 4.5f, 5.0f })
 			));
@@ -27,7 +28,7 @@ Field06::Field06(IGameEventHandler* gameEvent) : Field("./map/map5.csv") {
 	_layer[LayerType::GREEN]->addGameObj(new Epigraph(gameEvent,
 		MathTool::getCoordPos({ 16.0f, 2.0f, 10.0f }),
 		Color::lightBlue,
-		L"四つの箱を正しいマスに置けと書いている"
+		L"「四つの箱を正しいマスに置けば、お宝は現れる」と記されている。"
 	));
 
 	Field::load();

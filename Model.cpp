@@ -95,7 +95,9 @@ void Model::updateNode(int frame, aiNode* node, aiMatrix4x4 parentTransform) {
 
 	aiMatrix4x4 globalTransform = parentTransform * nodeTransform;
 	for (int i = 0; i < _meshes.size(); i++) {
-		 _meshes[i]->updateBoneTransform(node, _globalInverseTransform * globalTransform);
+		 _meshes[i]->updateBoneTransform(
+			 node, _globalInverseTransform * globalTransform
+		 );
 	}
 	for (int i = 0; i < node->mNumChildren; i++) {
 		updateNode(frame, node->mChildren[i], globalTransform);
@@ -104,7 +106,7 @@ void Model::updateNode(int frame, aiNode* node, aiMatrix4x4 parentTransform) {
 
 void Model::draw(Float3 pos, Float3 radian, Float3 scale) {
 	DX3D.setDepthEnable(true);
-	TEXTURE.setTexture(-1);
+	SHADER.setPS(PS::NO_TEX);
 	for (int i = 0; i < _meshes.size(); i++) {
 		Mesh* mesh = _meshes[i];
 		aiString texName;
@@ -112,8 +114,8 @@ void Model::draw(Float3 pos, Float3 radian, Float3 scale) {
 		aiMaterial* aimaterial = _aiScene->mMaterials[aiMesh->mMaterialIndex];
 		aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
 		if (texName != aiString("")) {
-			TEXTURE.setTexture(0);
-			DX3D.getDeviceContext()->PSSetShaderResources(0, 1, &_texture[texName.data]);
+			TEXTURE.setTexture(_texture[texName.data]);
+			SHADER.setPS(PS::GENERAL);
 		}
 		mesh->draw(pos, radian, scale);
 	}

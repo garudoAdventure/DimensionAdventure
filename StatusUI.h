@@ -22,17 +22,18 @@ class StatusUI {
 			rotateRadian -= 0.04f;
 		}
 		void draw() {
-			SPRITE.drawSprite2D({ 95.0f - 640.0f, -83.0f + 360.0f }, { 108.0f, 102.0f }, baseCircleTex);
+			SHADER.setPS(PS::GENERAL);
+			SPRITE.drawSprite2D({ -545.0f, 277.0f }, { 108.0f, 102.0f }, TEXTURE.getTexture(baseCircleTex), Color::white);
 			if (!PLAYER.hasDimensionRing()) {
-				SPRITE.drawSprite2D({ 90.0f - 640.0f, -82.0f + 360.0f }, { 126.0f, 119.0f }, circleArrowTex, { 0.0f, 0.0f, 0.0f, 1.0f });
+				SPRITE.drawSprite2D({ -550.0f, 278.0f }, { 126.0f, 119.0f }, TEXTURE.getTexture(circleArrowTex), Color::black);
 			}
 			else {
-				SPRITE.drawSprite2DRotate({ 90.0f - 640.0f, -82.0f + 360.0f }, { 126.0f, 119.0f }, circleArrowTex, rotateRadian, { 95.0f - 640.0f, -82.0f + 360.0f });
+				SPRITE.drawSprite2DRotate({ -550.0f, 278.0f }, { 126.0f, 119.0f }, TEXTURE.getTexture(circleArrowTex), rotateRadian, { -545.0f, 278.0f });
 			}
 			for (int i = 0; i < crystalNum; i++) {
 				SPRITE.drawSprite2DRotate(
-					{ 95.0f - 640.0f, -61.0f + 360.0f }, { 22.0f, 38.0f },
-					crystalTex, 2 * PI * i / 3.0f, { 95.0f - 640.0f, -83.0f + 360.0f },
+					{ -545.0f, 299.0f }, { 22.0f, 38.0f },
+					TEXTURE.getTexture(crystalTex), 2 * PI * i / 3.0f, { -545.0f, 277.0f },
 					crystalColor[i]
 				);
 			}

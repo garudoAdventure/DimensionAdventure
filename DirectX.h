@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #define NOMINMAX
 #include <Windows.h>
@@ -8,9 +8,6 @@ using namespace DirectX;
 
 #define SAFE_RELEASE(o)	  if(o) { (o)->Release(); o = NULL; } 
 
-#define SCREEN_WIDTH  1280
-#define SCREEN_HEIGHT 720
-
 enum class BlendMode {
 	NORMAL,
 	ADD_ALPHA,
@@ -19,6 +16,9 @@ enum class BlendMode {
 
 class Direct3D {
   public:
+		static constexpr int SCREEN_WIDTH = 1280;
+		static constexpr int SCREEN_HEIGHT = 720;
+
 		ID3D11Device* getDevice();
 		ID3D11DeviceContext* getDeviceContext();
 		IDXGISwapChain* getSwapChain();

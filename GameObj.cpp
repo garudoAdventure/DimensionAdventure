@@ -1,4 +1,4 @@
-#include "GameObj.h"
+﻿#include "GameObj.h"
 #include "CubeRenderer.h"
 #include "MathTool.h"
 
@@ -78,7 +78,7 @@ void GameObj::hitObj(GameObj* obj, bool isStatic) {
 	const float blockRight = obj->_pos.x + obj->_size.x / 2;
 	const float blockLeft = obj->_pos.x - obj->_size.x / 2;
 	const float blockFront = obj->_pos.z - obj->_size.z / 2;
-	const float blockBack = obj->_pos.z + obj->_size.z / 2;
+	const float blockBack = obj->_pos.z + obj->_size.z / 2;	
 	if (oldRight <= blockLeft && right > blockLeft) {
 		if (!isStatic) {
 			obj->_pos.x = right + obj->_size.x / 2 + 0.001f;

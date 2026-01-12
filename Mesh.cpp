@@ -166,7 +166,7 @@ void Mesh::draw(Float3 pos, Float3 radian, Float3 scale) {
 	world *= XMMatrixRotationRollPitchYaw(radian.x, radian.y, radian.z);
 	world *= XMMatrixTranslation(pos.x, pos.y, pos.z);
 
-	SHADER.setWorldMatrix(world);
+	SHADER.setWorld(world);
 	SHADER.setMatrix();
 
 	UINT stride = sizeof(Vertex);
@@ -180,7 +180,7 @@ void Mesh::draw(Float3 pos, Float3 radian, Float3 scale) {
 
 void Mesh::updateColor(Float4 color) {
 	for (int i = 0; i < _vertexData.size(); i++) {
-		_vertexData[i].color = XMFLOAT4(color.r, color.g, color.b, color.a);
+		_vertexData[i].color = { color.r, color.g, color.b, color.a };
 	}
 	DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &_vertexData[0], 0, 0);
 }

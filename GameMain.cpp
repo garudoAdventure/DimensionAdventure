@@ -1,5 +1,6 @@
-#include "GameMain.h"
+﻿#include "GameMain.h"
 #include "Player.h"
+#include "Sound.h"
 #include "ChangeFieldEvent.h"
 #include "TransformDimensionEvent.h"
 #include "TransformLayerEvent.h"
@@ -13,16 +14,21 @@ GameMain::GameMain() {
   currentField = fieldManager->getField(0);
   PLAYER.setPos(MathTool::getCoordPos({ 1.0f, 1.1f, 5.0f }));
 
+  layerScreen = new LayerScreen(this);
   offscreenTex = new RenderTexture(1280, 720);
   postProcess = new PostProcess(offscreenTex);
 
   gameEventQueue.reserve(5);
   gameEventQueue.emplace_back(new StartEvent(this));
+  PLAYER.setState(new PlayerFreeze());
+
+  bgm = SOUND.loadSound("./assets/sound/bgm.wav");
 }
 
 GameMain::~GameMain() {
   delete postProcess;
   delete offscreenTex;
+  delete layerScreen;
   delete fieldManager;
   delete camera;
   Player::DeleteInstance();
@@ -39,30 +45,27 @@ void GameMain::update() {
     currentField->onEntryField();
   }
 
-  updatePlayerAct();
+  PLAYER.update();
+  updateField();
 
   moveCamera(PLAYER.getPos());
 
   statusUI.update();
+
+  bg.update();
 }
 
 void GameMain::draw() {
-  offscreenTex->setTargetView();
-  offscreenTex->clear();
-  DX3D.setBlendMode(BlendMode::REND_TEX);
   camera->draw();
-  currentField->draw(PLAYER.getCurrentLayer());
-  PLAYER.getSpirit()->draw();
-  postProcess->update();
+
+  drawOffscreen(PLAYER.getCurrentLayer());
 
   DX3D.setTargetView();
   DX3D.clear();
   SHADER.begin();
   DX3D.setViewport(1280.0f, 720.0f);
 
-  postProcess->draw();
-  currentField->draw(PLAYER.getCurrentLayer());
-  PLAYER.draw();
+  drawGameScene(PLAYER.getCurrentLayer());
   PLAYER.getSpirit()->drawHint();
 
   // Game Event
@@ -87,6 +90,8 @@ void GameMain::setNewField(int fieldID, Float3 doorPos, Float3 playerInitPos) {
   if (!PLAYER.is2D()) {
     PLAYER.convertDimension();
   }
+  PLAYER.setState(new PlayerFreeze());
+  PLAYER.changeState();
   gameEventQueue.emplace_back(new ChangeFieldEvent(camera, {
     doorPos.x - camera->get2DPos().x,
     doorPos.y - camera->get2DPos().y
@@ -102,8 +107,8 @@ void GameMain::transformDimension() {
 }
 
 void GameMain::transformLayer() {
-  layerScreen.drawScreen(camera, currentField);
-  gameEventQueue.emplace_back(new TransformLayerEvent(&layerScreen));
+  layerScreen->drawScreen(camera, currentField);
+  gameEventQueue.emplace_back(new TransformLayerEvent(layerScreen));
 }
 
 void GameMain::moveCamera(Float3 targetPos) {
@@ -118,9 +123,8 @@ void GameMain::cameraVibration(bool isSet) {
   camera->vibration(isSet);
 }
 
-void GameMain::updatePlayerAct() {
+void GameMain::updateField() {
   currentField->update(PLAYER.getCurrentLayer());
-  PLAYER.update();
   currentField->collisionCheck(camera->is2D());
 }
 
@@ -136,6 +140,33 @@ void GameMain::setCheckpoint(CheckPoint checkPoint) {
   currentCheckpoint = checkPoint;
 }
 
-CheckPoint GameMain::getCheckpoint() {
+CheckPoint& GameMain::getCheckpoint() {
   return currentCheckpoint;
+}
+
+void GameMain::setSavePointPos(Float3& pos) {
+  savePointPos = pos;
+}
+
+Float3& GameMain::getSavePointPos() {
+  return savePointPos;
+}
+
+int GameMain::getBgmId() {
+  return bgm;
+}
+
+void GameMain::drawGameScene(int layerIdx) {
+  bg.draw();
+  currentField->draw(layerIdx);
+  PLAYER.draw();
+  postProcess->drawBloom();
+}
+
+void GameMain::drawOffscreen(int layerIdx) {
+  offscreenTex->setTargetView();
+  offscreenTex->clear();
+  currentField->draw(layerIdx);
+  PLAYER.getSpirit()->draw();
+  postProcess->update();
 }

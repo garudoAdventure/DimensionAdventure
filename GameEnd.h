@@ -33,9 +33,12 @@ class GameEnd : public GameState {
 		}
 		void draw() override {
 			SHADER.begin();
+			SHADER.setPS(PS::NO_TEX);
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, Color::white);
-			SPRITE.drawSprite2D({ 0.0f, 200.0f }, { 631.0f, 105.0f }, _gameClearTex, _gameClearTexColor);
-			SPRITE.drawSprite2D({ 0.0f, 50.0f }, { 850.0f, 84.0f }, _thankPlayTex, _thankPlayTexColor);
+			SHADER.setPS(PS::GENERAL);
+			SPRITE.drawSprite2D({ 0.0f, 200.0f }, { 631.0f, 105.0f }, TEXTURE.getTexture(_gameClearTex), _gameClearTexColor);
+			SPRITE.drawSprite2D({ 0.0f, 50.0f }, { 850.0f, 84.0f }, TEXTURE.getTexture(_thankPlayTex), _thankPlayTexColor);
+			SHADER.setPS(PS::NO_TEX);
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _coverColor);
 		}
 

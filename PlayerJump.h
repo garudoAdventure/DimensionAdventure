@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "PlayerState.h"
 
@@ -8,4 +8,7 @@ class PlayerJump : public PlayerState {
 		void init() override;
 		void update() override;
 		void draw() override;
+
+	private:
+		unsigned int jumpSE;
 };

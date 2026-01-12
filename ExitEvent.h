@@ -6,13 +6,14 @@
 #include "Sprite.h"
 #include "MathTool.h"
 #include "Player.h"
+#include "PlayerFreeze.h"
 #include "MessageDialog.h"
 #include "IGameEventHandler.h"
 
 class ExitEvent : public IGameEvent {
 	public:
 		ExitEvent(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
-			PLAYER.setToEventState(true);
+			PLAYER.setState(new PlayerFreeze);
 			_dialog = new MessageDialog({
 				{ Talker::SELF, L"やった！" },
 			});
@@ -33,6 +34,7 @@ class ExitEvent : public IGameEvent {
 		}
 		void draw() override {
 			_dialog->draw();
+			SHADER.setPS(PS::NO_TEX);
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _coverColor);
 		}
 		bool isEnd() override {

@@ -45,10 +45,10 @@ class PostProcess {
 
 		void update() {      
       SHADER.begin();
-      SHADER.setPS(PS::NORMAL);
+      SHADER.setPS(PS::LUMINANCE);
       _offscreenCopyTex->setTargetView();
       _offscreenCopyTex->clear();
-      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex());
+      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex(), Color::white);
       
       DX3D.setBlendMode(BlendMode::NORMAL);
       SHADER.setPS(PS::BLUR);
@@ -62,10 +62,11 @@ class PostProcess {
         pc.height = 720 >> i;
         DX3D.setViewport(pc.width, pc.height);
         DX3D.getDeviceContext()->UpdateSubresource(_pixelConstBuffer, 0, NULL, &pc, 0, 0);
-        DX3D.getDeviceContext()->PSSetConstantBuffers(1, 1, &_pixelConstBuffer);
+        DX3D.getDeviceContext()->PSSetConstantBuffers(0, 1, &_pixelConstBuffer);
         SPRITE.drawSprite2D(
           { 0.0f, 0.0f }, { pc.width, pc.height },
           (i == 0 ? _offscreenCopyTex->getTex() : _blurTex[i - 1]->getTex()),
+          Color::white,
           pc.width, pc.height
         );
 
@@ -73,25 +74,25 @@ class PostProcess {
         _blurTex[i]->clear();
         pc.isVertical = false;
         DX3D.getDeviceContext()->UpdateSubresource(_pixelConstBuffer, 0, NULL, &pc, 0, 0);
-        DX3D.getDeviceContext()->PSSetConstantBuffers(1, 1, &_pixelConstBuffer);
-        SPRITE.drawSprite2D({ 0.0f, 0.0f }, { pc.width, pc.height }, _blurVTex[i]->getTex(), pc.width, pc.height);
+        DX3D.getDeviceContext()->PSSetConstantBuffers(0, 1, &_pixelConstBuffer);
+        SPRITE.drawSprite2D({ 0.0f, 0.0f }, { pc.width, pc.height }, _blurVTex[i]->getTex(), Color::white, pc.width, pc.height);
       }
       DX3D.setViewport(1280.0f, 720.0f);
       SHADER.setSamplerState(SamplerState::WRAP);
 		}
 
-    void draw() {
-      DX3D.setBlendMode(BlendMode::ADD_ALPHA);
-      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[2]->getTex());
-      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[1]->getTex());
-      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[0]->getTex());
-      DX3D.setBlendMode(BlendMode::NORMAL);
-    }
+    void drawBloom(int bloomPower = 3) {
+      bloomPower = MathTool::clamp(bloomPower, 1, 5);
 
-    void drawBlurBloom() {
-      DX3D.setBlendMode(BlendMode::ADD_ALPHA);
-      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[4]->getTex());
-      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _blurTex[3]->getTex());
+      DX3D.setBlendMode(BlendMode::REND_TEX);
+      SHADER.setPS(PS::BLOOM);
+      for (int i = 0; i < bloomPower; i++) {
+        ID3D11ShaderResourceView* tex = _blurTex[i]->getTex();
+        DX3D.getDeviceContext()->PSSetShaderResources(i, 1, &tex);
+      }
+      SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, Color::white);
+      
+      SHADER.setPS(PS::GENERAL);
       DX3D.setBlendMode(BlendMode::NORMAL);
     }
 

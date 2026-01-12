@@ -1,19 +1,19 @@
-#pragma once
+﻿#pragma once
 
 #include "MathStruct.h"
 #include "Player.h"
-
-#define CAMERA_2D_MIN_X	(0.0f)
-#define CAMERA_2D_MAX_X	(72.0f)
-#define CAMERA_3D_MIN_X	(-52.0f)
-#define CAMERA_3D_MAX_X	(42.0f)
-#define CAMERA_MAX_Y		(50.0f)
-#define CAMERA_Z_DISTANCE (40.0f)
 
 class CameraController;
 
 class Camera {
   public:
+		static constexpr float _2D_MIN_X = 0.0f;
+		static constexpr float _2D_MAX_X = 72.0f;
+		static constexpr float _3D_MIN_X = -52.0f;
+		static constexpr float _3D_MAX_X = 42.0f;
+		static constexpr float _MAX_Y = 50.0f;
+		static constexpr float _Z_DISTANCE = 40.0f;
+
 		Camera();
 		~Camera();
 		void draw();
@@ -28,10 +28,10 @@ class Camera {
 		}
 
   private:
-		Float3 _eye = { 0.0f, 0.0f, -CAMERA_Z_DISTANCE };
-		Float3 _newEye = { 0.0f, 0.0f, -CAMERA_Z_DISTANCE };
+		Float3 _eye = { 0.0f, 0.0f, -_Z_DISTANCE };
+		Float3 _newEye = _eye;
 		Float3 _focus = { 0.0f, 0.0f, 0.0f };
-		Float3 _newFocus = { 0.0f, 0.0f, 0.0f };
+		Float3 _newFocus = _focus;
 		CameraController* _cameraController;
 		CameraController* _cameraController2D;
 		CameraController* _cameraController3D;

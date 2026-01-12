@@ -6,16 +6,17 @@
 #include "Sprite.h"
 #include "MathTool.h"
 #include "Player.h"
+#include "PlayerIdle.h"
+#include "PlayerFreeze.h"
 #include "MessageDialog.h"
 
 class GreenCrystalEvent : public IGameEvent {
 	public:
 		GreenCrystalEvent() {
-			PLAYER.setToEventState(true);
+			PLAYER.setState(new PlayerFreeze());
 			_dialog = new MessageDialog({
-				{ Talker::SPIRIT, L"これでニコ目の水晶もゲットだね" },
-				{ Talker::SPIRIT, L"今はできるはずです" },
-				{ Talker::SPIRIT, L"他のレイヤーに行くこと" },
+				{ Talker::SPIRIT, L"これで二つ目の水晶も手にいれだな。" },
+				{ Talker::SPIRIT, L"今なら、別のレイヤーへ切り替えられるはずだ。" },
 			});
 		}
 		~GreenCrystalEvent() {
@@ -24,7 +25,7 @@ class GreenCrystalEvent : public IGameEvent {
 		void update() override {
 			_dialog->update();
 			if (_dialog->isEnd()) {
-				PLAYER.setToEventState(false);
+				PLAYER.setState(new PlayerIdle());
 			}
 		}
 		void draw() override {
