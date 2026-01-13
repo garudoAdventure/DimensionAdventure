@@ -38,10 +38,9 @@ class MazeBg {
 
 			_time += 0.002f;
 		}
-		void draw(int layerIdx) {
-			const Float4 color[4] = { Color::white, Color::lightRed, Color::lightGreen, Color::lightBlue };
+		void draw(Float4 color) {
 			SHADER.setPS(PS::GENERAL);
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _spiralTex->getTex(), color[layerIdx]);
+			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _spiralTex->getTex(), color);
 		}
 
 	private:

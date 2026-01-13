@@ -16,7 +16,7 @@ Field04::Field04(IGameEventHandler* gameEvent) : Field("./map/map4.csv") , _game
 		_layer[i]->addGameObj(door);
 	}
 
-	Model* floorModel = MODEL.loadModel("./assets/model/transposeBox.fbx");
+	Model* floorModel = MODEL.loadModel("./assets/model/block.fbx");
 	for (int i = 0; i < 4; i++) {
 		_layer[i]->addGameObj(new MovingFloor(
 			MathTool::getCoordPos({ 15.0f, 0.0f, 5.0f }),

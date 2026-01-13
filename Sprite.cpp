@@ -274,7 +274,7 @@ void Sprite::drawSprite3D(Float2 size, ID3D11ShaderResourceView* tex, Float4 col
   }
 
   DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &vertexData[0], 0, 0);
-  DX3D.setDepthEnable(false);
+  DX3D.setDepthEnable(true);
   TEXTURE.setTexture(tex);
   SHADER.setPS(PS::GENERAL);
   draw();

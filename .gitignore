@@ -2,10 +2,10 @@
 # この .gitignore ファイルは Microsoft(R) Visual Studio によって自動的に作成されました。
 ################################################################################
 
-/.vs/dimGameProto
-/dimGameProto/x64/Debug/dimGameProto.tlog
+/.vs
+/x64
 /dimGameProto/x64/Debug
-/x64/Debug
 /packages/AssimpCpp.5.0.1.6
 /dimGameProto/x64/Release
-/x64
+
+*.cso

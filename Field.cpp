@@ -48,7 +48,7 @@ void Field::load() {
 			case 1:
 			case 2:
 			case 3:
-				_layer[layerIdx]->addGameObj(new Block(pos, block.scale, _layerColor[layerIdx], MODEL.loadModel("./assets/model/transposeBox.fbx")));
+				_layer[layerIdx]->addGameObj(new Block(pos, block.scale, _layerColor[layerIdx], MODEL.loadModel("./assets/model/block.fbx")));
 				break;
 		}
 	}

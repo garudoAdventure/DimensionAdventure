@@ -6,6 +6,7 @@
 #include "DirectX.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Sound.h"
 #include "Model.h"
 #include "ModelManager.h"
 #include "Color.h"
@@ -14,16 +15,19 @@
 #include "MathStruct.h"
 #include "MathTool.h"
 #include "GameMain.h"
+#include "MazeBg.h"
 
 class GameTitle : public GameState {
 	public:
 		GameTitle() {
-			_model = MODEL.loadModel("./assets/model/transposeBox.fbx");
+			_model = MODEL.loadModel("./assets/model/transparentBox.fbx");
 			_titleTex = TEXTURE.loadTexture("./assets/gameTitle.png");
 			_titleStartTex = TEXTURE.loadTexture("./assets/titleStartHint.png");
+			_bgm = SOUND.loadSound("./assets/sound/gameTitle.wav");
 			_title = new RenderTexture(1280.0f, 720.0f);
-			_bg = new RenderTexture(1280.0f, 720.0f);
-			_postProcess = new PostProcess(_bg);
+			_bloomCube = new RenderTexture(1280.0f, 720.0f);
+			_postProcess = new PostProcess(_bloomCube);
+			_mazeBg = new MazeBg();
 
 			D3D11_BUFFER_DESC desc = {};
 			desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -33,17 +37,21 @@ class GameTitle : public GameState {
 			desc.StructureByteStride = 0;
 			desc.CPUAccessFlags = 0;
 			DX3D.getDevice()->CreateBuffer(&desc, NULL, &_pixelTimeBuffer);
+
+			SOUND.playSound(_bgm, -1);
 		}
 		~GameTitle() {
 			SAFE_RELEASE(_pixelTimeBuffer);
+			delete _mazeBg;
 			delete _postProcess;
-			delete _bg;
+			delete _bloomCube;
 			delete _title;
 		}
 		void update() override {
 			_rotate += !_isStart ? 0.01f : 0.05f;
 			_postProcess->update(false);
 			updateColor();
+			_mazeBg->update();
 
 			if (!_isShowTitle) {
 				_showTitleCount++;
@@ -55,6 +63,7 @@ class GameTitle : public GameState {
 
 			if (_isShowTitle && Keyboard_IsKeyTrigger(KK_ENTER)) {
 				_isStart = true;
+				SOUND.stopSound(_bgm);
 			}
 			if (_isStart) {
 				_startCount++;
@@ -66,8 +75,8 @@ class GameTitle : public GameState {
 			_time = (_time + 1) % 1800;
 		}
 		void draw() override {
-			_bg->setTargetView();
-			_bg->clear();
+			_bloomCube->setTargetView();
+			_bloomCube->clear();
 			SHADER.begin();
 			SHADER.setView({ 0.0f, 0.0f, -10.0f }, { 0.0f, 0.0f, 0.0f });
 			SHADER.setProjection(SHADER.getPerspectiveMatrix());
@@ -80,6 +89,9 @@ class GameTitle : public GameState {
 
 			DX3D.setTargetView();
 			DX3D.clear();
+			
+			_mazeBg->draw(_color);
+			
 			_postProcess->drawBloom(5);
 
 			if (_isShowTitle) {
@@ -102,22 +114,22 @@ class GameTitle : public GameState {
 		}
 
 		void updateColor() {
-			if (_redCount == colorSpeed && _blueCount == 0) {
-				_greenCount = std::min(colorSpeed, _greenCount + 1);
+			if (_redCount == _colorSpeed && _blueCount == 0) {
+				_greenCount = std::min(_colorSpeed, _greenCount + 1);
 			}
-			if (_greenCount == colorSpeed) {
+			if (_greenCount == _colorSpeed) {
 				_redCount = std::max(0, _redCount - 1);
 			}
 			if (_redCount == 0) {
-				_blueCount = std::min(colorSpeed, _blueCount + 1);
+				_blueCount = std::min(_colorSpeed, _blueCount + 1);
 			}
-			if (_blueCount == colorSpeed) {
+			if (_blueCount == _colorSpeed) {
 				_greenCount = std::max(0, _greenCount - 1);
 			}
 			if (_greenCount == 0) {
-				_redCount = std::min(colorSpeed, _redCount + 1);
+				_redCount = std::min(_colorSpeed, _redCount + 1);
 			}
-			if (_redCount == colorSpeed) {
+			if (_redCount == _colorSpeed) {
 				_blueCount = std::max(0, _blueCount - 1);
 			}
 
@@ -129,14 +141,15 @@ class GameTitle : public GameState {
 	private:
 		Model* _model;
 		PostProcess* _postProcess;
-		RenderTexture* _bg;
+		RenderTexture* _bloomCube;
 		RenderTexture* _title;
 		unsigned int _titleTex;
 		unsigned int _titleStartTex;
+		unsigned int _bgm;
 		ID3D11Buffer* _pixelTimeBuffer;
 		Float4 _color = { 0.0f, 1.0f, 0.0f, 1.0f };
-		const int colorSpeed = 120;
-		int _redCount = colorSpeed;
+		const int _colorSpeed = 120;
+		int _redCount = _colorSpeed;
 		int _greenCount = 0;
 		int _blueCount = 0;
 		float _rotate = 0.0f;
@@ -146,4 +159,5 @@ class GameTitle : public GameState {
 		int _startCount = 0;
 		int _showTitleCount = 0;
 		bool _isShowTitle = false;
+		MazeBg* _mazeBg;
 };

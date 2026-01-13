@@ -160,7 +160,8 @@ int GameMain::getBgmId() {
 }
 
 void GameMain::drawGameScene(int layerIdx) {
-  mazeBg->draw(layerIdx);
+  const Float4 layerColor[4] = { Color::white, Color::lightRed, Color::lightGreen, Color::lightBlue };
+  mazeBg->draw(layerColor[layerIdx]);
   currentField->draw(layerIdx);
   postProcess->drawBloom(3);
   PLAYER.draw();
