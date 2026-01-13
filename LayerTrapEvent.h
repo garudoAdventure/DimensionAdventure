@@ -68,6 +68,7 @@ class LayerTrapEvent : public IGameEvent {
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _screenTex->getTex(), Color::white);
 
 			DX3D.setTargetView();
+
 			switch (phase) {
 				case 0:
 					DX3D.setBlendMode(BlendMode::NORMAL);
@@ -76,7 +77,6 @@ class LayerTrapEvent : public IGameEvent {
 					break;
 
 				case 1:
-					DX3D.setTargetView();
 					DX3D.clear({0.0f, 0.0f, 0.0f, 1.0f});
 					SHADER.begin();
 					

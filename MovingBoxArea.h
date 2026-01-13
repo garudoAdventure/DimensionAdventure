@@ -65,12 +65,9 @@ class MovingBoxArea : public IStagePuzzle {
 			}
 			if (!_isSolved && checkAnswer()) {
 				_isSolved = true;
-				PLAYER.setState(new PlayerFreeze());
-				PLAYER.changeState();
 				_gameEvent->addEvent(new ShowDialogEvent(
 					new SystemDialog({ L"奥になにが現れた！" })
 				));
-				PLAYER.setState(new PlayerIdle());
 				_callback();
 			}
 		}

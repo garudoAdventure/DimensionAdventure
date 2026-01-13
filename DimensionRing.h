@@ -27,7 +27,6 @@ class DimensionRing : public Item {
 			PLAYER.changeState();
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.getDimensionAbility();
-				PLAYER.setState(new PlayerIdle());
 				_gameEvent->addEvent(new ShowDialogEvent(
 					new DimensionTutorialDialog()
 				));

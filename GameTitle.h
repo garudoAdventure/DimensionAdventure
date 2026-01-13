@@ -24,6 +24,7 @@ class GameTitle : public GameState {
 			_titleTex = TEXTURE.loadTexture("./assets/gameTitle.png");
 			_titleStartTex = TEXTURE.loadTexture("./assets/titleStartHint.png");
 			_bgm = SOUND.loadSound("./assets/sound/gameTitle.wav");
+			_confirmSE = SOUND.loadSound("./assets/sound/don.wav");
 			_title = new RenderTexture(1280.0f, 720.0f);
 			_bloomCube = new RenderTexture(1280.0f, 720.0f);
 			_postProcess = new PostProcess(_bloomCube);
@@ -61,9 +62,10 @@ class GameTitle : public GameState {
 				}
 			}
 
-			if (_isShowTitle && Keyboard_IsKeyTrigger(KK_ENTER)) {
+			if (!_isStart && _isShowTitle && Keyboard_IsKeyTrigger(KK_ENTER)) {
 				_isStart = true;
 				SOUND.stopSound(_bgm);
+				SOUND.playSound(_confirmSE, 0);
 			}
 			if (_isStart) {
 				_startCount++;
@@ -146,6 +148,7 @@ class GameTitle : public GameState {
 		unsigned int _titleTex;
 		unsigned int _titleStartTex;
 		unsigned int _bgm;
+		unsigned int _confirmSE;
 		ID3D11Buffer* _pixelTimeBuffer;
 		Float4 _color = { 0.0f, 1.0f, 0.0f, 1.0f };
 		const int _colorSpeed = 120;

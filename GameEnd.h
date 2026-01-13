@@ -9,9 +9,12 @@ class GameEnd : public GameState {
 		GameEnd() {
 			_gameClearTex = TEXTURE.loadTexture("./assets/gameClear.png");
 			_thankPlayTex = TEXTURE.loadTexture("./assets/thankPlay.png");
+			_congratulationsSE = SOUND.loadSound("./assets/sound/congratulations.wav");
 			_coverColor.a = 0.0f;
 			_gameClearTexColor.a = 0.0f;
 			_thankPlayTexColor.a = 0.0f;
+
+			SOUND.playSound(_congratulationsSE, 0);
 		}
 		void update() override {
 			if (_showGameClearCount < 180) {
@@ -45,6 +48,7 @@ class GameEnd : public GameState {
 	private:
 		unsigned int _gameClearTex;
 		unsigned int _thankPlayTex;
+		unsigned int _congratulationsSE;
 		int _showGameClearCount = 0;
 		int _showThankPlayCount = 0;
 		int _fadeOutCount = 0;

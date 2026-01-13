@@ -22,7 +22,6 @@ class RemoteControl : public Item {
 			PLAYER.changeState();
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.getRemoteControl();
-				PLAYER.setState(new PlayerIdle());
 				_gameEvent->setCheckpoint(CheckPoint::REMOTE_CONTROL);
 			}));
 		}

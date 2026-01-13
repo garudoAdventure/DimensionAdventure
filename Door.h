@@ -20,6 +20,7 @@ class Door : public ActivableGameObj {
 			_model = MODEL.loadModel("./assets/model/door.fbx");
 			_size = _model->getSize();
 			_triggerSize = { _size.x, _size.y, _size.z + 0.5f };
+			_inDoorSE = SOUND.loadSound("./assets/sound/inDoor.wav");
 		}
 		virtual void draw() {
 			_model->updateColor(_color);
@@ -31,6 +32,7 @@ class Door : public ActivableGameObj {
 
 	protected:
 		Model* _model;
+		unsigned int _inDoorSE;
 };
 
 class LockedDoor : public Door {
@@ -75,9 +77,7 @@ class LockedDoor : public Door {
 class OpenedDoor : public Door {
 	public:
 		OpenedDoor(Float3 pos, int fieldID, IGameEventHandler* gameEvent, Float3 playerInitPos) :
-			Door(pos), _gameEvent(gameEvent), _nextField(fieldID), _playerInitPos(playerInitPos)
-		{
-			_inDoorSE = SOUND.loadSound("./assets/sound/inDoor.wav");
+			Door(pos), _gameEvent(gameEvent), _nextField(fieldID), _playerInitPos(playerInitPos) {
 		}
 		void onTrigger(GameObj* player) override {
 			if (MathTool::checkCollision(player->getBox(), this->getBox(), false)) {
@@ -107,7 +107,6 @@ class OpenedDoor : public Door {
 	private:
 		IGameEventHandler* _gameEvent = nullptr;
 		Float3 _playerInitPos;
-		unsigned int _inDoorSE;
 		int _nextField;
 };
 
@@ -122,6 +121,7 @@ class MazeDoor : public Door {
 			}
 			if (_pos.z > player->getPos().z && _pos.z - player->getPos().z < 9.0f) {
 				if (Keyboard_IsKeyTrigger(KK_ENTER)) {
+					SOUND.playSound(_inDoorSE, 0);
 					_gameEvent->setNewField(_nextField, _pos, _playerInitPos);
 				}
 			}
@@ -129,6 +129,6 @@ class MazeDoor : public Door {
 
 	private:
 		IGameEventHandler* _gameEvent = nullptr;
-		int _nextField;
 		Float3 _playerInitPos;
+		int _nextField;
 };

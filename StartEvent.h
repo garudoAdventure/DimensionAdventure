@@ -5,9 +5,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Sprite.h"
-#include "MathTool.h"
 #include "Player.h"
-#include "PlayerIdle.h"
 #include "MessageDialog.h"
 #include "Sound.h"
 
@@ -72,9 +70,6 @@ class StartEvent : public IGameEvent {
 					break;
 				case 1:
 					_dialog[1]->draw();
-					if (_dialog[1]->isEnd()) {
-						PLAYER.setState(new PlayerIdle());
-					}
 					break;
 			}
 		}

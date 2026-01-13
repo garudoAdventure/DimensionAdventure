@@ -5,8 +5,6 @@
 #include "MessageDialog.h"
 #include "Color.h"
 #include "Player.h"
-#include "PlayerIdle.h"
-#include "PlayerFreeze.h"
 
 class TrapEventFH : public IGameEvent {
 	public:
@@ -101,7 +99,6 @@ class TrapEventSH : public IGameEvent {
 			}
 			_dialog->update();
 			if (_dialog->isEnd()) {
-				PLAYER.setState(new PlayerIdle());
 				SOUND.playSound(_gameEvent->getBgmId(), -1);
 			}
 		}

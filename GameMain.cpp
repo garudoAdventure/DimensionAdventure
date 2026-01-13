@@ -1,5 +1,6 @@
 ﻿#include "GameMain.h"
 #include "Player.h"
+#include "PlayerIdle.h"
 #include "Sound.h"
 #include "ChangeFieldEvent.h"
 #include "TransformDimensionEvent.h"
@@ -20,8 +21,7 @@ GameMain::GameMain() {
   mazeBg = new MazeBg();
 
   gameEventQueue.reserve(5);
-  gameEventQueue.emplace_back(new StartEvent(this));
-  PLAYER.setState(new PlayerFreeze());
+  addEvent(new StartEvent(this));
 
   bgm = SOUND.loadSound("./assets/sound/bgm.wav");
 }
@@ -37,7 +37,7 @@ GameMain::~GameMain() {
 }
 
 void GameMain::update() {
-  if (gameEventQueue.size() != 0) {
+  if (gameEventQueue.size() > 0) {
     gameEventQueue.at(0)->update();
     return;
   }
@@ -70,11 +70,14 @@ void GameMain::draw() {
   PLAYER.getSpirit()->drawHint();
 
   // Game Event
-  if (gameEventQueue.size() != 0) {
+  if (gameEventQueue.size() > 0) {
     gameEventQueue.at(0)->draw();
     if (gameEventQueue.at(0)->isEnd()) {
       delete gameEventQueue.at(0);
       gameEventQueue.erase(gameEventQueue.begin());
+      if (gameEventQueue.size() == 0) {
+        PLAYER.setState(new PlayerIdle());
+      }
     }
   }
 
@@ -83,6 +86,8 @@ void GameMain::draw() {
 }
 
 void GameMain::addEvent(IGameEvent* gameEvent) {
+  PLAYER.setState(new PlayerFreeze());
+  PLAYER.changeState();
   gameEventQueue.emplace_back(gameEvent);
 }
 
@@ -93,7 +98,7 @@ void GameMain::setNewField(int fieldID, Float3 doorPos, Float3 playerInitPos) {
   }
   PLAYER.setState(new PlayerFreeze());
   PLAYER.changeState();
-  gameEventQueue.emplace_back(new ChangeFieldEvent(camera, {
+  addEvent(new ChangeFieldEvent(camera, {
     doorPos.x - camera->get2DPos().x,
     doorPos.y - camera->get2DPos().y
     }, playerInitPos, [=]() {
@@ -104,13 +109,13 @@ void GameMain::setNewField(int fieldID, Float3 doorPos, Float3 playerInitPos) {
 }
 
 void GameMain::transformDimension() {
-  gameEventQueue.emplace_back(new TransformDimensionEvent(camera));
+  addEvent(new TransformDimensionEvent(camera));
 }
 
 void GameMain::transformLayer() {
   layerScreen->drawScreen(camera, currentField);
   SOUND.setVolume(bgm, 0.2f);
-  gameEventQueue.emplace_back(new TransformLayerEvent(layerScreen));
+  addEvent(new TransformLayerEvent(layerScreen));
 }
 
 void GameMain::moveCamera(Float3 targetPos) {

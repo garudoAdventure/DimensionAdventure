@@ -35,6 +35,7 @@ public:
 		_dialog = new SystemDialog({ L"ホワイトレイヤーを発見した！" });
 		_changeLayerSE = SOUND.loadSound("./assets/sound/changeLayer.wav");
 		_confirmLayerSE = SOUND.loadSound("./assets/sound/confirmLayer.wav");
+		_findWhiteLayerSE = SOUND.loadSound("./assets/sound/findWhiteLayer.wav");
 	}
 
 	~LayerScreen() {
@@ -189,6 +190,7 @@ private:
 	const float _offsetZ = 10.0f;
 	unsigned int _changeLayerSE;
 	unsigned int _confirmLayerSE;
+	unsigned int _findWhiteLayerSE;
 	int _layerNum = 0;
 	int _oldLayerIdx = 0;
 	int _layerIdx = 0;
@@ -278,6 +280,7 @@ private:
 			if (_correctCommandNum == 5) {
 				_isWhiteLayerActive = true;
 				_gameEvent->setCheckpoint(CheckPoint::WHITE_LAYER);
+				SOUND.playSound(_findWhiteLayerSE, 0);
 				return;
 			}
 			_correctCommandNum = 0;
