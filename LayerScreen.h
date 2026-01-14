@@ -1,4 +1,4 @@
-ï»¿#pragma once
+#pragma once
 
 #include "Shader.h"
 #include "Texture.h"
@@ -19,7 +19,6 @@ public:
 	static constexpr int ALL_LAYER_NUM = 4;
 
 	LayerScreen(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
-		Float4 layerColor[4] = { Color::lightRed, Color::lightGreen, Color::lightBlue, Color::white };
 		const unsigned int frameTex = TEXTURE.loadTexture("./assets/UI/frame.png");
 		for (int i = 0; i < ALL_LAYER_NUM; i++) {
 			_layerTex[i] = new RenderTexture(1280.0f, 720.0f, Color::darkGray);
@@ -27,12 +26,12 @@ public:
 			frameEffectTex->setTargetView();
 			frameEffectTex->clear();
 			SHADER.begin();
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1267.0f, 713.0f }, TEXTURE.getTexture(frameTex), layerColor[i]);
+			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1267.0f, 713.0f }, TEXTURE.getTexture(frameTex), Color::layerColor[(i + 1) % 4]);
 
 			_postProcess[i] = new PostProcess(frameEffectTex);
 			_postProcess[i]->update(false);
 		}
-		_dialog = new SystemDialog({ L"ãƒ›ãƒ¯ã‚¤ãƒˆãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç™ºè¦‹ã—ãŸï¼" });
+		_dialog = new SystemDialog({ L"ƒzƒƒCƒgƒŒƒCƒ„[‚ğ”­Œ©‚µ‚½I" });
 		_changeLayerSE = SOUND.loadSound("./assets/sound/changeLayer.wav");
 		_confirmLayerSE = SOUND.loadSound("./assets/sound/confirmLayer.wav");
 		_findWhiteLayerSE = SOUND.loadSound("./assets/sound/findWhiteLayer.wav");

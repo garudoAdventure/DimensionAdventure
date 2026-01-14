@@ -1,6 +1,5 @@
-﻿#include "Field.h"
+#include "Field.h"
 #include "MathTool.h"
-#include "Texture.h"
 #include "ModelManager.h"
 #include "Block.h"
 #include "Wall.h"
@@ -48,7 +47,7 @@ void Field::load() {
 			case 1:
 			case 2:
 			case 3:
-				_layer[layerIdx]->addGameObj(new Block(pos, block.scale, _layerColor[layerIdx], MODEL.loadModel("./assets/model/block.fbx")));
+				_layer[layerIdx]->addGameObj(new Block(pos, block.scale, Color::layerColor[layerIdx], MODEL.loadModel("./assets/model/block.fbx")));
 				break;
 		}
 	}
@@ -74,4 +73,5 @@ Field::~Field() {
 	delete _layer[0];
 	delete _layer[1];
 	delete _layer[2];
+	delete _layer[3];
 }

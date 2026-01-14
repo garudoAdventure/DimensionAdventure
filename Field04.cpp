@@ -1,4 +1,4 @@
-ï»¿#include "Field.h"
+#include "Field.h"
 #include "Door.h"
 #include "Block.h"
 #include "Color.h"
@@ -22,25 +22,25 @@ Field04::Field04(IGameEventHandler* gameEvent) : Field("./map/map4.csv") , _game
 			MathTool::getCoordPos({ 15.0f, 0.0f, 5.0f }),
 			MathTool::getCoordPos({ 10.0f, 0.0f, 5.0f }),
 			{ 3.0f, 1.0f, 3.0f },
-			_layerColor[i], floorModel
+			Color::layerColor[i], floorModel
 		));
 		_layer[i]->addGameObj(new MovingFloor(
 			MathTool::getCoordPos({ 15.0f, 0.0f, 8.0f }),
 			MathTool::getCoordPos({ 20.0f, 0.0f, 8.0f }),
 			{ 3.0f, 1.0f, 3.0f },
-			_layerColor[i], floorModel
+			Color::layerColor[i], floorModel
 		));
 		_layer[i]->addGameObj(new MovingFloor(
 			MathTool::getCoordPos({ 28.0f, 0.0f, 1.0f }),
 			MathTool::getCoordPos({ 23.0f, 0.0f, 1.0f }),
 			{ 3.0f, 1.0f, 3.0f },
-			_layerColor[i], floorModel
+			Color::layerColor[i], floorModel
 		));
 		_layer[i]->addGameObj(new MovingFloor(
 			MathTool::getCoordPos({ 31.0f, 0.0f, 5.0f }),
 			MathTool::getCoordPos({ 31.0f, 5.0f, 5.0f }),
 			{ 3.0f, 1.0f, 3.0f },
-			_layerColor[i], floorModel
+			Color::layerColor[i], floorModel
 		));
 	}
 
@@ -52,7 +52,7 @@ Field04::Field04(IGameEventHandler* gameEvent) : Field("./map/map4.csv") , _game
 	_layer[LayerType::WHITE]->addGameObj(new Epigraph(gameEvent,
 		MathTool::getCoordPos({ 7.0f, 2.0f, 10.0f }),
 		Color::lightRed,
-		L"ã€ŒãŠå®ã¯å¥¥ã«ã‚ã‚‹ã€ã¨è¨˜ã•ã‚Œã¦ã„ã‚‹ã€‚"
+		L"u‚¨•ó‚Í‰œ‚É‚ ‚év‚Æ‹L‚³‚ê‚Ä‚¢‚éB"
 	));
 
 	for (int i = 0; i < 4; i++) {

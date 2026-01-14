@@ -1,4 +1,4 @@
-ï»¿#include "Field.h"
+#include "Field.h"
 #include "Door.h"
 #include "Block.h"
 #include "DimensionRing.h"
@@ -23,7 +23,7 @@ Field02::Field02(IGameEventHandler* gameEvent) : Field("./map/map2.csv") {
 	};
 	for (int i = 0; i < 4; i++) {
 		_layer[i]->addGameObj(new HintBlock(
-			MathTool::getCoordPos({ 14.0f, 3.0f, 5.0f }), { 1.0f, 1.0f, 1.0f }, _layerColor[i],
+			MathTool::getCoordPos({ 14.0f, 3.0f, 5.0f }), { 1.0f, 1.0f, 1.0f }, Color::layerColor[i],
 			hintWall[i]
 		));
 	}
@@ -41,7 +41,7 @@ Field02::Field02(IGameEventHandler* gameEvent) : Field("./map/map2.csv") {
 	_layer[LayerType::WHITE]->addGameObj(new Epigraph(gameEvent,
 		MathTool::getCoordPos({ 8.0f, 2.0f, 10.0f }),
 		Color::white,
-		L"ã€Œä¸‰ã¤ã®æ°´æ™¶ã‚’é›†ã‚ã‚Œã°ã€å¥¥ã¸ã®é“ãŒé–‹ã‹ã‚Œã‚‹ã€ã¨è¨˜ã•ã‚Œã¦ã„ã‚‹ã€‚"
+		L"uO‚Â‚Ì…»‚ğW‚ß‚ê‚ÎA‰œ‚Ö‚Ì“¹‚ªŠJ‚©‚ê‚év‚Æ‹L‚³‚ê‚Ä‚¢‚éB"
 	));
 
 	for (int i = 0; i < 4; i++) {

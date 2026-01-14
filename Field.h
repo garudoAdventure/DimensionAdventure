@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "MathStruct.h"
 #include "Layer.h"
@@ -22,12 +22,6 @@ class Field {
 	protected:
 		const char* filePath;
 		Layer* _layer[4];
-		Float4 _layerColor[4] = {
-			Color::white,
-			Color::lightRed,
-			Color::lightGreen,
-			Color::lightBlue,
-		};
 };
 
 class Field00 : public Field {
