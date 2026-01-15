@@ -67,7 +67,6 @@ void GameMain::draw() {
   DX3D.setViewport(1280.0f, 720.0f);
 
   drawGameScene(PLAYER.getCurrentLayer());
-  currentField->drawBillboard(PLAYER.getCurrentLayer());
   PLAYER.getSpirit()->drawHint();
 
   // Game Event
@@ -169,6 +168,8 @@ void GameMain::drawGameScene(int layerIdx) {
   mazeBg->draw(Color::layerColor[layerIdx]);
   currentField->draw(layerIdx);
   postProcess->drawBloom(3);
+
+  currentField->drawBillboard(layerIdx);
   PLAYER.draw();
 }
 
