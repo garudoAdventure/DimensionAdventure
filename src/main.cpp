@@ -124,12 +124,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	    Keyboard_ProcessMessage(msg, wParam, lParam);
 	  break;
 
-    case WM_CLOSE:
-	    if (IDOK == MessageBox(hWnd, "ゲームを終了しますが？", "ゲーム終了", MB_OKCANCEL | MB_ICONQUESTION)) {
-	      DestroyWindow(hWnd);
-	    }
-	    break;
-
     default:
 	    return DefWindowProc(hWnd, msg, wParam, lParam);
   }
