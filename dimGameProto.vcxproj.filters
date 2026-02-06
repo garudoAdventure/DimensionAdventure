@@ -63,9 +63,6 @@
     <ClCompile Include="src\Render\Texture.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Render\CubeRenderer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="src\DirectX\DirectWrite.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -185,13 +182,13 @@
     <ClInclude Include="src\Object\Block.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="src\StatusUI.h">
+    <ClInclude Include="src\CollectedItemUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="src\RenderTexture.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="src\LayerScreen.h">
+    <ClInclude Include="src\LayerSwitcher.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="src\Player\PlayerState.h">
@@ -251,9 +248,6 @@
     <ClInclude Include="src\Field\FieldManager.h">
       <Filter>ヘッダー ファイル\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="src\PostProcess.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="src\Item\DimensionRing.h">
       <Filter>ヘッダー ファイル\Item</Filter>
     </ClInclude>
@@ -270,9 +264,6 @@
       <Filter>ヘッダー ファイル\Player</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEvent\ChangeFieldEvent.h">
-      <Filter>ヘッダー ファイル\GameEvent</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEvent\GreenCrystalEvent.h">
       <Filter>ヘッダー ファイル\GameEvent</Filter>
     </ClInclude>
     <ClInclude Include="src\Object\Wall.h">
@@ -326,7 +317,7 @@
     <ClInclude Include="src\Game\IGameEventHandler.h">
       <Filter>ヘッダー ファイル\GameEvent</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpaceBG.h">
+    <ClInclude Include="src\SwitchLayerBg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="src\Trail.h">
@@ -336,9 +327,6 @@
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
     <ClInclude Include="src\MazeBg.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\CubeRenderer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="src\DirectX\DirectWrite.h">
@@ -366,6 +354,15 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="src\Player\PlayerController.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FadeCover.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PostProcess\Bloom.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PostProcess\Glitch.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

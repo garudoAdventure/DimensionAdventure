@@ -6,7 +6,6 @@
 Player::Player(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 	_pos = MathTool::getCoordPos({ 5.0f, 1.1f, 5.0f });
 	_size = { 2.0f, 3.5f, 2.0f };
-	_color = { 1.0f, 1.0f, 1.0f, 0.8f };
 	_tag = ObjTag::PLAYER_TAG;
 	_model = new Model("./assets/model/player.fbx");
 

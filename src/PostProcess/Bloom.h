@@ -4,34 +4,36 @@
 #include "./DirectX/DirectX.h"
 #include "./Render/Shader.h"
 #include "./Render/Sprite.h"
+#include "./Common/Color.h"
+#include "./Utils/MathTool.h"
 
 struct PixelConst {
-	BOOL isVertical;
-	float width;
-	float height;
-	int bloomPower;
+  BOOL isVertical;
+  float width;
+  float height;
+  int bloomPower;
 };
 
-class PostProcess {
-	public:
-		PostProcess(RenderTexture* offscreenTex) : _offscreenTex(offscreenTex) {
+class Bloom {
+  public:
+    Bloom(RenderTexture* offscreenTex) : _offscreenTex(offscreenTex) {
       _offscreenCopyTex = new RenderTexture(1280, 720);
       for (int i = 0; i < 5; i++) {
         _blurVTex[i] = new RenderTexture(1280 >> i, 720 >> i);
         _blurTex[i] = new RenderTexture(1280 >> i, 720 >> i);
-			}
+      }
 
-			D3D11_BUFFER_DESC desc = {};
-			desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			desc.ByteWidth = sizeof(PixelConst);
-			desc.Usage = D3D11_USAGE_DEFAULT;
-			desc.MiscFlags = 0;
-			desc.StructureByteStride = 0;
-			desc.CPUAccessFlags = 0;
-			DX3D.getDevice()->CreateBuffer(&desc, NULL, &_pixelConstBuffer);
-		}
+      D3D11_BUFFER_DESC desc = {};
+      desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+      desc.ByteWidth = sizeof(PixelConst);
+      desc.Usage = D3D11_USAGE_DEFAULT;
+      desc.MiscFlags = 0;
+      desc.StructureByteStride = 0;
+      desc.CPUAccessFlags = 0;
+      DX3D.getDevice()->CreateBuffer(&desc, NULL, &_pixelConstBuffer);
+    }
 
-    ~PostProcess() {
+    ~Bloom() {
       SAFE_RELEASE(_pixelConstBuffer);
       delete _offscreenCopyTex;
       for (int i = 0; i < 5; i++) {
@@ -40,10 +42,10 @@ class PostProcess {
       }
     }
 
-		void update(bool clipLuminance) {
+    void update() {
       SHADER.begin();
-      
-      if (clipLuminance) {
+
+      if (needClipLuminance) {
         SHADER.setPS(PS::LUMINANCE);
       }
       else {
@@ -52,7 +54,7 @@ class PostProcess {
       _offscreenCopyTex->setTargetView();
       _offscreenCopyTex->clear();
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _offscreenTex->getTex(), Color::white);
-      
+
       DX3D.setBlendMode(BlendMode::NORMAL);
       SHADER.setPS(PS::BLUR);
       SHADER.setSamplerState(SamplerState::CLAMP);
@@ -82,7 +84,7 @@ class PostProcess {
       }
       DX3D.setViewport(1280.0f, 720.0f);
       SHADER.setSamplerState(SamplerState::WRAP);
-		}
+    }
 
     void drawBloom(int bloomPower = 3) {
       bloomPower = MathTool::clamp(bloomPower, 1, 5);
@@ -99,15 +101,20 @@ class PostProcess {
         DX3D.getDeviceContext()->PSSetShaderResources(i, 1, &tex);
       }
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, Color::white);
-      
+
       SHADER.setPS(PS::GENERAL);
       DX3D.setBlendMode(BlendMode::NORMAL);
     }
 
-	private:
-		ID3D11Buffer* _pixelConstBuffer;
+    void setClipLuminance(bool clipLuminance) {
+      needClipLuminance = clipLuminance;
+    }
+
+  private:
+    ID3D11Buffer* _pixelConstBuffer;
     RenderTexture* _offscreenTex;
     RenderTexture* _offscreenCopyTex;
-		RenderTexture* _blurVTex[5];
-		RenderTexture* _blurTex[5];
+    RenderTexture* _blurVTex[5];
+    RenderTexture* _blurTex[5];
+    bool needClipLuminance = false;
 };

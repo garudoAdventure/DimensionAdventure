@@ -20,6 +20,13 @@ class MazeBg {
 			desc.CPUAccessFlags = 0;
 			DX3D.getDevice()->CreateBuffer(&desc, NULL, &_pixelTimeBuffer);
 		}
+
+		~MazeBg() {
+			delete _noiseTex;
+			delete _spiralTex;
+			SAFE_RELEASE(_pixelTimeBuffer);
+		}
+
 		void update() {
 			PixelTime pt;
 			pt.time = _time;
@@ -36,8 +43,9 @@ class MazeBg {
 			SHADER.setPS(PS::SPIRAL);
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _noiseTex->getTex(), Color::white);
 
-			_time += 0.002f;
+			_time += 1;
 		}
+
 		void draw(Float4 color) {
 			SHADER.setPS(PS::GENERAL);
 			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _spiralTex->getTex(), color);

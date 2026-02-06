@@ -1,6 +1,6 @@
 cbuffer PixelTime : register(b1)
 {
-    float time;
+    int time;
     float3 dummy;
 };
 
@@ -33,6 +33,6 @@ float perlinNoise(in float2 pos) {
 
 float4 main(VSOutput In) : SV_Target0
 {
-    float col = perlinNoise(float2(In.tex.x * 2 + time, 0.0f));
+    float col = perlinNoise(float2(In.tex.x * 2 + time * 0.002f, 0.0f));
     return float4(col, col, col, 1.0f);
 }

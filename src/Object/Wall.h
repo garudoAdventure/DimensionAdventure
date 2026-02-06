@@ -9,12 +9,10 @@ class Wall : public GameObj {
 			_pos = pos;
 			_size = size;
 		}
+
 		void collide(GameObj* obj, bool is2D) override {
 			if (MathTool::checkCollision(this->getBox(), obj->getBox(), false)) {
 				obj->hitObj(this);
 			}
-		}
-		void draw() override {
-			// 描画しない
 		}
 };

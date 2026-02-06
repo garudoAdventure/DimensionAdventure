@@ -16,10 +16,11 @@ GameMain::GameMain() {
   currentField = fieldManager->getField(0);
   PLAYER.setPos(MathTool::getCoordPos({ 1.0f, 1.1f, 5.0f }));
 
-  layerScreen = new LayerScreen(this);
+  layerSwitcher = new LayerSwitcher(this);
   offscreenTex = new RenderTexture(1280, 720);
-  postProcess = new PostProcess(offscreenTex);
+  bloomWorld = new Bloom(offscreenTex);
   mazeBg = new MazeBg();
+  collectedItemUI = new CollectedItemUI();
 
   gameEventQueue.reserve(5);
   addEvent(new StartEvent(this));
@@ -28,10 +29,11 @@ GameMain::GameMain() {
 }
 
 GameMain::~GameMain() {
+  delete collectedItemUI;
   delete mazeBg;
-  delete postProcess;
+  delete bloomWorld;
   delete offscreenTex;
-  delete layerScreen;
+  delete layerSwitcher;
   delete fieldManager;
   delete camera;
   Player::DeleteInstance();
@@ -53,7 +55,7 @@ void GameMain::update() {
 
   moveCamera(PLAYER.getPos());
 
-  statusUI.update();
+  collectedItemUI->update();
 }
 
 void GameMain::draw() {
@@ -82,7 +84,7 @@ void GameMain::draw() {
   }
 
   // UI
-  statusUI.draw();
+  collectedItemUI->draw();
 }
 
 void GameMain::addEvent(IGameEvent* gameEvent) {
@@ -113,9 +115,9 @@ void GameMain::transformDimension() {
 }
 
 void GameMain::transformLayer() {
-  layerScreen->drawScreen(camera, currentField);
+  layerSwitcher->drawGameSceneOnLayer(camera, currentField);
   SOUND.setVolume(bgm, 0.2f);
-  addEvent(new TransformLayerEvent(layerScreen));
+  addEvent(new TransformLayerEvent(layerSwitcher));
 }
 
 void GameMain::moveCamera(Float3 targetPos) {
@@ -167,7 +169,7 @@ int GameMain::getBgmId() {
 void GameMain::drawGameScene(int layerIdx) {
   mazeBg->draw(Color::layerColor[layerIdx]);
   currentField->draw(layerIdx);
-  postProcess->drawBloom(3);
+  bloomWorld->drawBloom(3);
 
   currentField->drawBillboard(layerIdx);
   PLAYER.draw();
@@ -178,5 +180,6 @@ void GameMain::drawOffscreen(int layerIdx) {
   offscreenTex->clear();
   currentField->draw(layerIdx);
   PLAYER.getSpirit()->draw();
-  postProcess->update(true);
+  bloomWorld->setClipLuminance(true);
+  bloomWorld->update();
 }

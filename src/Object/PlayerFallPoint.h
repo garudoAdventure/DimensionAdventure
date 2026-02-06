@@ -12,13 +12,11 @@ class PlayerFallPoint : public GameObj {
 			_size = size;
 			_tag = ObjTag::PLAYER_FALL_POINT;
 		}
+
 		void collide(GameObj* obj, bool is2D) override {
 			if (MathTool::checkCollision(this->getBox(), obj->getBox(), is2D)) {
 				obj->setPos(_gameEvent->getSavePointPos());
 			}
-		}
-		void draw() override {
-			// 描画しない
 		}
 
 	private:

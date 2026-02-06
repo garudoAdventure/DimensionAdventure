@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "./Common/MathStruct.h"
+#include "./Common/Color.h"
 
 enum class ObjTag {
 	NONE,
@@ -15,7 +16,7 @@ class GameObj {
 	public:
 		virtual ~GameObj() = default;
 		virtual void update();
-		virtual void draw();
+		virtual void draw() {}
 		virtual void drawBillboard() {}
 		virtual void collide(GameObj* obj, bool is2D);
 		virtual void hitObj(GameObj* obj, bool isStatic = true);
@@ -32,11 +33,11 @@ class GameObj {
 		bool isActive() const;
 
 	protected:
-		Float3 _pos;
-		Float3 _oldPos;
-		Float3 _vel = { 0.0f, 0.0f, 0.0f };
-		Float3 _size;
-		Float4 _color = { 0.3f, 0.3f, 0.3f, 0.7f };
+		Float3 _pos{ 0.0f, 0.0f, 0.0f };
+		Float3 _oldPos{ 0.0f, 0.0f, 0.0f };
+		Float3 _vel{ 0.0f, 0.0f, 0.0f };
+		Float3 _size{ 0.0f, 0.0f, 0.0f };
+		Float4 _color = Color::white;
 		int _texID = -1;
 		ObjTag _tag = ObjTag::NONE;
 		bool _isActive = true;

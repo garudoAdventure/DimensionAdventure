@@ -7,8 +7,8 @@ class DimensionTutorialDialog : public IDialog {
 	public:
 		DimensionTutorialDialog() {
 			_pos = { 0.0f, 0.0f };
-			_size = { 0.0f, 500.0f };
 			_margin = { 150.0f, 80.0f };
+			_size.y = 500.0f;
 			_dialogWidth = 800.0f;
 			_pic2DTex = TEXTURE.loadTexture("./assets/tutorial/2D.png");
 			_pic3DTex = TEXTURE.loadTexture("./assets/tutorial/3D.png");

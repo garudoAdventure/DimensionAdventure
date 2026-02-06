@@ -27,7 +27,7 @@ class MovingBoxArea : public IStagePuzzle {
 				{ 3, 0 }, { 2, 1 }, { 1, 2 }, { 0, 3 }
 			};
 			for (int i = 0; i < BOX_NUM; i++) {
-				_box[i] = new MovableBox(MathTool::getCoordPos({
+				_box[i] = new PushableBox(MathTool::getCoordPos({
 					_startX - boxCoord[i].x * 2, _startY, _startZ + boxCoord[i].y * 2
 				}), { 1.0f, 1.0f, 1.0f }, Color::white, boxModel[i]);
 			}
@@ -137,7 +137,7 @@ class MovingBoxArea : public IStagePuzzle {
 		std::function<void()> _callback;
 		Model* _boxGrid;
 		Wall* _gridBorder[4];
-		MovableBox* _box[BOX_NUM];
+		Block* _box[BOX_NUM];
 		bool _isSolved = false;
 		const float _startX = 24.5f;
 		const float _startY = 1.0f;

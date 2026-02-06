@@ -45,9 +45,7 @@ class RenderTexture {
       dsvDesc.Flags = 0;
       DX3D.getDevice()->CreateDepthStencilView(_depthStencilTex, &dsvDesc, &_depthStencilView);
 		}
-    void setTargetView() {
-      DX3D.getDeviceContext()->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
-    }
+
     ~RenderTexture() {
       SAFE_RELEASE(_renderTargetTex);
       SAFE_RELEASE(_depthStencilTex);
@@ -55,11 +53,17 @@ class RenderTexture {
       SAFE_RELEASE(_shaderResourceView);
       SAFE_RELEASE(_depthStencilView);
     }
+
     void clear() {
       float clearColor[4] = { _clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a};
       DX3D.getDeviceContext()->ClearRenderTargetView(_renderTargetView, clearColor);
       DX3D.getDeviceContext()->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     }
+
+    void setTargetView() {
+      DX3D.getDeviceContext()->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
+    }
+
     ID3D11ShaderResourceView* getTex() {
       return _shaderResourceView;
     }

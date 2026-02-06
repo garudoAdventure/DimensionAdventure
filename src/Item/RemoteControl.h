@@ -12,6 +12,7 @@ class RemoteControl : public Item {
 		RemoteControl(Float3 pos, IGameEventHandler* gameEvent) : Item(pos, gameEvent) {
 			_tex = TEXTURE.loadTexture("./assets/remoteControl.png");
 		}
+
 		void drawBillboard() override {
 			XMMATRIX world = XMMatrixIdentity();
 			world *= SHADER.getInverseView();
@@ -20,15 +21,18 @@ class RemoteControl : public Item {
 			SHADER.setMatrix();
 			SPRITE.drawSprite3D({ 63.0f, 60.0f }, TEXTURE.getTexture(_tex), Color::white);
 		}
+
 		void getItem() override {
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.getRemoteControl();
 				_gameEvent->setCheckpoint(CheckPoint::REMOTE_CONTROL);
 			}));
 		}
+
 		std::wstring getName() override {
-			return L"出口の制御装置をゲット！";
+			return L"出口の制御装置";
 		}
+
 		ItemTag getTag() override {
 			return ItemTag::REMOTE_CONTROL;
 		}

@@ -20,19 +20,21 @@ class Door : public ActivableGameObj {
 			_model = MODEL.loadModel("./assets/model/door.fbx");
 			_size = _model->getSize();
 			_triggerSize = { _size.x, _size.y, _size.z + 0.5f };
-			_inDoorSE = SOUND.loadSound("./assets/sound/inDoor.wav");
+			_entryDoorSE = SOUND.loadSound("./assets/sound/inDoor.wav");
 		}
-		virtual void draw() {
+
+		void draw() override {
 			_model->updateColor(_color);
 			_model->draw(_pos, { 0.0f, 0.0f, 0.0f });
 		}
-		virtual void drawBillboard() {
+
+		void drawBillboard() override {
 			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 		}
 
 	protected:
 		Model* _model;
-		unsigned int _inDoorSE;
+		unsigned int _entryDoorSE;
 };
 
 class LockedDoor : public Door {
@@ -40,6 +42,7 @@ class LockedDoor : public Door {
 		LockedDoor(Float3 pos, IGameEventHandler* gameEvent) : Door(pos), _gameEvent(gameEvent) {
 			_color = { 1.0f, 1.0f, 1.0f, 0.3f };
 		}
+
 		void onTrigger(GameObj* player) override {
 			if (MathTool::checkCollision(player->getBox(), this->getBox(), false)) {
 				player->hitObj(this);
@@ -69,6 +72,7 @@ class LockedDoor : public Door {
 				}
 			}
 		}
+
 	private:
 		IGameEventHandler* _gameEvent = nullptr;
 		bool _isActive = false;
@@ -79,12 +83,13 @@ class OpenedDoor : public Door {
 		OpenedDoor(Float3 pos, int fieldID, IGameEventHandler* gameEvent, Float3 playerInitPos) :
 			Door(pos), _gameEvent(gameEvent), _nextField(fieldID), _playerInitPos(playerInitPos) {
 		}
+
 		void onTrigger(GameObj* player) override {
 			if (MathTool::checkCollision(player->getBox(), this->getBox(), false)) {
 				player->hitObj(this);
 			}
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
-				SOUND.playSound(_inDoorSE, 0);
+				SOUND.playSound(_entryDoorSE, 0);
 				_gameEvent->setNewField(_nextField, _pos, _playerInitPos);
 				if (_nextField == 5 && _gameEvent->getCheckpoint() == CheckPoint::RED_CRYSTAL) {
 					_gameEvent->setCheckpoint(CheckPoint::GREEN_HINT);
@@ -110,18 +115,22 @@ class OpenedDoor : public Door {
 		int _nextField;
 };
 
-class MazeDoor : public Door {
+class PuzzleDoor : public Door {
 	public:
-		MazeDoor(Float3 pos, int fieldID, IGameEventHandler* gameEvent, Float3 playerInitPos) :
+		PuzzleDoor(Float3 pos, int fieldID, IGameEventHandler* gameEvent, Float3 playerInitPos) :
 			Door(pos), _gameEvent(gameEvent), _nextField(fieldID), _playerInitPos(playerInitPos) {
 		}
+
 		void onTrigger(GameObj* player) override {
 			if (MathTool::checkCollision(player->getBox(), this->getBox(), false)) {
 				player->hitObj(this);
 			}
+
+			// 2D時に誤ったドアへ入らないよう、
+			// ドアとプレイヤーのZ座標から、入るドアを特定しています。
 			if (_pos.z > player->getPos().z && _pos.z - player->getPos().z < 9.0f) {
 				if (Keyboard_IsKeyTrigger(KK_ENTER)) {
-					SOUND.playSound(_inDoorSE, 0);
+					SOUND.playSound(_entryDoorSE, 0);
 					_gameEvent->setNewField(_nextField, _pos, _playerInitPos);
 				}
 			}

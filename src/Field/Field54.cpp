@@ -3,7 +3,7 @@
 #include "./Item/Crystal.h"
 
 Field54::Field54(IGameEventHandler* gameEvent) : Field("./assets/map/map5.csv"), _gameEvent(gameEvent) {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < LAYER_NUM; i++) {
 		_layer[i]->addGameObj(new OpenedDoor(
 			MathTool::getCoordPos({ 3.0f, 1.5f, 10.0f }), 3, gameEvent,
 			MathTool::getCoordPos({ 35.0f, 1.1f, 5.0f })

@@ -13,42 +13,44 @@
 
 class PasswordDialog : public IDialog {
 	public:
+		static constexpr int PUSH_BUTTON_INTERVAL = 10;
+
 		PasswordDialog(IGameEventHandler* gameEvent): _gameEvent(gameEvent) {
 			_pos = { 0.0f, 100.0f };
-			_size = { 0.0f, 300.0f };
+			_size.y = 300.0f;
 			_dialogWidth = 800.0f;
-			_currentContentNum = _context.length();
+			_currentContentStrLen = _content.length();
 			_numberTex = TEXTURE.loadTexture("./assets/number.png");
 			_triangleTex = TEXTURE.loadTexture("./assets/triangle.png");
-			_cursorMoveSE = SOUND.loadSound("./assets/sound/cursorMove.wav");
+			_speakSE = SOUND.loadSound("./assets/sound/cursorMove.wav");
 		}
 
 		void dialogUpdate() override {
 			if (_frameCount % 2 == 0) {
-				_contentIdx = std::min(_currentContentNum, _contentIdx + 1);
+				_contentIdx = std::min(_currentContentStrLen, _contentIdx + 1);
 			}
 			if (Keyboard_IsKeyTrigger(KK_RIGHT)) {
-				SOUND.playSound(_cursorMoveSE, 0);
+				SOUND.playSound(_speakSE, 0);
 				_selectDigit = std::min(3, _selectDigit + 1);
 			}
 			if (Keyboard_IsKeyTrigger(KK_LEFT)) {
-				SOUND.playSound(_cursorMoveSE, 0);
+				SOUND.playSound(_speakSE, 0);
 				_selectDigit = std::max(0, _selectDigit - 1);
 			}
-			if (_pushCount == 10) {
+			if (_pushBottonCount == PUSH_BUTTON_INTERVAL) {
 				_isPushUp = false;
 				_isPushDown = false;
 			}
 			if (Keyboard_IsKeyTrigger(KK_UP)) {
-				SOUND.playSound(_cursorMoveSE, 0);
+				SOUND.playSound(_speakSE, 0);
 				_isPushUp = true;
-				_pushCount = 0;
+				_pushBottonCount = 0;
 				_inputPassword[_selectDigit] = std::min(9, _inputPassword[_selectDigit] + 1);
 			}
 			if (Keyboard_IsKeyTrigger(KK_DOWN)) {
-				SOUND.playSound(_cursorMoveSE, 0);
+				SOUND.playSound(_speakSE, 0);
 				_isPushDown = true;
-				_pushCount = 0;
+				_pushBottonCount = 0;
 				_inputPassword[_selectDigit] = std::max(0, _inputPassword[_selectDigit] - 1);
 			}
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
@@ -69,13 +71,14 @@ class PasswordDialog : public IDialog {
 			}
 			_time++;
 			_frameCount++;
-			_pushCount = std::min(10, _pushCount + 1);
+			_pushBottonCount = std::min(PUSH_BUTTON_INTERVAL, _pushBottonCount + 1);
 		}
 
 		void dialogDraw() override {
-			std::wstring wstr = _context.substr(0, _contentIdx);
+			const std::wstring wstr = _content.substr(0, _contentIdx);
 			IDialog::drawStr(wstr, _pos);
-			if (_contentIdx != _currentContentNum) {
+			
+			if (_contentIdx != _currentContentStrLen) {
 				return;
 			}
 			for (int i = 0; i < 4; i++) {
@@ -84,10 +87,10 @@ class PasswordDialog : public IDialog {
 					_pos.y - 20.0f
 				};
 				if (i == _selectDigit) {
-					Float4 selectColor = Color::gray;
-					selectColor.a = (sinf(_time * 0.1f) + 1) * 0.5f + 0.2f;
+					Float4 selectDigitBgColor = Color::gray;
+					selectDigitBgColor.a = (sinf(_time * 0.1f) + 1) * 0.5f + 0.2f;
 					SHADER.setPS(PS::NO_TEX);
-					SPRITE.drawSprite2D(numberPos, { 80.0f, 150.0f }, selectColor);
+					SPRITE.drawSprite2D(numberPos, { 80.0f, 150.0f }, selectDigitBgColor);
 				}
 				SHADER.setPS(PS::NO_TEX);
 				SPRITE.drawSprite2D(numberPos, { 40.0f, 60.0f }, Color::black);
@@ -95,25 +98,33 @@ class PasswordDialog : public IDialog {
 					numberPos, { 26.0f, 38.0f }, TEXTURE.getTexture(_numberTex), numberColor[i],
 					{ (_inputPassword[i] % 10) * 0.1f, 0.0f }, { 0.1f, 1.0f }
 				);
-				SPRITE.drawSprite2D({ numberPos.x, numberPos.y + 50.0f }, { 24.0f, 24.0f }, TEXTURE.getTexture(_triangleTex), (_isPushUp && i == _selectDigit ? Color::darkGray : Color::white));
-				SPRITE.drawSprite2DRotate({ numberPos.x, numberPos.y - 50.0f }, { 24.0f, 24.0f }, TEXTURE.getTexture(_triangleTex), PI, { numberPos.x, numberPos.y - 50.0f }, (_isPushDown && i == _selectDigit ? Color::darkGray : Color::white));
+
+				// 上矢印描画
+				SPRITE.drawSprite2D({ numberPos.x, numberPos.y + 50.0f }, { 24.0f, 24.0f },
+					TEXTURE.getTexture(_triangleTex),
+					(_isPushUp && i == _selectDigit ? Color::darkGray : Color::white));
+				
+				// 下矢印描画
+				SPRITE.drawSprite2DRotate({ numberPos.x, numberPos.y - 50.0f }, { 24.0f, 24.0f },
+					TEXTURE.getTexture(_triangleTex), PI, { numberPos.x, numberPos.y - 50.0f },
+					(_isPushDown && i == _selectDigit ? Color::darkGray : Color::white));
 			}
 		}
 
 	private:
-		const std::wstring _context{ L"暗証番号を入力してください" };
+		const std::wstring _content{ L"暗証番号を入力してください" };
 		IGameEventHandler* _gameEvent;
 		unsigned int _numberTex;
 		unsigned int _triangleTex;
-		unsigned int _cursorMoveSE;
+		unsigned int _speakSE;
 		int _frameCount = 0;
 		int _time = 0;
 		bool _isPushUp = false;
 		bool _isPushDown = false;
-		int _pushCount = 0;
+		int _pushBottonCount = 0;
 		int _selectDigit = 0;
 		int _inputPassword[4] = { 0, 0, 0, 0 };
-		Float4 numberColor[4] = {
+		const Float4 numberColor[4] = {
 			Color::lightRed,
 			Color::lightGreen,
 			Color::lightBlue,

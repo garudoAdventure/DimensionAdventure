@@ -10,7 +10,7 @@ struct VSOutput
 
 cbuffer PixelTime : register(b1)
 {
-    float time;
+    int time;
     float3 dummy;
 };
 

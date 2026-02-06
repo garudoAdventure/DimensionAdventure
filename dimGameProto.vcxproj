@@ -155,7 +155,6 @@
     <ClCompile Include="src\Field\Field54.cpp" />
     <ClCompile Include="src\Game\Game.cpp" />
     <ClCompile Include="src\Game\GameMain.cpp" />
-    <ClCompile Include="src\Render\CubeRenderer.cpp" />
     <ClCompile Include="src\DirectX\DirectX.cpp" />
     <ClCompile Include="src\Field\Field.cpp" />
     <ClCompile Include="src\Object\GameObj.cpp" />
@@ -174,6 +173,7 @@
     <ClCompile Include="src\Render\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\FadeCover.h" />
     <ClInclude Include="src\Object\ActivableGameObj.h" />
     <ClInclude Include="src\Object\Block.h" />
     <ClInclude Include="src\Camera.h" />
@@ -184,8 +184,9 @@
     <ClInclude Include="src\Item\Crystal.h" />
     <ClInclude Include="src\Item\DimensionRing.h" />
     <ClInclude Include="src\Player\PlayerController.h" />
+    <ClInclude Include="src\PostProcess\Bloom.h" />
+    <ClInclude Include="src\PostProcess\Glitch.h" />
     <ClInclude Include="src\Utils\CSVParser.h" />
-    <ClInclude Include="src\Render\CubeRenderer.h" />
     <ClInclude Include="src\Dialog\Dialog.h" />
     <ClInclude Include="src\Dialog\DimensionTutorialDialog.h" />
     <ClInclude Include="src\DirectX\DirectWrite.h" />
@@ -201,14 +202,13 @@
     <ClInclude Include="src\Game\GameState.h" />
     <ClInclude Include="src\Game\GameTitle.h" />
     <ClInclude Include="src\GameEvent\GetItemEvent.h" />
-    <ClInclude Include="src\GameEvent\GreenCrystalEvent.h" />
     <ClInclude Include="src\GameEvent\IGameEvent.h" />
     <ClInclude Include="src\Game\IGameEventHandler.h" />
     <ClInclude Include="src\StagePuzzle\IStagePuzzle.h" />
     <ClInclude Include="src\Item\Item.h" />
     <ClInclude Include="src\HALKeyboard.h" />
     <ClInclude Include="src\Layer.h" />
-    <ClInclude Include="src\LayerScreen.h" />
+    <ClInclude Include="src\LayerSwitcher.h" />
     <ClInclude Include="src\GameEvent\LayerTrapEvent.h" />
     <ClInclude Include="src\Dialog\LayerTutorialDialog.h" />
     <ClInclude Include="src\MazeBg.h" />
@@ -223,7 +223,6 @@
     <ClInclude Include="src\Player\PlayerJump.h" />
     <ClInclude Include="src\Player\PlayerWalk.h" />
     <ClInclude Include="src\Player\PlayerState.h" />
-    <ClInclude Include="src\PostProcess.h" />
     <ClInclude Include="src\Item\RemoteControl.h" />
     <ClInclude Include="src\RenderTexture.h" />
     <ClInclude Include="src\Utils\MathTool.h" />
@@ -236,11 +235,11 @@
     <ClInclude Include="src\Render\Shader.h" />
     <ClInclude Include="src\GameEvent\ShowDialogEvent.h" />
     <ClInclude Include="src\Sound.h" />
-    <ClInclude Include="src\SpaceBG.h" />
+    <ClInclude Include="src\SwitchLayerBg.h" />
     <ClInclude Include="src\Spirit.h" />
     <ClInclude Include="src\Render\Sprite.h" />
     <ClInclude Include="src\GameEvent\StartEvent.h" />
-    <ClInclude Include="src\StatusUI.h" />
+    <ClInclude Include="src\CollectedItemUI.h" />
     <ClInclude Include="src\Dialog\SystemDialog.h" />
     <ClInclude Include="src\Render\Texture.h" />
     <ClInclude Include="src\Trail.h" />

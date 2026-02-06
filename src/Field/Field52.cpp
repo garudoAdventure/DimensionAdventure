@@ -3,7 +3,7 @@
 #include "./Object/Epigraph.h"
 
 Field52::Field52(IGameEventHandler* gameEvent) : Field("./assets/map/map5.csv") {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < LAYER_NUM; i++) {
 		_layer[i]->addGameObj(new OpenedDoor(
 			MathTool::getCoordPos({ 3.0f, 1.5f, 10.0f }), 3, gameEvent,
 			MathTool::getCoordPos({ 35.0f, 1.1f, 5.0f })
@@ -12,7 +12,7 @@ Field52::Field52(IGameEventHandler* gameEvent) : Field("./assets/map/map5.csv") 
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			_layer[LayerType::RED]->addGameObj(new MazeDoor(
+			_layer[LayerType::RED]->addGameObj(new PuzzleDoor(
 				MathTool::getCoordPos({ 20.0f + 3 * i, 1.5f, 10.0f - 3 * j }),
 				(i == 0 && j == 0 ? 53 : 5), gameEvent,
 				MathTool::getCoordPos({ 20.0f + 3 * i, 1.1f, 10.0f - 3 * j - 1.0f })

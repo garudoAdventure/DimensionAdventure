@@ -13,7 +13,6 @@
 #include "./Render/Texture.h"
 #include "./Render/Sprite.h"
 #include "./Render/ModelManager.h"
-#include "./Render/CubeRenderer.h"
 #include "./Game/Game.h"
 
 int g_countFPS;
@@ -138,7 +137,6 @@ void Initialize(HWND hWnd) {
   DirectWrite::CreateInstance();
   Shader::CreateInstance(DX3D.getDevice(), DX3D.getDeviceContext());
   Texture::CreateInstance();
-  CubeRenderer::CreateInstance();
   Sprite::CreateInstance();
   ModelManager::CreateInstance();
   game = new Game();
@@ -160,7 +158,6 @@ void Finalize() {
   delete game;
   ModelManager::DeleteInstance();
   Sprite::DeleteInstance();
-  CubeRenderer::DeleteInstance();
   Shader::DeleteInstance();
   DirectWrite::DeleteInstance();
   Sound::DeleteInstance();

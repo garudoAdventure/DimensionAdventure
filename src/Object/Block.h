@@ -21,13 +21,16 @@ class Block : public ActivableGameObj {
 			_size.z *= scale.z;
 			_triggerSize = { _size.x + 0.1f, _size.y + 0.1f, _size.z + 0.1f };
 			_inactiveColor = { 0.3f, 0.3f, 0.3f, 1.0f };
+			_color = _inactiveColor;
 		}
+
 		void update() override {
 			GameObj::update();
 			ActivableGameObj::update();
 			_color = MathTool::lerp<Float4>(_inactiveColor, _activeColor, _count / 60.0f);
 			_count = std::max(0, _count - 1);
 		}
+
 		void draw() override {
 			Light light;
 			light.enable = false;
@@ -37,6 +40,7 @@ class Block : public ActivableGameObj {
 				_pos, { 0.0f, 0.0f, 0.0f }, _scale
 			);
 		}
+
 		void onTrigger(GameObj* player) override {
 			if (MathTool::checkCollision(player->getBox(), this->getBox(), PLAYER.is2D())) {
 				player->hitObj(this);
@@ -57,15 +61,11 @@ class HintBlock : public Block {
 		HintBlock(Float3 pos, Float3 scale, Float4 color, Model* model) :
 			Block(pos, scale, color, model) {
 		}
-		void update() override {
-			Block::update();
-		}
-		void draw() override {
-			Block::draw();
-		}
+
 		void drawBillboard() override {
 			ActivableGameObj::drawHint({ _pos.x, _pos.y + _size.y / 2 + 1.0f, _pos.z });
 		}
+
 		void onTrigger(GameObj* player) override {
 			Block::onTrigger(player);
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
@@ -76,6 +76,8 @@ class HintBlock : public Block {
 
 class MovingFloor : public Block {
 	public:
+		static constexpr float MOVE_SPEED = 0.125f;
+
 		MovingFloor(Float3 startPos, Float3 endPos, Float3 scale, Float4 color, Model* model) :
 			Block(startPos, scale, color, model), _startPos(startPos), _endPos(endPos)
 		{
@@ -85,11 +87,14 @@ class MovingFloor : public Block {
 			_distance = sqrtf(dx * dx + dy * dy + dz * dz);
 			_tag = ObjTag::MOVING_FLOOR;
 		}
+
 		void update() override {
 			Block::update();
-			_pos = MathTool::lerp<Float3>(_startPos, _endPos, _count / (_distance * 8));
+
+			// ブロックの往復移動
+			_pos = MathTool::lerp<Float3>(_startPos, _endPos, _count * MOVE_SPEED / _distance);
 			_vel = _pos - _oldPos;
-			if (_count == 0 || _count == (int)_distance * 8) {
+			if (_pos == _startPos || _pos == _endPos) {
 				_countAdd = -_countAdd;
 			}
 			_count += _countAdd;
@@ -98,18 +103,18 @@ class MovingFloor : public Block {
 	private:
 		Float3 _startPos;
 		Float3 _endPos;
+		float _distance;
 		int _count = 0;
 		int _countAdd = -1;
-		float _distance;
 };
 
-class MovableBox : public Block {
-	public:
-		MovableBox(Float3 pos, Float3 scale, Float4 color, Model* model) : Block(pos, scale, color, model) {
-			_color = color;
-		}
-		void update() override {
-			GameObj::update();
-			ActivableGameObj::update();
-		}
+class PushableBox : public Block {
+public:
+	PushableBox(Float3 pos, Float3 scale, Float4 color, Model* model) : Block(pos, scale, color, model) {
+		_color = color;
+	}
+	void update() override {
+		GameObj::update();
+		ActivableGameObj::update();
+	}
 };

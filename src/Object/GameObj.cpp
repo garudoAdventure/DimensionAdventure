@@ -1,13 +1,8 @@
 ﻿#include "GameObj.h"
-#include "./Render/CubeRenderer.h"
 #include "./Utils/MathTool.h"
 
 void GameObj::update() {
 	_oldPos = _pos;
-}
-
-void GameObj::draw() {
-	CUBE_RENDERER.drawCube({ _pos, _size }, _color, _texID);
 }
 
 void GameObj::collide(GameObj* obj, bool is2D) {

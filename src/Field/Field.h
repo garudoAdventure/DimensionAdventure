@@ -9,6 +9,8 @@
 
 class Field {
   public:
+		static constexpr int LAYER_NUM = 4;
+
 		Field(const char* file);
 		virtual ~Field();
 		void update(int currentLayer);
@@ -20,7 +22,7 @@ class Field {
 
 	protected:
 		const char* filePath;
-		Layer* _layer[4];
+		Layer* _layer[LAYER_NUM];
 };
 
 class Field00 : public Field {
@@ -47,8 +49,8 @@ class Field04 : public Field {
 	public:
 		Field04(IGameEventHandler* gameEvent);
 		void onEntryField() override {
-			if (!isLookRedCrystal) {
-				isLookRedCrystal = true;
+			if (!_isFocusRedCrystal) {
+				_isFocusRedCrystal = true;
 				_gameEvent->addEvent(new CameraFocusEvent(_gameEvent,
 					MathTool::getCoordPos({ 39.0f, 3.5f, 5.0f })
 				));
@@ -57,7 +59,7 @@ class Field04 : public Field {
 
 	private:
 		IGameEventHandler* _gameEvent;
-		bool isLookRedCrystal = false;
+		bool _isFocusRedCrystal = false;
 };
 
 class Field05 : public Field {
@@ -84,8 +86,8 @@ class Field54 : public Field {
 	public:
 		Field54(IGameEventHandler* gameEvent);
 		void onEntryField() override {
-			if (!isLookGreenCrystal) {
-				isLookGreenCrystal = true;
+			if (!_isFocusGreenCrystal) {
+				_isFocusGreenCrystal = true;
 				_gameEvent->addEvent(new CameraFocusEvent(_gameEvent,
 					MathTool::getCoordPos({ 39.0f, 4.5f, 5.0f })
 				));
@@ -94,7 +96,7 @@ class Field54 : public Field {
 
 	private:
 		IGameEventHandler* _gameEvent;
-		bool isLookGreenCrystal = false;
+		bool _isFocusGreenCrystal = false;
 };
 
 class Field06 : public Field {

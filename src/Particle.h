@@ -10,37 +10,41 @@
 
 class Particle {
 	public:
+		static constexpr int LIFE_TIME = 300;
+
 		Particle(Float3 pos) {
 			_tex = TEXTURE.loadTexture("./assets/elf.png");
 			_pos = pos;
-			vel.x = sinf(rand());
-			vel.y = sinf(rand());
-			vel.z = sinf(rand());
+			_vel.x = sinf(rand());
+			_vel.y = sinf(rand());
+			_vel.z = sinf(rand());
 		}
+
 		void update() {
-			_pos += vel * 0.02f;
-			color = MathTool::lerp(Color::weakGray, Color::yellow, lifeTime / 300.0f);
-			lifeTime--;
+			_pos += _vel * 0.02f;
+			_color = MathTool::lerp(Color::weakGray, Color::yellow, (float)_lifeTime / LIFE_TIME);
+			_lifeTime--;
 		}
+
 		void draw() {
 			XMMATRIX world = XMMatrixIdentity();
 			world *= SHADER.getInverseView();
 			world *= XMMatrixTranslation(_pos.x, _pos.y, _pos.z);
 			SHADER.setWorld(world);
 			SHADER.setMatrix();
-			SPRITE.drawSprite3D({ 16.0f, 16.0f }, TEXTURE.getTexture(_tex), color);
+			SPRITE.drawSprite3D({ 16.0f, 16.0f }, TEXTURE.getTexture(_tex), _color);
 		}
+
 		int getLifeTime() {
-			return lifeTime;
+			return _lifeTime;
 		}
 
 	private:
 		unsigned int _tex;
-		Float3 _pos = { 0.0f, 0.0f, 0.0f };
-		Float3 vel;
-		Float3 size = { 0.5f, 0.5f, 0.5f };
-		Float4 color = Color::yellow;
-		int lifeTime = 300;
+		Float3 _pos{ 0.0f, 0.0f, 0.0f };
+		Float3 _vel{ 0.0f, 0.0f, 0.0f };;
+		Float4 _color = Color::yellow;
+		int _lifeTime = LIFE_TIME;
 };
 
 class Emitter {
@@ -49,12 +53,14 @@ class Emitter {
 			_tex = TEXTURE.loadTexture("./assets/elf.png");
 			_particles.reserve(150);
 		}
+
 		~Emitter() {
 			for (Particle* particle : _particles) {
 				delete particle;
 			}
 			_particles.clear();
 		}
+
 		void update(Float3 pos) {
 			_pos = pos;
 			for (int i = 0; i < _particles.size(); i++){
@@ -71,6 +77,7 @@ class Emitter {
 			_color = MathTool::lerp<Float4>(Color::gray, Color::white, (sinf(_time * 0.05f) + 1) * 0.5f);
 			_time++;
 		}
+
 		void draw(Float3 pos) {
 			SHADER.begin();
 			XMMATRIX world = XMMatrixIdentity();
@@ -86,9 +93,9 @@ class Emitter {
 		}
 
 	private:
-		Float3 _pos = { 0.0f, 0.0f, 0.0f };
-		Float4 _color = Color::white;
 		unsigned int _tex;
+		Float3 _pos{ 0.0f, 0.0f, 0.0f };
+		Float4 _color = Color::white;
 		std::vector<Particle*> _particles;
 		int _time = 0;
 };

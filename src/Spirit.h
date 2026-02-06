@@ -14,9 +14,11 @@ class Spirit {
 			_emitter = new Emitter();
 			_buttonTex = TEXTURE.loadTexture("./assets/keyX.png");
 		}
+
 		~Spirit() {
 			delete _emitter;
 		}
+
 		void update() {
 			_pos = MathTool::lerp<Float3>(_pos, _newPos, 0.05f);
 			_pos.y += sinf(_time * 0.05f) * 0.01f;
@@ -30,6 +32,7 @@ class Spirit {
 			
 			_time = (_time + 1) % 1000;
 		}
+
 		void updatePos(Float3 playerPos, Float3 playerDir) {
 			_newPos = {
 				playerPos.x - 3.0f * playerDir.x,
@@ -37,6 +40,7 @@ class Spirit {
 				playerPos.z
 			};
 		}
+
 		void setPos(Float3 playerPos) {
 			_pos = {
 				playerPos.x - 3.0f,
@@ -44,9 +48,11 @@ class Spirit {
 				playerPos.z
 			};
 		}
+
 		void draw() {
 			_emitter->draw(_pos);
 		}
+
 		void chat() {
 			if (Keyboard_IsKeyTrigger(KK_X)) {
 				_gameEvent->addEvent(new ShowDialogEvent(
@@ -56,6 +62,7 @@ class Spirit {
 				));
 			}
 		}
+
 		void drawHint() {
 			if (_isStatic) {
 				XMMATRIX world = XMMatrixIdentity();
@@ -66,6 +73,7 @@ class Spirit {
 				SPRITE.drawSprite3D({ 28.0f, 28.0f }, TEXTURE.getTexture(_buttonTex), Color::white);
 			}
 		}
+
 		void introHintBlock() {
 			_gameEvent->addEvent(new ShowDialogEvent(
 				new MessageDialog({

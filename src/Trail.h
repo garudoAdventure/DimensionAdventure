@@ -24,9 +24,11 @@ public:
 			trailPos[i] = { initPos.x, initPos.y, initPos.z };
 		}
 	}
+
 	~Trail() {
 		SAFE_RELEASE(vertexBuffer);
 	}
+
 	void update() {
 		Vertex v[TRAIL_LEN * 2 - 2];
 		Float3 cameraPos = { 0.0f, 0.0f, -30.0f };
@@ -75,6 +77,7 @@ public:
 		DX3D.getDeviceContext()->UpdateSubresource(vertexBuffer, 0, NULL, &v[0], 0, 0);
 		frame++;
 	}
+
 	void draw() {
 		ID3D11ShaderResourceView* texture = TEXTURE.getTexture(tex);
 		DX3D.getDeviceContext()->PSSetShaderResources(0, 1, &texture);

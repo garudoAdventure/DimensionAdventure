@@ -4,6 +4,7 @@
 #include "RenderTexture.h"
 #include "Sound.h"
 #include "Layer.h"
+#include "FadeCover.h"
 #include "./DirectX/DirectX.h"
 #include "./Game/IGameEventHandler.h"
 #include "./Player/Player.h"
@@ -15,10 +16,15 @@
 
 class LayerTrapEvent : public IGameEvent {
 	public:
+		static constexpr int SCREEN_SCATTER_TIME = 180;
+		static constexpr int FALLING_LAYER_TIME = 300;
+		static constexpr int LAYER_SWITCH_SPEED = 60;
+
 		LayerTrapEvent(IGameEventHandler* gameEvent, unsigned int earthquakeSE) : _gameEvent(gameEvent), _earthquakeSE(earthquakeSE){
 			_screenTex = _gameEvent->getScreenTex();
 			_layerTex = new RenderTexture(1280.0f, 720.0f, Color::darkGray);
-			_frameTex = TEXTURE.loadTexture("./assets/UI/frame.png");
+			_fadeCover = new FadeCover(300);
+			_borderTex = TEXTURE.loadTexture("./assets/UI/border.png");
 			_trapSE = SOUND.loadSound("./assets/sound/trap.wav");
 		}
 
@@ -26,38 +32,36 @@ class LayerTrapEvent : public IGameEvent {
 			PLAYER.update();
 			_gameEvent->updateField();
 			_gameEvent->cameraVibration(true);
-			switch (phase) {
-				case 0:
-					_pos += _vel * 50;
-					if (frame <= 10) {
-						frame++;
-					}
-					else {
-						frame = 0;
-						_pos = { 0.0f, 0.0f };
-						int r = rand();
-						_vel.x = cosf(r);
-						_vel.y = sinf(r);
-						SOUND.playSound(_trapSE, 0);
-					}
-					if (time == 180) {
-						phase = 1;
-						frame = 0;
-					}
-					break;
-
-				case 1:
-					if (frame == 300) {
-						PLAYER.setLayer(LayerType::RED);
-						_gameEvent->cameraVibration(false);
-						SOUND.stopSound(_earthquakeSE);
-						_isEnd = true;
-					}
-					SOUND.setVolume(_earthquakeSE, (300 - frame) / 300.0f);
-					frame++;
-					break;
+			if (!_isScreenScatterEnd) {
+				_screenPos += _scatterVel * 50;
+				if (_screenScatterCount <= 10) {
+					_screenScatterCount++;
+				}
+				else {
+					_screenScatterCount = 0;
+					int r = rand();
+					_scatterVel.x = cosf(r);
+					_scatterVel.y = sinf(r);
+					_screenPos = { 0.0f, 0.0f };
+					SOUND.playSound(_trapSE, 0);
+				}
+				if (_time == SCREEN_SCATTER_TIME) {
+					_isScreenScatterEnd = true;
+					_time = 0;
+				}
 			}
-			time++;
+			else {
+				if (_time == FALLING_LAYER_TIME) {
+					PLAYER.setLayer(LayerType::RED);
+					_gameEvent->cameraVibration(false);
+					SOUND.stopSound(_earthquakeSE);
+					_isEnd = true;
+				}
+				SOUND.setVolume(_earthquakeSE, (float)(FALLING_LAYER_TIME - _time) / FALLING_LAYER_TIME);
+				_fadeCover->fadeOut();
+			}
+
+			_time++;
 		}
 
 		void draw() override {
@@ -66,64 +70,56 @@ class LayerTrapEvent : public IGameEvent {
 
 			_layerTex->setTargetView();
 			_layerTex->clear();
-			DX3D.setBlendMode(BlendMode::REND_TEX);
-			SHADER.setPS(PS::GENERAL);
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _screenTex->getTex(), Color::white);
+			_gameEvent->drawGameScene(0);
 
 			DX3D.setTargetView();
 
-			switch (phase) {
-				case 0:
+			if (!_isScreenScatterEnd) {
+				// 画面を散らばっている演出
+				DX3D.setBlendMode(BlendMode::NORMAL);
+				SHADER.setPS(PS::GENERAL);
+				SPRITE.drawSprite2D(_screenPos, { 1280.0f, 720.0f }, _layerTex->getTex(), { 1.0f, 1.0f, 1.0f, 0.8f });
+			}
+			else {
+				// 別レイヤーに飛ばされる演出
+				DX3D.clear({ 0.0f, 0.0f, 0.0f, 1.0f });
+				SHADER.begin();
+
+				if (_eyeMoveCount <= 30) {
+					_eye.x = MathTool::lerp<float>(0.0f, -35.0f, (float)_eyeMoveCount / 30);
+					_eye.y = MathTool::lerp<float>(0.0f, 14.0f, (float)_eyeMoveCount / 30);
+					_eye.z = MathTool::lerp<float>(-30.0f, -45.0f, (float)_eyeMoveCount / 30);
+					_eyeMoveCount++;
+				}
+
+				for (int i = 5; i >= 0; i--) {
+					Float4 color = Color::white;
+					if (_layerSwitchCount == LAYER_SWITCH_SPEED) {
+						_layerSwitchCount = 0;
+					} else {
+						_layerSwitchCount++;
+						if (i == 0) {
+							color.a = 1.0f - ((float)_layerSwitchCount / LAYER_SWITCH_SPEED);
+						}
+						if (i == 5) {
+							color.a = (float)_layerSwitchCount / LAYER_SWITCH_SPEED;
+						}
+					}
+
+					XMMATRIX world = XMMatrixIdentity();
+					world *= XMMatrixTranslation(0.0f, 0.0f, 10.0f * (i - 1) - _layerSwitchCount * 10.0f / LAYER_SWITCH_SPEED);
+					SHADER.setWorld(world);
+					SHADER.setView({ _eye.x, _eye.y, _eye.z - _time * 0.5f }, { 0.0f, 0.0f, 22.5f });
+					SHADER.setProjection(SHADER.getPerspectiveMatrix());
+					SHADER.setMatrix();
+
 					DX3D.setBlendMode(BlendMode::NORMAL);
+					DX3D.setDepthEnable(true);
 					SHADER.setPS(PS::GENERAL);
-					SPRITE.drawSprite2D(_pos, _size, _layerTex->getTex(), { 1.0f, 1.0f, 1.0f, 0.8f });
-					break;
+					SPRITE.drawSprite3D({ 1280.0f, 720.0f }, _layerTex->getTex(), color);
+				}
 
-				case 1:
-					DX3D.clear({0.0f, 0.0f, 0.0f, 1.0f});
-					SHADER.begin();
-					
-					if (eyeTransformCount <= 30) {
-						_eye.x = MathTool::lerp<float>(0.0f, -35.0f, eyeTransformCount / 30.0f);
-						_eye.y = MathTool::lerp<float>(0.0f, 14.0f, eyeTransformCount / 30.0f);
-						_eye.z = MathTool::lerp<float>(-30.0f, -45.0f, eyeTransformCount / 30.0f);
-						eyeTransformCount++;
-					}
-
-					for (int i = 5; i >= 0; i--) {
-						const int layerSpd = 60;
-						Float4 color = Color::white;
-						if (layerSwitchCount < layerSpd) {
-							layerSwitchCount++;
-							if (i == 0) {
-								color.a = 1.0f - (layerSwitchCount / (float)layerSpd);
-							}
-							if (i == 5) {
-								color.a = layerSwitchCount / (float)layerSpd;
-							}
-						}
-						else {
-							layerSwitchCount = 0;
-						}
-
-						XMMATRIX world = XMMatrixIdentity();
-						world *= XMMatrixTranslation(0.0f, 0.0f, 10.0f * (i - 1) - layerSwitchCount * 10.0f / (float)layerSpd);
-						SHADER.setWorld(world);
-						SHADER.setView({ _eye.x, _eye.y, _eye.z - frame * 0.5f }, { 0.0f, 0.0f, 22.5f });
-						SHADER.setProjection(SHADER.getPerspectiveMatrix());
-						SHADER.setMatrix();
-
-						DX3D.setBlendMode(BlendMode::NORMAL);
-						DX3D.setDepthEnable(true);
-						SHADER.setPS(PS::GENERAL);
-						SPRITE.drawSprite3D({ 1280.0f, 720.0f }, _layerTex->getTex(), color);
-					}
-
-					Float4 coverColor = Color::black;
-					coverColor.a = frame / 300.0f;
-					SHADER.setPS(PS::NO_TEX);
-					SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, coverColor);
-					break;
+				_fadeCover->draw();
 			}
 		}
 
@@ -135,17 +131,17 @@ class LayerTrapEvent : public IGameEvent {
 		RenderTexture* _screenTex;
 		RenderTexture* _layerTex;
 		IGameEventHandler* _gameEvent;
-		Float2 _size = { 1280.0f, 720.0f };
-		Float2 _pos = { 0.0f, 0.0f };
-		Float2 _vel = { 0.0f, 0.0f };;
+		FadeCover* _fadeCover;
+		Float2 _screenPos = { 0.0f, 0.0f };
+		Float2 _scatterVel = { 0.0f, 0.0f };;
 		Float3 _eye = { 0.0f, 0.0f, 0.0f };
+		unsigned int _borderTex;
 		unsigned int _trapSE;
 		unsigned int _earthquakeSE;
-		int time = 0;
-		int frame = 0;
-		int eyeTransformCount = 0;
-		int layerSwitchCount = 0;
-		unsigned int _frameTex;
-		int phase = 0;
+		int _time = 0;
+		int _screenScatterCount = 0;
+		int _eyeMoveCount = 0;
+		int _layerSwitchCount = 0;
+		bool _isScreenScatterEnd = false;
 		bool _isEnd = false;
 };

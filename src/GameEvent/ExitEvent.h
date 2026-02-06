@@ -2,6 +2,7 @@
 
 #include "IGameEvent.h"
 #include "Sound.h"
+#include "FadeCover.h"
 #include "./Game/IGameEventHandler.h"
 #include "./Dialog/MessageDialog.h"
 #include "./Render/Shader.h"
@@ -11,35 +12,42 @@
 
 class ExitEvent : public IGameEvent {
 	public:
+		static constexpr int FADE_OUT_TIME = 240;
+		
 		ExitEvent(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 			_dialog = new MessageDialog({
 				{ Talker::SELF, L"やった！" },
 			});
-			_coverColor.a = 0.0f;
+			_fadeCover = new FadeCover(FADE_OUT_TIME, Color::white);
 			_exitSE = SOUND.loadSound("./assets/sound/exit.wav");
 		}
+
 		~ExitEvent() {
 			delete _dialog;
+			delete _fadeCover;
 		}
+
 		void update() override {
 			_dialog->update();
 			if (_dialog->isEnd()) {
-				if (_coverCount == 0) {
+				if (!_isPlayeSE) {
 					SOUND.stopSound(_gameEvent->getBgmId());
 					SOUND.playSound(_exitSE, 0);
+					_isPlayeSE = true;
 				}
-				_coverCount++;
-				_coverColor.a = MathTool::lerp<float>(0.0f, 1.0f, _coverCount / 240.0f);
-				if (_coverCount == 240) {
+				if (_fadeCover->fadeOut()) {
 					_gameEvent->setGameEnd();
 				}
 			}
 		}
+
 		void draw() override {
 			_dialog->draw();
-			SHADER.setPS(PS::NO_TEX);
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _coverColor);
+			if (_dialog->isEnd()) {
+				_fadeCover->draw();
+			}
 		}
+
 		bool isEnd() override {
 			return _isEnd;
 		}
@@ -47,8 +55,9 @@ class ExitEvent : public IGameEvent {
 	private:
 		IGameEventHandler* _gameEvent;
 		IDialog* _dialog;
+		FadeCover* _fadeCover;
 		unsigned int _exitSE;
 		bool _isEnd = false;
+		bool _isPlayeSE = false;
 		int _coverCount = 0;
-		Float4 _coverColor = Color::white;
 };

@@ -12,6 +12,7 @@ class DimensionRing : public Item {
 		DimensionRing(Float3 pos, IGameEventHandler* gameEvent) : Item(pos, gameEvent) {
 			_tex = TEXTURE.loadTexture("./assets/UI/circleArrow.png");
 		}
+
 		void drawBillboard() override {
 			_rotate -= 0.005f;
 			XMMATRIX world = XMMatrixIdentity();
@@ -22,6 +23,7 @@ class DimensionRing : public Item {
 			SHADER.setMatrix();
 			SPRITE.drawSprite3D({ 63.0f, 60.0f }, TEXTURE.getTexture(_tex), Color::white);
 		}
+
 		void getItem() override {
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.getDimensionAbility();
@@ -30,9 +32,11 @@ class DimensionRing : public Item {
 				));
 			}));
 		}
+
 		std::wstring getName() override {
-			return L"次元リングをゲット！";
+			return L"次元リング";
 		}
+
 		ItemTag getTag() override {
 			return ItemTag::RING;
 		}

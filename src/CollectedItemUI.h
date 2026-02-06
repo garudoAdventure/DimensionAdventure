@@ -4,9 +4,9 @@
 #include "./Render/Texture.h"
 #include "./Render/Sprite.h"
 
-class StatusUI {
+class CollectedItemUI {
 	public:
-		StatusUI() {
+		CollectedItemUI() {
 			crystalTex = TEXTURE.loadTexture("./assets/UI/crystal.png");
 			circleArrowTex = TEXTURE.loadTexture("./assets/UI/circleArrow.png");
 			baseCircleTex = TEXTURE.loadTexture("./assets/UI/baseCircle.png");
@@ -14,6 +14,7 @@ class StatusUI {
 			crystalColor[1] = Color::lightGreen;
 			crystalColor[2] = Color::lightBlue;
 		}
+
 		void update() {
 			crystalNum = PLAYER.getCrystalNum();
 			if (PLAYER.is2D()) {
@@ -21,6 +22,7 @@ class StatusUI {
 			}
 			rotateRadian -= 0.04f;
 		}
+
 		void draw() {
 			SHADER.setPS(PS::GENERAL);
 			SPRITE.drawSprite2D({ -545.0f, 277.0f }, { 108.0f, 102.0f }, TEXTURE.getTexture(baseCircleTex), Color::white);

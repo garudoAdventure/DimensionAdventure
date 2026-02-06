@@ -20,6 +20,7 @@ class Layer {
 			_gameObjs.reserve(500);
 			_stagePuzzles.reserve(3);
 		}
+
 		~Layer() {
 			for (GameObj* obj : _gameObjs) {
 				delete obj;
@@ -28,6 +29,7 @@ class Layer {
 				delete puzzle;
 			}
 		}
+
 		void update() {
 			for (GameObj* gameObj : _gameObjs) {
 				if (gameObj->isActive()) {
@@ -38,6 +40,7 @@ class Layer {
 				stagePuzzle->update();
 			}
 		}
+
 		void draw() {
 			for (GameObj* gameObj : _gameObjs) {
 				if (gameObj->isActive()) {
@@ -48,6 +51,7 @@ class Layer {
 				stagePuzzle->draw();
 			}
 		}
+
 		void drawBillboard() {
 			for (GameObj* gameObj : _gameObjs) {
 				if (gameObj->isActive()) {
@@ -55,6 +59,7 @@ class Layer {
 				}
 			}
 		}
+
 		void collisionCheck(bool is2D) {
 			for (GameObj* gameObj : _gameObjs) {
 				if (!gameObj->isActive()) continue;
@@ -64,9 +69,11 @@ class Layer {
 				stagePuzzle->collide(&PLAYER, is2D);
 			}
 		}
+
 		void addGameObj(GameObj* gameObj) {
 			_gameObjs.emplace_back(gameObj);
 		}
+
 		void addStagePuzzle(IStagePuzzle* stagePuzzle) {
 			_stagePuzzles.emplace_back(stagePuzzle);
 		}

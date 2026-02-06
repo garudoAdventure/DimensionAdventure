@@ -9,8 +9,12 @@
 
 class GetItemEvent : public IGameEvent {
 	public:
-		GetItemEvent(IGameEventHandler* gameEvent, Item* item, std::function<void()> callback) : _gameEvent(gameEvent), _item(item), _callback(callback) {
-			_dialog = new SystemDialog({ item->getName() });
+		static constexpr int SHOW_GET_ITEM_TIME = 300;
+
+		GetItemEvent(IGameEventHandler* gameEvent, Item* item, std::function<void()> callback) :
+			_gameEvent(gameEvent), _item(item), _triggerGetItemFn(callback)
+		{
+			_dialog = new SystemDialog({ item->getName() + L"をゲット！" });
 			_getItemSE = SOUND.loadSound("./assets/sound/getItem.wav");
 			SOUND.playSound(_getItemSE, 0);
 			SOUND.setVolume(gameEvent->getBgmId(), 0);
@@ -18,20 +22,22 @@ class GetItemEvent : public IGameEvent {
 		~GetItemEvent() {
 			delete _dialog;
 		}
+
 		void update() override {
-			if (_count == 300) {
-				_isEnd = true;
-				SOUND.setVolume(_gameEvent->getBgmId(), 0.3);
-				_callback();
-			}
-			else {
+			if (_count < SHOW_GET_ITEM_TIME) {
 				_count++;
 				_dialog->update();
+			} else {
+				_isEnd = true;
+				SOUND.setVolume(_gameEvent->getBgmId(), 0.3);
+				_triggerGetItemFn();
 			}
 		}
+
 		void draw() override {
 			_dialog->draw();
 		}
+
 		bool isEnd() override {
 			return _isEnd;
 		}
@@ -41,7 +47,7 @@ class GetItemEvent : public IGameEvent {
 		IGameEventHandler* _gameEvent;
 		Item* _item;
 		IDialog* _dialog;
-		std::function<void()> _callback;
+		std::function<void()> _triggerGetItemFn;
 		int _count = 0;
 		bool _isEnd = false;
 };

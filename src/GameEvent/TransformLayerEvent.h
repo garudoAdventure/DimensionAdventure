@@ -1,31 +1,35 @@
 ﻿#pragma once
 
 #include "IGameEvent.h"
-#include "LayerScreen.h"
+#include "LayerSwitcher.h"
 #include "./DirectX/DirectX.h"
 #include "./Player/Player.h"
 
 class TransformLayerEvent : public IGameEvent {
 	public:
-		TransformLayerEvent(LayerScreen* layerScreen) : _layerScreen(layerScreen) {
+		TransformLayerEvent(LayerSwitcher* layerScreen) : _layerSwitcher(layerScreen) {
+			_layerSwitcher->init();
 		}
+
 		void update() override {
-			_layerScreen->update();
-			if (!_layerScreen->selectLayer()) {
-				PLAYER.setLayer(_layerScreen->getCurrentLayer());
+			_layerSwitcher->update();
+			if (_layerSwitcher->isSelectLayerEnd()) {
+				PLAYER.setLayer(_layerSwitcher->getCurrentLayer());
 				_isEnd = true;
 			}
 		}
+
 		void draw() override {
 			DX3D.setTargetView();
-			DX3D.clear({0.0f, 0.0f, 0.0f, 1.0f});
-			_layerScreen->draw();
+			DX3D.clear({ 0.0f, 0.0f, 0.0f, 1.0f });
+			_layerSwitcher->draw();
 		}
+
 		bool isEnd() override {
 			return _isEnd;
 		}
 
 	private:
-		LayerScreen* _layerScreen;
+		LayerSwitcher* _layerSwitcher;
 		bool _isEnd = false;
 };

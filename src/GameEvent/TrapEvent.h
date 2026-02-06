@@ -23,38 +23,46 @@ class TrapEventFH : public IGameEvent {
 				{ Talker::SELF, L"ううわわわわわわわわわわわ！！" },
 			});
 		}
+
 		~TrapEventFH() {
 			delete _dialog[0];
 			delete _dialog[1];
 		}
+
 		void update() override {
 			PLAYER.update();
 			_gameEvent->updateField();
-			switch (_eventPhase) {
-				case 0:
-					_dialog[0]->update();
-					if (_dialog[0]->isEnd()) {
-						if (_startVibrationCount == 0) {
-							SOUND.stopSound(_gameEvent->getBgmId());
-							SOUND.playSound(_earthquakeSE, -1);
-						}
-						_gameEvent->cameraVibration(true);
-						_startVibrationCount++;
-						if (_startVibrationCount > 120) {
-							_eventPhase = 1;
-						}
+			if (!_isStartEarthquake) {
+				_dialog[0]->update();
+				if (_dialog[0]->isEnd()) {
+					if (_startVibrationCount == 0) {
+						SOUND.stopSound(_gameEvent->getBgmId());
+						SOUND.playSound(_earthquakeSE, -1);
 					}
-					break;
-				
-				case 1:
 					_gameEvent->cameraVibration(true);
-					_dialog[1]->update();
-					break;
+					_startVibrationCount++;
+					if (_startVibrationCount > 120) {
+						_isStartEarthquake = true;
+					}
+				}
+			}
+			else {
+				_gameEvent->cameraVibration(true);
+				_dialog[1]->update();
 			}
 		}
+
 		void draw() override {
-			_dialog[_eventPhase]->draw();
+			if (!_isStartEarthquake) {
+				if (!_dialog[0]->isEnd()) {
+					_dialog[0]->draw();
+				}
+			}
+			else {
+				_dialog[1]->draw();
+			}
 		}
+
 		bool isEnd() override {
 			return _dialog[1]->isEnd();
 		}
@@ -64,12 +72,13 @@ class TrapEventFH : public IGameEvent {
 		IGameEventHandler* _gameEvent;
 		unsigned int _earthquakeSE;
 		int _startVibrationCount = 0;
-		int _eventPhase = 0;
-		int _startCount = 0;
+		bool _isStartEarthquake = false;
 };
 
 class TrapEventSH : public IGameEvent {
 	public:
+		static constexpr int FADE_IN_TIME = 120;
+
 		TrapEventSH(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 			_dialog = new MessageDialog({
 				{ Talker::SELF, L"ううう......" },
@@ -86,30 +95,30 @@ class TrapEventSH : public IGameEvent {
 				{ Talker::SPIRIT, L"三つの水晶をすべて集めれば、元のレイヤーに戻れるはずだ。" },
 				{ Talker::SELF, L"わかりました。とりあえず探しに行きましょう。" },
 			});
+			_fadeCover = new FadeCover(FADE_IN_TIME);
 		}
+
 		~TrapEventSH() {
 			delete _dialog;
+			delete _fadeCover;
 		}
+
 		void update() override {
 			PLAYER.update();
 			_gameEvent->updateField();
-			if (startCount < 120) {
-				startCount++;
-				return;
+			if (_fadeCover->fadeIn()) {
+				_dialog->update();
 			}
-			_dialog->update();
 			if (_dialog->isEnd()) {
 				SOUND.playSound(_gameEvent->getBgmId(), -1);
 			}
 		}
+
 		void draw() override {
 			_dialog->draw();
-
-			Float4 coverColor = Color::black;
-			coverColor.a = 1.0f - startCount / 120.0f;
-			SHADER.setPS(PS::NO_TEX);
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, coverColor);
+			_fadeCover->draw();
 		}
+
 		bool isEnd() override {
 			return _dialog->isEnd();
 		}
@@ -117,5 +126,5 @@ class TrapEventSH : public IGameEvent {
 	private:
 		IDialog* _dialog;
 		IGameEventHandler* _gameEvent;
-		int startCount = 0;
+		FadeCover* _fadeCover;
 };

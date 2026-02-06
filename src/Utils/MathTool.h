@@ -26,6 +26,7 @@ class MathTool {
 
 		template<class T>
 		static T lerp(T start, T end, float step) {
+			step = clamp(step, 0.0f, 1.0f);
 			return start - (start - end) * step;
 		}
 

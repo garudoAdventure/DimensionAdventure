@@ -7,8 +7,8 @@ class LayerTutorialDialog : public IDialog {
 	public:
 		LayerTutorialDialog() {
 			_pos = { 0.0f, 0.0f };
-			_size = { 0.0f, 500.0f };
 			_margin = { 150.0f, 80.0f };
+			_size.y = 500.0f;
 			_dialogWidth = 800.0f;
 			_layerTex = TEXTURE.loadTexture("./assets/tutorial/layer.png");
 			_spaceTex = TEXTURE.loadTexture("./assets/keySpace.png");

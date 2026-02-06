@@ -13,7 +13,7 @@ Field::Field(const char* file) : filePath(file) {
 	_layer[3] = new Layer();
 
 	// Air wall
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < LAYER_NUM; i++) {
 		_layer[i]->addGameObj(new Wall(
 			MathTool::getCoordPos({ 19.5f, 10.0f, 11.0f }),
 			{ 40.0f * 3, 20.0f * 3, 1.0f * 3 }
@@ -48,7 +48,9 @@ void Field::load() {
 			case 1:
 			case 2:
 			case 3:
-				_layer[layerIdx]->addGameObj(new Block(pos, block.scale, Color::layerColor[layerIdx], MODEL.loadModel("./assets/model/block.fbx")));
+				_layer[layerIdx]->addGameObj(
+					new Block(pos, block.scale, Color::layerColor[layerIdx], MODEL.loadModel("./assets/model/block.fbx"))
+				);
 				break;
 		}
 	}

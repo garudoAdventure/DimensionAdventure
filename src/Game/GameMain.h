@@ -3,13 +3,13 @@
 #include "GameState.h"
 #include "Camera.h"
 #include "MazeBg.h"
-#include "StatusUI.h"
-#include "LayerScreen.h"
-#include "PostProcess.h"
+#include "CollectedItemUI.h"
+#include "LayerSwitcher.h"
 #include "./Field/Field.h"
 #include "./Field/FieldManager.h"
 #include "./GameEvent/IGameEvent.h"
 #include "./Game/IGameEventHandler.h"
+#include "./PostProcess/Bloom.h"
 #include <vector>
 
 class GameMain : public GameState, public IGameEventHandler {
@@ -41,10 +41,10 @@ class GameMain : public GameState, public IGameEventHandler {
 		Camera* camera;
 		Field* currentField;
 		FieldManager* fieldManager;
-		StatusUI statusUI;
-		LayerScreen* layerScreen;
-		PostProcess* postProcess;
+		CollectedItemUI* collectedItemUI;
+		LayerSwitcher* layerSwitcher;
 		RenderTexture* offscreenTex;
+		Bloom* bloomWorld;
 		CheckPoint currentCheckpoint = CheckPoint::JUMP;
 		std::vector<IGameEvent*> gameEventQueue;
 		Float3 savePointPos{ 0.0f, 0.0f, 0.0f };

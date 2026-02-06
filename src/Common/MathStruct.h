@@ -11,19 +11,23 @@ struct Float2 {
   Float2 operator+(const Float2& r) {
 	  return { x + r.x, y + r.y };
   }
+
   Float2& operator+=(const Float2& r) {
     x += r.x;
     y += r.y;
     return *this;
   }
+
   Float2 operator-(const Float2& r) {
 	  return { x - r.x, y - r.y };
   }
+
   Float2& operator-=(const Float2& r) {
     x -= r.x;
     y -= r.y;
     return *this;
   }
+
   Float2 operator*(const float r) {
     return { x * r, y * r };
   }
@@ -39,22 +43,27 @@ struct Int2 {
   Int2 operator+(const Int2& r) {
     return { x + r.x, y + r.y };
   }
+
   Int2& operator+=(const Int2& r) {
     x += r.x;
     y += r.y;
     return *this;
   }
+
   Int2 operator-(const Int2& r) {
     return { x - r.x, y - r.y };
   }
+
   Int2& operator-=(const Int2& r) {
     x -= r.x;
     y -= r.y;
     return *this;
   }
+
   Int2 operator*(const int r) {
     return { x * r, y * r };
   }
+
   Int2 operator/(const int r) {
     return { x / r, y / r };
   }
@@ -65,27 +74,40 @@ struct Float3 {
   float y;
   float z;
 
+  bool operator==(const Float3& r) {
+    return x == r.x && y == r.y && z == r.z;
+  }
+
   Float3 operator+(const Float3& r) {
 	  return { x + r.x, y + r.y, z + r.z };
   }
+
 	Float3& operator+=(const Float3& r) {
 		x += r.x;
 		y += r.y;
 		z += r.z;
 		return *this;
 	}
+
   Float3 operator-(const Float3& r) {
 	  return { x - r.x, y - r.y, z - r.z };
   }
+
 	Float3& operator-=(const Float3& r) {
 		x -= r.x;
 		y -= r.y;
 		z -= r.z;
 		return *this;
 	}
+
+  Float3 operator*(const int r) {
+    return { x * r, y * r, z * r };
+  }
+
   Float3 operator*(const float r) {
 	  return { x * r, y * r, z * r };
   }
+
   Float3 operator/(const float r) {
 	  return { x / r, y / r, z / r };
   }
@@ -99,24 +121,29 @@ struct Int3 {
   Int3 operator+(const Int3& r) {
     return { x + r.x, y + r.y, z + r.z };
   }
+
   Int3& operator+=(const Int3& r) {
     x += r.x;
     y += r.y;
     z += r.z;
     return *this;
   }
+
   Int3 operator-(const Int3& r) {
     return { x - r.x, y - r.y, z - r.z };
   }
+
   Int3& operator-=(const Int3& r) {
     x -= r.x;
     y -= r.y;
     z -= r.z;
     return *this;
   }
+
   Int3 operator*(const int r) {
     return { x * r, y * r, z * r };
   }
+
   Int3 operator/(const int r) {
     return { x / r, y / r, z / r };
   }
@@ -131,6 +158,7 @@ struct Float4 {
   Float4 operator+(const Float4& s) {
     return { r + s.r, g + s.g, b + s.b, a + s.a };
   }
+
   Float4& operator+=(const Float4& s) {
     r += s.r;
     g += s.g;
@@ -138,9 +166,11 @@ struct Float4 {
     a += s.a;
     return *this;
   }
+
   Float4 operator-(const Float4& s) {
     return { r - s.r, g - s.g, b - s.b, a - s.a };
   }
+
   Float4& operator-=(const Float4& s) {
     r -= s.r;
     g -= s.g;
@@ -148,9 +178,11 @@ struct Float4 {
     a -= s.a;
     return *this;
   }
+
   Float4 operator*(const float s) {
     return { r * s, g * s, b * s, a * s };
   }
+
   Float4 operator/(const float s) {
     return { r / s, g / s, b / s, a / s };
   }
@@ -165,6 +197,7 @@ struct Int4 {
   Int4 operator+(const Int4& r) {
     return { x + r.x, y + r.y, z + r.z, w + r.w };
   }
+
   Int4& operator+=(const Int4& r) {
     x += r.x;
     y += r.y;
@@ -172,9 +205,11 @@ struct Int4 {
     w += r.w;
     return *this;
   }
+
   Int4 operator-(const Int4& r) {
     return { x - r.x, y - r.y, z - r.z, w - r.w };
   }
+
   Int4& operator-=(const Int4& r) {
     x -= r.x;
     y -= r.y;
@@ -182,9 +217,11 @@ struct Int4 {
     w -= r.w;
     return *this;
   }
+
   Int4 operator*(const int r) {
     return { x * r, y * r, z * r, w * r };
   }
+
   Int4 operator/(const int r) {
     return { x / r, y / r, z / r, w / r };
   }
@@ -230,6 +267,6 @@ struct Light {
 };
 
 struct PixelTime {
-  float time;
+  int time = 0;
   Float3 dummy;
 };

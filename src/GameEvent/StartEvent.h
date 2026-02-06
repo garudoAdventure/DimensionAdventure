@@ -2,6 +2,7 @@
 
 #include "IGameEvent.h"
 #include "Sound.h"
+#include "FadeCover.h"
 #include "./Game/IGameEventHandler.h"
 #include "./Render/Shader.h"
 #include "./Render/Texture.h"
@@ -11,6 +12,8 @@
 
 class StartEvent : public IGameEvent {
 	public:
+		static constexpr int FADE_IN_TIME = 180;
+
 		StartEvent(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 			_dialog[0] = new MessageDialog({
 				{ Talker::SELF, L"......" },
@@ -32,47 +35,47 @@ class StartEvent : public IGameEvent {
 				{ Talker::SELF, L"わかりました。" },
 				{ Talker::SPIRIT, L"困ったときは、いつでも相談に乗ろう。" },
 			});
+			_fadeCover = new FadeCover(FADE_IN_TIME);
 		}
+
 		~StartEvent() {
 			delete _dialog[0];
 			delete _dialog[1];
+			delete _fadeCover;
 		}
+
 		void update() override {
 			PLAYER.update();
 			_gameEvent->updateField();
-			switch (_eventPhase) {
-				case 0:
-					_dialog[0]->update();
-					if (_dialog[0]->isEnd()) {
-						_coverCount++;
-						_coverColor.a = 1 - (_coverCount / 180.0f);
-						if (_coverCount == 180) {
-							_eventPhase = 1;
-						}
+			if (!_isWakeUp) {
+				_dialog[0]->update();
+				if (_dialog[0]->isEnd()) {
+					if (_fadeCover->fadeIn()) {
+						_isWakeUp = true;
 					}
-					break;
-				case 1:
-					_dialog[1]->update();
-					if (_dialog[1]->isEnd()) {
-						SOUND.setVolume(_gameEvent->getBgmId(), 0.3f);
-						SOUND.playSound(_gameEvent->getBgmId(), -1);
-					}
-					break;
+				}
 			}
-			
+			else {
+				_dialog[1]->update();
+				if (_dialog[1]->isEnd()) {
+					SOUND.setVolume(_gameEvent->getBgmId(), 0.3f);
+					SOUND.playSound(_gameEvent->getBgmId(), -1);
+				}
+			}			
 		}
+
 		void draw() override {
-			switch (_eventPhase) {
-				case 0:
-					SHADER.setPS(PS::NO_TEX);
-					SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _coverColor);
+			if (!_isWakeUp) {
+				_fadeCover->draw();
+				if (!_dialog[0]->isEnd()) {
 					_dialog[0]->draw();
-					break;
-				case 1:
-					_dialog[1]->draw();
-					break;
+				}
+			}
+			else {
+				_dialog[1]->draw();
 			}
 		}
+
 		bool isEnd() override {
 			return _dialog[1]->isEnd();
 		}
@@ -80,8 +83,7 @@ class StartEvent : public IGameEvent {
 	private:
 		IGameEventHandler* _gameEvent;
 		IDialog* _dialog[2];
+		FadeCover* _fadeCover;
 		bool _isEnd = false;
-		int _coverCount = 0;
-		Float4 _coverColor = Color::black;
-		int _eventPhase = 0;
+		bool _isWakeUp = false;
 };

@@ -5,7 +5,6 @@
 #include "./GameEvent/GetItemEvent.h"
 #include "./GameEvent/TrapEvent.h"
 #include "./GameEvent/LayerTrapEvent.h"
-#include "./GameEvent/GreenCrystalEvent.h"
 #include "./GameEvent/ShowDialogEvent.h"
 #include "./Dialog/LayerTutorialDialog.h"
 #include "./Dialog/MessageDialog.h"
@@ -18,11 +17,13 @@ class Crystal : public Item {
 		Crystal(Float3 pos, IGameEventHandler* gameEvent) : Item(pos, gameEvent) {
 			_model = MODEL.loadModel("./assets/model/crystal.fbx");
 		}
+
 		void update() override {
 			Item::update();
 			rotate += 0.01f;
 			_model->updateColor({_ambientColor.x, _ambientColor.y, _ambientColor.z, _ambientColor.w });
 		}
+
 		void draw() override {
 			Light light;
 			light.enable = true;
@@ -34,6 +35,7 @@ class Crystal : public Item {
 
 			_model->draw(_pos, { 0.0f, rotate, 0.0f });
 		}
+
 		ItemTag getTag() override {
 			return ItemTag::CRYSTAL;
 		}
@@ -51,6 +53,7 @@ class RedCrystal : public Crystal {
 		RedCrystal(Float3 pos, IGameEventHandler* gameEvent) : Crystal(pos, gameEvent) {
 			_ambientColor = { 0.4f, 0.2f, 0.3f, 1.0f };
 		}
+
 		void getItem() override {
 			unsigned int earthquakeSE = SOUND.loadSound("./assets/sound/earthquake.wav");
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
@@ -64,8 +67,9 @@ class RedCrystal : public Crystal {
 				_gameEvent->setCheckpoint(CheckPoint::RED_CRYSTAL);
 			}));
 		}
+
 		std::wstring getName() override {
-			return L"次元水晶（赤）をゲット！";
+			return L"次元水晶（赤）";
 		}
 };
 
@@ -74,6 +78,7 @@ class GreenCrystal : public Crystal {
 		GreenCrystal(Float3 pos, IGameEventHandler* gameEvent) : Crystal(pos, gameEvent) {
 			_ambientColor = { 0.2f, 0.3f, 0.2f, 1.0f };
 		}
+
 		void getItem() override {
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.addCrystalNum();
@@ -86,7 +91,9 @@ class GreenCrystal : public Crystal {
 						{ Talker::SPIRIT, L"今なら、別のレイヤーへ切り替えられるはずだ。" },
 					})
 				));
-				_gameEvent->addEvent(new ShowDialogEvent(new LayerTutorialDialog()));
+				_gameEvent->addEvent(new ShowDialogEvent(
+					new LayerTutorialDialog())
+				);
 				_gameEvent->addEvent(new ShowDialogEvent(
 					new MessageDialog({
 						{ Talker::SPIRIT, L"それぞれのレイヤー空間は、大体同じだが、実は微妙の違いがあるんだ。" },
@@ -98,8 +105,9 @@ class GreenCrystal : public Crystal {
 				_gameEvent->setCheckpoint(CheckPoint::GREEN_CRYSTAL);
 			}));
 		}
+
 		std::wstring getName() override {
-			return L"次元水晶（緑）をゲット！";
+			return L"次元水晶（緑）";
 		}
 };
 
@@ -108,6 +116,7 @@ class BlueCrystal : public Crystal {
 		BlueCrystal(Float3 pos, IGameEventHandler* gameEvent) : Crystal(pos, gameEvent) {
 			_ambientColor = { 0.2f, 0.2f, 0.5f, 1.0f };
 		}
+
 		void getItem() override {
 			_gameEvent->addEvent(new GetItemEvent(_gameEvent, this, [=]() {
 				PLAYER.addCrystalNum();
@@ -133,7 +142,8 @@ class BlueCrystal : public Crystal {
 			}));
 			_gameEvent->setCheckpoint(CheckPoint::BLUE_CRYSTAL);
 		}
+
 		std::wstring getName() override {
-			return L"次元水晶（青）をゲット！";
+			return L"次元水晶（青）";
 		}
 };

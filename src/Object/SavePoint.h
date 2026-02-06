@@ -11,13 +11,11 @@ class SavePoint : public GameObj {
 			_pos = pos;
 			_size = size;
 		}
+
 		void collide(GameObj* obj, bool is2D) override {
 			if (MathTool::checkCollision(this->getBox(), obj->getBox(), is2D)) {
 				_gameEvent->setSavePointPos(_pos);
 			}
-		}
-		void draw() override {
-			// 描画しない
 		}
 
 	private:

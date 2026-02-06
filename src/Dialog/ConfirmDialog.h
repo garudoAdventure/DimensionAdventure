@@ -9,12 +9,13 @@
 
 class ConfirmDialog : public IDialog {
 	public:
-		ConfirmDialog(std::vector<std::wstring> context, std::function<void()> callback) : _callback(callback) {
+		ConfirmDialog(std::vector<std::wstring> contentList, std::function<void()> callback) :
+			_contentList(contentList), _callback(callback)
+		{
 			_pos = { 0.0f, 200.0f };
-			_size = { 0.0f, 200.0f };
+			_size.y = 200.0f;
 			_dialogWidth = 500.0f;
-			_context = context;
-			_currentContentNum = _context.at(0).length();
+			_currentContentStrLen = _contentList.at(0).length();
 		}
 		void dialogUpdate() override {
 			if (Keyboard_IsKeyTrigger(KK_RIGHT)) {
@@ -30,15 +31,15 @@ class ConfirmDialog : public IDialog {
 				_isEnd = true;
 			}
 			if (_frameCount % 2 == 0) {
-				_contentIdx = std::min(_currentContentNum, _contentIdx + 1);
+				_contentIdx = std::min(_currentContentStrLen, _contentIdx + 1);
 			}
 			_frameCount++;
 		}
 		void dialogDraw() override {
-			std::wstring wstr = _context.at(_contextIdx).substr(0, _contentIdx);
+			std::wstring wstr = _contentList.at(_contentListIdx).substr(0, _contentIdx);
 			IDialog::drawStr(wstr, _pos);
 
-			if (_contentIdx != _currentContentNum) {
+			if (_contentIdx != _currentContentStrLen) {
 				return;
 			}
 			IDialog::drawStr(L"はい", { _pos.x + 50.0f, _pos.y - 80.0f });
@@ -54,6 +55,6 @@ class ConfirmDialog : public IDialog {
 	private:
 		bool _isConfirm = true;
 		std::function<void()> _callback;
-		std::vector<std::wstring> _context;
+		std::vector<std::wstring> _contentList;
 		int _frameCount = 0;
 };
