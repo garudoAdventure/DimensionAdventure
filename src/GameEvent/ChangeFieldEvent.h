@@ -56,16 +56,16 @@ class ChangeFieldEvent : public IGameEvent {
 			float coverScale = 0.0f;
 			switch (_status) {
 				case Status::FADE_OUT:
-					coverScale = MathTool::easeInQuad<float>(-1.6f, 30.0f, _count / 60.f);
-					SPRITE.drawSceneCover(_doorPos, { 1280.0f, 1280.0f }, TEXTURE.getTexture(_coverTex), coverScale);
+					coverScale = MathTool::easeInQuad<float>(-1.0f, 30.0f, _count / 60.f);
+					SPRITE.drawSceneCover(_doorPos, TEXTURE.getTexture(_coverTex), coverScale);
 					break;
 				case Status::LOADING:
 					SHADER.setPS(PS::NO_TEX);
 					SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 1280.0f }, { 0.0f, 0.0f, 0.0f, 1.0f });
 					break;
 				case Status::FADE_IN:
-					coverScale = MathTool::easeOutQuad<float>(20.0f, -2.0f, _count / 45.0f);
-					SPRITE.drawSceneCover(_doorPos, { 1280.0f, 1280.0f }, TEXTURE.getTexture(_coverTex), coverScale);
+					coverScale = MathTool::easeOutQuad<float>(20.0f, -1.0f, _count / 45.0f);
+					SPRITE.drawSceneCover(_doorPos, TEXTURE.getTexture(_coverTex), coverScale);
 					break;
 			}
 			SHADER.setSamplerState(SamplerState::WRAP);
