@@ -1,4 +1,4 @@
-Ôªø#pragma once
+#pragma once
 
 #include "Camera.h"
 #include "HALKeyboard.h"
@@ -38,7 +38,7 @@ public:
 		}
 		_cameraEye = _fixedCamera[0];
 		_bg = new SwitchLayerBg();
-		_dialog = new SystemDialog({ L"„Éõ„ÉØ„Ç§„Éà„É¨„Ç§„É§„Éº„ÇíÁô∫Ë¶ã„Åó„ÅüÔºÅ" });
+		_dialog = new SystemDialog({ L"ÉzÉèÉCÉgÉåÉCÉÑÅ[Çî≠å©ÇµÇΩÅI" });
 		_changeLayerSE = SOUND.loadSound("./assets/sound/changeLayer.wav");
 		_confirmLayerSE = SOUND.loadSound("./assets/sound/confirmLayer.wav");
 		_findWhiteLayerSE = SOUND.loadSound("./assets/sound/findWhiteLayer.wav");
@@ -58,6 +58,7 @@ public:
 		_startSwitchLayerAnimationCount = 0;
 		_isConfirmLayer = false;
 		_isSelectLayerEnd = false;
+		_commandIdx = 0;
 	}
 
 	void update() {
@@ -228,6 +229,7 @@ private:
 	int _correctCommandNum = 0;
 	bool _isFindWhiteLayer = false;
 	int _showDialogCount = 0;
+	int _commandIdx = 0;
 	enum KeyCommand {
 		NONE,
 		UP,
@@ -269,7 +271,6 @@ private:
 	}
 
 	void checkWhiteLayerCommand() {
-		static int currectIdx = 0;
 		if (_isWhiteLayerActive || _layerNum < 3) {
 			if (_isWhiteLayerActive && !_isFindWhiteLayer) {
 				_dialog->update();
@@ -291,12 +292,12 @@ private:
 		if (command == KeyCommand::NONE) {
 			return;
 		}
-		if (command != whiteLayerCommand[currectIdx]) {
-			currectIdx = 0;
+		if (command != whiteLayerCommand[_commandIdx]) {
+			_commandIdx = 0;
 		}
 		else {
-			currectIdx += 1;
-			if (currectIdx == 6) {
+			_commandIdx += 1;
+			if (_commandIdx == 6) {
 				_isWhiteLayerActive = true;
 				_gameEvent->setCheckpoint(CheckPoint::WHITE_LAYER);
 				SOUND.playSound(_findWhiteLayerSE, 0);
