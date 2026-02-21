@@ -16,7 +16,9 @@
 | Space 長押し | レイヤー切り替え |
 
 ### ダウンロード
-ダウンロード先：[次元迷宮](https://github.com/garudoAdventure/DimensionAdventure/releases/download/v1.0/DimensionAdventure.zip)
+ダウンロード先：<br>
+zipファイル：[次元迷宮](https://github.com/garudoAdventure/DimensionAdventure/releases/download/v1.0/DimensionAdventure.zip)<br>
+rarファイル：[次元迷宮](https://github.com/garudoAdventure/DimensionAdventure/releases/download/v1.0/DimensionAdventure.rar)
 
 ### 作品技術解説
 ポートフォリオ（PCでの閲覧を推奨）：https://garudoadventure.github.io/portfolioWeb/game1.html
