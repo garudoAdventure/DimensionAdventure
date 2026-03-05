@@ -4,7 +4,7 @@
 
 Field05::Field05(IGameEventHandler* gameEvent) : Field("./assets/map/map5.csv") {
 	for (int i = 0; i < LAYER_NUM; i++) {
-		_layer[i]->addGameObj(new OpenedDoor(
+		_layer.at(i)->addGameObj(new OpenedDoor(
 			MathTool::getCoordPos({ 3.0f, 1.5f, 10.0f }), 3, gameEvent,
 			MathTool::getCoordPos({ 35.0f, 1.1f, 5.0f })
 		));
@@ -12,7 +12,7 @@ Field05::Field05(IGameEventHandler* gameEvent) : Field("./assets/map/map5.csv") 
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			_layer[LayerType::RED]->addGameObj(new PuzzleDoor(
+			_layer.at(LayerType::RED)->addGameObj(new PuzzleDoor(
 				MathTool::getCoordPos({ 20.0f + 3 * i, 1.5f, 10.0f - 3 * j }),
 				(i == 1 && j == 1 ? 51 : 5), gameEvent,
 				MathTool::getCoordPos({ 20.0f + 3 * i, 1.1f, 10.0f - 3 * j - 1.0f })
@@ -20,7 +20,7 @@ Field05::Field05(IGameEventHandler* gameEvent) : Field("./assets/map/map5.csv") 
 		}
 	}
 
-	_layer[LayerType::RED]->addGameObj(new Epigraph(gameEvent,
+	_layer.at(LayerType::RED)->addGameObj(new Epigraph(gameEvent,
 		MathTool::getCoordPos({ 16.0f, 2.0f, 10.0f }),
 		Color::lightGreen,
 		L"「正しい順番で正しいドアに入れば道が開く」と記されている。"

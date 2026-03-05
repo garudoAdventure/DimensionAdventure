@@ -63,12 +63,12 @@ Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
 			float boneWeight = vertexWeight.mWeight;
 
 			int idx = 0;
-			while (idx < 4 && _vertexData[vertexID].boneWeight[idx] != 0.0f) {
+			while (idx < 4 && _vertexData.at(vertexID).boneWeight[idx] != 0.0f) {
 				idx++;
 			}
 			if (idx < 4) {
-				_vertexData[vertexID].boneIdx[idx] = boneID;
-				_vertexData[vertexID].boneWeight[idx] = boneWeight;
+				_vertexData.at(vertexID).boneIdx[idx] = boneID;
+				_vertexData.at(vertexID).boneWeight[idx] = boneWeight;
 			}
 		}
 	}
@@ -91,7 +91,7 @@ Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
 		desc.CPUAccessFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA data = {};
-		data.pSysMem = &_vertexData[0];
+		data.pSysMem = &_vertexData.at(0);
 		data.SysMemPitch = 0;
 		data.SysMemSlicePitch = 0;
 		DX3D.getDevice()->CreateBuffer(&desc, &data, &_vertexBuffer);
@@ -107,7 +107,7 @@ Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
 		desc.StructureByteStride = 0;
 
 		D3D11_SUBRESOURCE_DATA data = {};
-		data.pSysMem = &_indexData[0];
+		data.pSysMem = &_indexData.at(0);
 		data.SysMemPitch = 0;
 		data.SysMemSlicePitch = 0;
 		DX3D.getDevice()->CreateBuffer(&desc, &data, &_indexBuffer);
@@ -138,15 +138,15 @@ bool Mesh::updateBoneTransform(aiNode* node, aiMatrix4x4 globalTransform) {
 	if (_boneNameToID.find(nodeName) == _boneNameToID.end()) {
 		return false;
 	}
-	int boneID = _boneNameToID[nodeName];
-	aiMatrix4x4 mat = globalTransform * _boneOffset[boneID];
+	int boneID = _boneNameToID.at(nodeName);
+	aiMatrix4x4 mat = globalTransform * _boneOffset.at(boneID);
 	XMMATRIX boneMat = XMMATRIX(
 		(float)mat.a1, (float)mat.a2, (float)mat.a3, (float)mat.a4,
 		(float)mat.b1, (float)mat.b2, (float)mat.b3, (float)mat.b4,
 		(float)mat.c1, (float)mat.c2, (float)mat.c3, (float)mat.c4,
 		(float)mat.d1, (float)mat.d2, (float)mat.d3, (float)mat.d4
 	);
-	XMStoreFloat4x4(&_boneTransform[boneID], boneMat);
+	XMStoreFloat4x4(&_boneTransform.at(boneID), boneMat);
 	return true;
 }
 
@@ -180,7 +180,7 @@ void Mesh::draw(Float3 pos, Float3 radian, Float3 scale) {
 
 void Mesh::updateColor(Float4 color) {
 	for (int i = 0; i < _vertexData.size(); i++) {
-		_vertexData[i].color = { color.r, color.g, color.b, color.a };
+		_vertexData.at(i).color = { color.r, color.g, color.b, color.a };
 	}
 	DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &_vertexData[0], 0, 0);
 }

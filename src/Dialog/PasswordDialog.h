@@ -10,6 +10,7 @@
 #include "./GameEvent/ShowDialogEvent.h"
 #include "./GameEvent/ExitEvent.h"
 #include <string>
+#include <array>
 
 class PasswordDialog : public IDialog {
 	public:
@@ -45,21 +46,21 @@ class PasswordDialog : public IDialog {
 				SOUND.playSound(_speakSE, 0);
 				_isPushUp = true;
 				_pushBottonCount = 0;
-				_inputPassword[_selectDigit] = std::min(9, _inputPassword[_selectDigit] + 1);
+				_inputPassword.at(_selectDigit) = std::min(9, _inputPassword.at(_selectDigit) + 1);
 			}
 			if (Keyboard_IsKeyTrigger(KK_DOWN)) {
 				SOUND.playSound(_speakSE, 0);
 				_isPushDown = true;
 				_pushBottonCount = 0;
-				_inputPassword[_selectDigit] = std::max(0, _inputPassword[_selectDigit] - 1);
+				_inputPassword.at(_selectDigit) = std::max(0, _inputPassword.at(_selectDigit) - 1);
 			}
 			if (Keyboard_IsKeyTrigger(KK_ENTER)) {
 				_isEnd = true;
 				if (
-					_inputPassword[0] == 4 &&
-					_inputPassword[1] == 7 &&
-					_inputPassword[2] == 3 &&
-					_inputPassword[3] == 1
+					_inputPassword.at(0) == 4 &&
+					_inputPassword.at(1) == 7 &&
+					_inputPassword.at(2) == 3 &&
+					_inputPassword.at(3) == 1
 				) {
 					_gameEvent->addEvent(new ExitEvent(_gameEvent));
 				}
@@ -95,8 +96,8 @@ class PasswordDialog : public IDialog {
 				SHADER.setPS(PS::NO_TEX);
 				SPRITE.drawSprite2D(numberPos, { 40.0f, 60.0f }, Color::black);
 				SPRITE.drawSprite2DUV(
-					numberPos, { 26.0f, 38.0f }, TEXTURE.getTexture(_numberTex), numberColor[i],
-					{ (_inputPassword[i] % 10) * 0.1f, 0.0f }, { 0.1f, 1.0f }
+					numberPos, { 26.0f, 38.0f }, TEXTURE.getTexture(_numberTex), _numberColor.at(i),
+					{ (_inputPassword.at(i) % 10) * 0.1f, 0.0f}, {0.1f, 1.0f}
 				);
 
 				// 上矢印描画
@@ -123,8 +124,8 @@ class PasswordDialog : public IDialog {
 		bool _isPushDown = false;
 		int _pushBottonCount = 0;
 		int _selectDigit = 0;
-		int _inputPassword[4] = { 0, 0, 0, 0 };
-		const Float4 numberColor[4] = {
+		std::array<int, 4> _inputPassword { 0, 0, 0, 0 };
+		const std::array<Float4, 4> _numberColor {
 			Color::lightRed,
 			Color::lightGreen,
 			Color::lightBlue,

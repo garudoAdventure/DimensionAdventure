@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 
 #include "Camera.h"
 #include "HALKeyboard.h"
@@ -14,6 +14,7 @@
 #include "./Render/Sprite.h"
 #include "./PostProcess/Bloom.h"
 #include "./Utils/MathTool.h"
+#include <array>
 
 class LayerSwitcher {
 public:
@@ -25,20 +26,20 @@ public:
 	LayerSwitcher(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
 		const unsigned int border = TEXTURE.loadTexture("./assets/UI/border.png");
 		for (int i = 0; i < ALL_LAYER_NUM; i++) {
-			_layerTex[i] = new RenderTexture(1280.0f, 720.0f, Color::darkGray);
+			_layerTex.at(i) = new RenderTexture(1280.0f, 720.0f, Color::darkGray);
 			RenderTexture* borderTex = new RenderTexture(1280.0f, 720.0f);
 			borderTex->setTargetView();
 			borderTex->clear();
 			SHADER.begin();
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1267.0f, 713.0f }, TEXTURE.getTexture(border), Color::layerColor[(i + 1) % 4]);
+			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1267.0f, 713.0f }, TEXTURE.getTexture(border), Color::layerColor.at((i + 1) % 4));
 
-			_bloomBorder[i] = new Bloom(borderTex);
-			_bloomBorder[i]->setClipLuminance(false);
-			_bloomBorder[i]->update();
+			_bloomBorder.at(i) = new Bloom(borderTex);
+			_bloomBorder.at(i)->setClipLuminance(false);
+			_bloomBorder.at(i)->update();
 		}
-		_cameraEye = _fixedCamera[0];
+		_cameraEye = _fixedCamera.at(0);
 		_bg = new SwitchLayerBg();
-		_dialog = new SystemDialog({ L"ÉzÉèÉCÉgÉåÉCÉÑÅ[Çî≠å©ÇµÇΩÅI" });
+		_dialog = new SystemDialog({ L"„Éõ„ÉØ„Ç§„Éà„É¨„Ç§„É§„Éº„ÇíÁô∫Ë¶ã„Åó„ÅüÔºÅ" });
 		_changeLayerSE = SOUND.loadSound("./assets/sound/changeLayer.wav");
 		_confirmLayerSE = SOUND.loadSound("./assets/sound/confirmLayer.wav");
 		_findWhiteLayerSE = SOUND.loadSound("./assets/sound/findWhiteLayer.wav");
@@ -48,8 +49,8 @@ public:
 		delete _dialog;
 		delete _bg;
 		for (int i = 0; i < ALL_LAYER_NUM; i++) {
-			delete _layerTex[i];
-			delete _bloomBorder[i];
+			delete _layerTex.at(i);
+			delete _bloomBorder.at(i);
 		}
 	}
 
@@ -128,10 +129,10 @@ public:
 		for (int i = 0; i < ALL_LAYER_NUM; i++) {
 			_gameEvent->drawOffscreen((i + 1) % 4);
 
-			_layerTex[i]->setTargetView();
-			_layerTex[i]->clear();
+			_layerTex.at(i)->setTargetView();
+			_layerTex.at(i)->clear();
 			_gameEvent->drawGameScene((i + 1) % 4);
-			_bloomBorder[i]->drawBloom();
+			_bloomBorder.at(i)->drawBloom();
 		}
 	}
 
@@ -140,12 +141,12 @@ public:
 		SHADER.begin();
 		if (_isStartSwitchLayerAnimation) {
 			SHADER.set2DMatrix();
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _layerTex[_layerIdx]->getTex(), Color::white);
+			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, _layerTex.at(_layerIdx)->getTex(), Color::white);
 
 			float width = MathTool::lerp<float>(1280.0f, 1280.0f * 1.5f, (float)_startSwitchLayerAnimationCount / START_ANIMATION_TIME);
 			float height = MathTool::lerp<float>(720.0f, 720.0f * 1.5f, (float)_startSwitchLayerAnimationCount / START_ANIMATION_TIME);
 			white.a = MathTool::lerp<float>(1.0f, 0.5f, (float)_startSwitchLayerAnimationCount / START_ANIMATION_TIME);
-			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { width, height }, _layerTex[_layerIdx]->getTex(), white);
+			SPRITE.drawSprite2D({ 0.0f, 0.0f }, { width, height }, _layerTex.at(_layerIdx)->getTex(), white);
 			
 			return;
 		}
@@ -168,7 +169,7 @@ public:
 			SHADER.setProjection(SHADER.getPerspectiveMatrix());
 			SHADER.setMatrix();
 			white.a = alpha;
-			SPRITE.drawSprite3D({ 1280.0f, 720.0f }, _layerTex[idx]->getTex(), white);
+			SPRITE.drawSprite3D({ 1280.0f, 720.0f }, _layerTex.at(idx)->getTex(), white);
 		}
 		if (_isWhiteLayerActive && !_isFindWhiteLayer) {
 			if (!_dialog->isEnd()) {
@@ -191,8 +192,8 @@ private:
 	unsigned int _findWhiteLayerSE;
 
 	IGameEventHandler* _gameEvent;
-	RenderTexture* _layerTex[4];
-	Bloom* _bloomBorder[4];
+	std::array<RenderTexture*, 4> _layerTex;
+	std::array<Bloom*, 4> _bloomBorder;
 	SwitchLayerBg* _bg;
 	IDialog* _dialog;
 	
@@ -200,9 +201,9 @@ private:
 	Float3 _oldCameraEye;
 	int _moveEyeCount = 0;
 	int _cameraIdx = 0;
-	const Float3 _fixedCamera[2] = {
-		{ 0.0f, 0.0f, -30.0f },
-		{ -35.0f, 14.0f, -45.0f }
+	const std::array<Float3, 2> _fixedCamera {
+		Float3{ 0.0f, 0.0f, -30.0f },
+		Float3{ -35.0f, 14.0f, -45.0f }
 	};
 
 	Float3 _initLastLayerPos { 0.0f, 0.0f, 2.5f };
@@ -235,12 +236,12 @@ private:
 		UP,
 		DOWN
 	};
-	const KeyCommand whiteLayerCommand[6] = {
+	const std::array<KeyCommand, 6> whiteLayerCommand = {
 		UP, DOWN, UP, DOWN, DOWN, UP
 	};
 
 	bool moveCameraEye() {
-		_cameraEye = MathTool::lerp<Float3>(_oldCameraEye, _fixedCamera[_cameraIdx], (float)_moveEyeCount / MOVE_EYE_TIME);
+		_cameraEye = MathTool::lerp<Float3>(_oldCameraEye, _fixedCamera.at(_cameraIdx), (float)_moveEyeCount / MOVE_EYE_TIME);
 		_moveEyeCount = std::min(MOVE_EYE_TIME, _moveEyeCount + 1);
 		return _moveEyeCount != MOVE_EYE_TIME;
 	}
@@ -292,7 +293,7 @@ private:
 		if (command == KeyCommand::NONE) {
 			return;
 		}
-		if (command != whiteLayerCommand[_commandIdx]) {
+		if (command != whiteLayerCommand.at(_commandIdx)) {
 			_commandIdx = 0;
 		}
 		else {

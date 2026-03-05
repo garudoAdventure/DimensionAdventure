@@ -26,7 +26,7 @@ class FieldManager {
 			_fields.clear();
 		}
 		Field* getField(int id) {
-			return _fields[id];
+			return _fields.at(id);
 		}
 
 	private:

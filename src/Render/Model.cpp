@@ -51,7 +51,7 @@ Model::~Model() {
 }
 
 void Model::loadAnim(int animIdx) {
-	aiAnimation* aiAnim = _animations[animIdx];
+	aiAnimation* aiAnim = _animations.at(animIdx);
 	_animDuration = aiAnim->mDuration;
 	for (int i = 0; i < aiAnim->mNumChannels; i++) {
 		aiNodeAnim* pNodeAnim = aiAnim->mChannels[i];
@@ -87,15 +87,15 @@ void Model::updateNode(int frame, aiNode* node, aiMatrix4x4 parentTransform) {
 	bool animDataExist = animData.time.size() != 0;
 	if (animDataExist) {
 		for (int i = 0; i < animData.time.size(); i++) {
-			if (animData.time[i] <= frame) {
-				nodeTransform = animData.animTransformation[i];
+			if (animData.time.at(i) <= frame) {
+				nodeTransform = animData.animTransformation.at(i);
 			}
 		}
 	}
 
 	aiMatrix4x4 globalTransform = parentTransform * nodeTransform;
 	for (int i = 0; i < _meshes.size(); i++) {
-		 _meshes[i]->updateBoneTransform(
+		 _meshes.at(i)->updateBoneTransform(
 			 node, _globalInverseTransform * globalTransform
 		 );
 	}
@@ -108,13 +108,13 @@ void Model::draw(Float3 pos, Float3 radian, Float3 scale) {
 	DX3D.setDepthEnable(true);
 	SHADER.setPS(PS::NO_TEX);
 	for (int i = 0; i < _meshes.size(); i++) {
-		Mesh* mesh = _meshes[i];
+		Mesh* mesh = _meshes.at(i);
 		aiString texName;
 		aiMesh* aiMesh = _aiScene->mMeshes[i];
 		aiMaterial* aimaterial = _aiScene->mMaterials[aiMesh->mMaterialIndex];
 		aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
 		if (texName != aiString("")) {
-			TEXTURE.setTexture(_texture[texName.data]);
+			TEXTURE.setTexture(_texture.at(texName.data));
 			SHADER.setPS(PS::GENERAL);
 		}
 		mesh->draw(pos, radian, scale);

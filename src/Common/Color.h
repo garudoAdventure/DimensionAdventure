@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "MathStruct.h"
+#include <array>
 
 namespace Color {
 	const Float4 white = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -12,7 +13,7 @@ namespace Color {
 	const Float4 lightGreen = { 0.54f, 1.0f, 0.43f, 1.0f };
 	const Float4 lightBlue = { 0.43f, 0.54f, 1.0f, 1.0f };
 	const Float4 weakGray = { 0.2f, 0.2f, 0.2f, 0.2f };
-	const Float4 layerColor[4] = {
+	const std::array<Float4, 4> layerColor = {
 		white,
 		lightRed,
 		lightGreen,

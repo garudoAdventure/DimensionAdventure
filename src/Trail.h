@@ -5,6 +5,7 @@
 #include "./Render/Shader.h"
 #include "./Render/Texture.h"
 #include "./Common/MathStruct.h"
+#include <array>
 
 class Trail {
 public:
@@ -21,7 +22,7 @@ public:
 		tex = TEXTURE.loadTexture("./assets/rainbow.png");
 
 		for (int i = 0; i < TRAIL_LEN; i++) {
-			trailPos[i] = { initPos.x, initPos.y, initPos.z };
+			trailPos.at(i) = { initPos.x, initPos.y, initPos.z };
 		}
 	}
 
@@ -30,18 +31,18 @@ public:
 	}
 
 	void update() {
-		Vertex v[TRAIL_LEN * 2 - 2];
+		std::array<Vertex, TRAIL_LEN * 2 - 2> v;
 		Float3 cameraPos = { 0.0f, 0.0f, -30.0f };
 		for (int i = 0; i < TRAIL_LEN - 1; i++) {
 			const XMFLOAT3 cameraVec = {
-				cameraPos.x - trailPos[i].x,
-				cameraPos.y - trailPos[i].y,
-				cameraPos.z - trailPos[i].z,
+				cameraPos.x - trailPos.at(i).x,
+				cameraPos.y - trailPos.at(i).y,
+				cameraPos.z - trailPos.at(i).z,
 			};
 			const XMFLOAT3 trailVec = {
-				trailPos[i + 1].x - trailPos[i].x,
-				trailPos[i + 1].y - trailPos[i].y,
-				trailPos[i + 1].z - trailPos[i].z,
+				trailPos.at(i + 1).x - trailPos.at(i).x,
+				trailPos.at(i + 1).y - trailPos.at(i).y,
+				trailPos.at(i + 1).z - trailPos.at(i).z,
 			};
 			XMFLOAT3 crossVec = {
 				cameraVec.y * trailVec.z - cameraVec.z * trailVec.y,
@@ -55,26 +56,26 @@ public:
 			crossVec.y /= crossVecLen;
 			crossVec.z /= crossVecLen;
 
-			v[i * 2 + 0].postion = {
-				trailPos[i].x + crossVec.x * 0.01f,
-				trailPos[i].y + crossVec.y * 0.01f,
-				trailPos[i].z + crossVec.z * 0.01f
+			v.at(i * 2 + 0).postion = {
+				trailPos.at(i).x + crossVec.x * 0.01f,
+				trailPos.at(i).y + crossVec.y * 0.01f,
+				trailPos.at(i).z + crossVec.z * 0.01f
 			};
-			v[i * 2 + 1].postion = {
-				trailPos[i].x - crossVec.x * 0.01f,
-				trailPos[i].y - crossVec.y * 0.01f,
-				trailPos[i].z - crossVec.z * 0.01f
+			v.at(i * 2 + 1).postion = {
+				trailPos.at(i).x - crossVec.x * 0.01f,
+				trailPos.at(i).y - crossVec.y * 0.01f,
+				trailPos.at(i).z - crossVec.z * 0.01f
 			};
-			v[i * 2 + 0].texCoord = { ((i + frame * 2) % 100) * 0.01f, 0.6f };
-			v[i * 2 + 1].texCoord = { ((i + frame * 2) % 100) * 0.01f, 0.4f };
+			v.at(i * 2 + 0).texCoord = { ((i + frame * 2) % 100) * 0.01f, 0.6f };
+			v.at(i * 2 + 1).texCoord = { ((i + frame * 2) % 100) * 0.01f, 0.4f };
 
-			v[i * 2 + 0].normal = { 0.0f, 0.0f, -1.0f };
-			v[i * 2 + 1].normal = { 0.0f, 0.0f, -1.0f };
+			v.at(i * 2 + 0).normal = { 0.0f, 0.0f, -1.0f };
+			v.at(i * 2 + 1).normal = { 0.0f, 0.0f, -1.0f };
 
-			v[i * 2 + 0].color = { 1.0f, 1.0f, 1.0f, 1.0f };
-			v[i * 2 + 1].color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			v.at(i * 2 + 0).color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			v.at(i * 2 + 1).color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		}
-		DX3D.getDeviceContext()->UpdateSubresource(vertexBuffer, 0, NULL, &v[0], 0, 0);
+		DX3D.getDeviceContext()->UpdateSubresource(vertexBuffer, 0, NULL, &v, 0, 0);
 		frame++;
 	}
 
@@ -109,20 +110,20 @@ public:
 
 	void setPos(Float3 pos) {
 		for (int i = 0; i < TRAIL_LEN - 1; i++) {
-			trailPos[i] = trailPos[i + 1];
+			trailPos.at(i) = trailPos.at(i + 1);
 		}
-		trailPos[TRAIL_LEN - 1] = { pos.x, pos.y, pos.z };
+		trailPos.at(TRAIL_LEN - 1) = { pos.x, pos.y, pos.z };
 	}
 
 	void resetPos(Float3 pos) {
 		for (int i = 0; i < TRAIL_LEN; i++) {
-			trailPos[i] = { pos.x, pos.y, pos.z };
+			trailPos.at(i) = { pos.x, pos.y, pos.z };
 		}
 	}
 
 	private:
 		unsigned int tex;
-		XMFLOAT3 trailPos[TRAIL_LEN];
+		std::array<XMFLOAT3, TRAIL_LEN> trailPos;
 		ID3D11Buffer* vertexBuffer;
 		int frame = 0;
 };

@@ -167,7 +167,7 @@ int GameMain::getBgmId() {
 }
 
 void GameMain::drawGameScene(int layerIdx) {
-  mazeBg->draw(Color::layerColor[layerIdx]);
+  mazeBg->draw(Color::layerColor.at(layerIdx));
   currentField->draw(layerIdx);
   bloomWorld->drawBloom(3);
 

@@ -9,17 +9,18 @@
 #include "./Render/Sprite.h"
 #include "./Dialog/MessageDialog.h"
 #include "./Player/Player.h"
+#include <array>
 
 class StartEvent : public IGameEvent {
 	public:
 		static constexpr int FADE_IN_TIME = 180;
 
 		StartEvent(IGameEventHandler* gameEvent) : _gameEvent(gameEvent) {
-			_dialog[0] = new MessageDialog({
+			_dialog.at(0) = new MessageDialog({
 				{ Talker::SELF, L"......" },
 				{ Talker::SELF, L"うう......。" },
 			});
-			_dialog[1] = new MessageDialog({
+			_dialog.at(1) = new MessageDialog({
 				{ Talker::SELF, L"私は一体......？" },
 				{ Talker::SPIRIT, L"やっと目が覚めたか。" },
 				{ Talker::SELF, L"ここは......？" },
@@ -39,8 +40,8 @@ class StartEvent : public IGameEvent {
 		}
 
 		~StartEvent() {
-			delete _dialog[0];
-			delete _dialog[1];
+			delete _dialog.at(0);
+			delete _dialog.at(1);
 			delete _fadeCover;
 		}
 
@@ -48,16 +49,16 @@ class StartEvent : public IGameEvent {
 			PLAYER.update();
 			_gameEvent->updateField();
 			if (!_isWakeUp) {
-				_dialog[0]->update();
-				if (_dialog[0]->isEnd()) {
+				_dialog.at(0)->update();
+				if (_dialog.at(0)->isEnd()) {
 					if (_fadeCover->fadeIn()) {
 						_isWakeUp = true;
 					}
 				}
 			}
 			else {
-				_dialog[1]->update();
-				if (_dialog[1]->isEnd()) {
+				_dialog.at(1)->update();
+				if (_dialog.at(1)->isEnd()) {
 					SOUND.setVolume(_gameEvent->getBgmId(), 0.3f);
 					SOUND.playSound(_gameEvent->getBgmId(), -1);
 				}
@@ -67,22 +68,22 @@ class StartEvent : public IGameEvent {
 		void draw() override {
 			if (!_isWakeUp) {
 				_fadeCover->draw();
-				if (!_dialog[0]->isEnd()) {
-					_dialog[0]->draw();
+				if (!_dialog.at(0)->isEnd()) {
+					_dialog.at(0)->draw();
 				}
 			}
 			else {
-				_dialog[1]->draw();
+				_dialog.at(1)->draw();
 			}
 		}
 
 		bool isEnd() override {
-			return _dialog[1]->isEnd();
+			return _dialog.at(1)->isEnd();
 		}
 
 	private:
 		IGameEventHandler* _gameEvent;
-		IDialog* _dialog[2];
+		std::array<IDialog*, 2> _dialog;
 		FadeCover* _fadeCover;
 		bool _isEnd = false;
 		bool _isWakeUp = false;

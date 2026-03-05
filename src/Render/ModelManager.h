@@ -6,7 +6,7 @@ class ModelManager {
   public:
 		Model* loadModel(const std::string path) {
 			if (modelMap.find(path) != modelMap.end()) {
-				return modelMap[path];
+				return modelMap.at(path);
 			}
 			Model* model = new Model(path);
 			modelMap[path] = model;

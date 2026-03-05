@@ -6,6 +6,7 @@
 #include "./Render/Sprite.h"
 #include "./Common/Color.h"
 #include "./Utils/MathTool.h"
+#include <array>
 
 struct PixelConst {
   BOOL isVertical;
@@ -19,8 +20,8 @@ class Bloom {
     Bloom(RenderTexture* offscreenTex) : _offscreenTex(offscreenTex) {
       _offscreenCopyTex = new RenderTexture(1280, 720);
       for (int i = 0; i < 5; i++) {
-        _blurVTex[i] = new RenderTexture(1280 >> i, 720 >> i);
-        _blurTex[i] = new RenderTexture(1280 >> i, 720 >> i);
+        _blurVTex.at(i) = new RenderTexture(1280 >> i, 720 >> i);
+        _blurTex.at(i) = new RenderTexture(1280 >> i, 720 >> i);
       }
 
       D3D11_BUFFER_DESC desc = {};
@@ -37,8 +38,8 @@ class Bloom {
       SAFE_RELEASE(_pixelConstBuffer);
       delete _offscreenCopyTex;
       for (int i = 0; i < 5; i++) {
-        delete _blurVTex[i];
-        delete _blurTex[i];
+        delete _blurVTex.at(i);
+        delete _blurTex.at(i);
       }
     }
 
@@ -60,8 +61,8 @@ class Bloom {
       SHADER.setSamplerState(SamplerState::CLAMP);
       PixelConst pc;
       for (int i = 0; i < 5; i++) {
-        _blurVTex[i]->setTargetView();
-        _blurVTex[i]->clear();
+        _blurVTex.at(i)->setTargetView();
+        _blurVTex.at(i)->clear();
         pc.isVertical = true;
         pc.width = 1280 >> i;
         pc.height = 720 >> i;
@@ -70,17 +71,17 @@ class Bloom {
         DX3D.getDeviceContext()->PSSetConstantBuffers(0, 1, &_pixelConstBuffer);
         SPRITE.drawSprite2D(
           { 0.0f, 0.0f }, { pc.width, pc.height },
-          (i == 0 ? _offscreenCopyTex->getTex() : _blurTex[i - 1]->getTex()),
+          (i == 0 ? _offscreenCopyTex->getTex() : _blurTex.at(i - 1)->getTex()),
           Color::white,
           pc.width, pc.height
         );
 
-        _blurTex[i]->setTargetView();
-        _blurTex[i]->clear();
+        _blurTex.at(i)->setTargetView();
+        _blurTex.at(i)->clear();
         pc.isVertical = false;
         DX3D.getDeviceContext()->UpdateSubresource(_pixelConstBuffer, 0, NULL, &pc, 0, 0);
         DX3D.getDeviceContext()->PSSetConstantBuffers(0, 1, &_pixelConstBuffer);
-        SPRITE.drawSprite2D({ 0.0f, 0.0f }, { pc.width, pc.height }, _blurVTex[i]->getTex(), Color::white, pc.width, pc.height);
+        SPRITE.drawSprite2D({ 0.0f, 0.0f }, { pc.width, pc.height }, _blurVTex.at(i)->getTex(), Color::white, pc.width, pc.height);
       }
       DX3D.setViewport(1280.0f, 720.0f);
       SHADER.setSamplerState(SamplerState::WRAP);
@@ -97,7 +98,7 @@ class Bloom {
       DX3D.setBlendMode(BlendMode::REND_TEX);
       SHADER.setPS(PS::BLOOM);
       for (int i = 0; i < bloomPower; i++) {
-        ID3D11ShaderResourceView* tex = _blurTex[i]->getTex();
+        ID3D11ShaderResourceView* tex = _blurTex.at(i)->getTex();
         DX3D.getDeviceContext()->PSSetShaderResources(i, 1, &tex);
       }
       SPRITE.drawSprite2D({ 0.0f, 0.0f }, { 1280.0f, 720.0f }, Color::white);
@@ -114,7 +115,7 @@ class Bloom {
     ID3D11Buffer* _pixelConstBuffer;
     RenderTexture* _offscreenTex;
     RenderTexture* _offscreenCopyTex;
-    RenderTexture* _blurVTex[5];
-    RenderTexture* _blurTex[5];
+    std::array<RenderTexture*, 5> _blurVTex;
+    std::array<RenderTexture*, 5> _blurTex;
     bool needClipLuminance = false;
 };

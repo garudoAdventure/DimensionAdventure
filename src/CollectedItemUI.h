@@ -3,6 +3,7 @@
 #include "./Player/Player.h"
 #include "./Render/Texture.h"
 #include "./Render/Sprite.h"
+#include <array>
 
 class CollectedItemUI {
 	public:
@@ -10,9 +11,9 @@ class CollectedItemUI {
 			crystalTex = TEXTURE.loadTexture("./assets/UI/crystal.png");
 			circleArrowTex = TEXTURE.loadTexture("./assets/UI/circleArrow.png");
 			baseCircleTex = TEXTURE.loadTexture("./assets/UI/baseCircle.png");
-			crystalColor[0] = Color::lightRed;
-			crystalColor[1] = Color::lightGreen;
-			crystalColor[2] = Color::lightBlue;
+			crystalColor.at(0) = Color::lightRed;
+			crystalColor.at(1) = Color::lightGreen;
+			crystalColor.at(2) = Color::lightBlue;
 		}
 
 		void update() {
@@ -36,7 +37,7 @@ class CollectedItemUI {
 				SPRITE.drawSprite2DRotate(
 					{ -545.0f, 299.0f }, { 22.0f, 38.0f },
 					TEXTURE.getTexture(crystalTex), 2 * PI * i / 3.0f, { -545.0f, 277.0f },
-					crystalColor[i]
+					crystalColor.at(i)
 				);
 			}
 		}
@@ -47,5 +48,5 @@ class CollectedItemUI {
 		unsigned int baseCircleTex;
 		float rotateRadian = 0.0f;
 		int crystalNum = 0;
-		Float4 crystalColor[3];
+		std::array<Float4, 3> crystalColor;
 };

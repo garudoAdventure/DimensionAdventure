@@ -9,33 +9,33 @@
 #endif
 
 Texture::Texture() {
-  for (int i = 0; i < 256; i++) {
-    textureData[i].srv = NULL;
+  for (int i = 0; i < MAX_TEX_NUM; i++) {
+    textureData.at(i).srv = NULL;
   }
   textureDataCount = 0;
 }
 
 int Texture::loadTexture(const std::string& fileName) {
   for (int i = 0; i < textureDataCount; i++) {
-    if (textureData[i].filename == fileName) {
+    if (textureData.at(i).filename == fileName) {
       return i;
     }
   }
 
   // テクスチャ読み込み
-  wchar_t wFileName[256];
+  wchar_t wFileName[MAX_TEX_NUM];
   size_t ret;
-  mbstowcs_s(&ret, wFileName, fileName.c_str(), 256);
+  mbstowcs_s(&ret, wFileName, fileName.c_str(), MAX_TEX_NUM);
 
   TexMetadata metadata;
   ScratchImage image;
   LoadFromWICFile(wFileName, WIC_FLAGS_NONE, &metadata, image);
-  CreateShaderResourceView(DX3D.getDevice(), image.GetImages(), image.GetImageCount(), metadata, &textureData[textureDataCount].srv);
-  textureData[textureDataCount].width = (int)metadata.width;
-  textureData[textureDataCount].height = (int)metadata.height;
-  textureData[textureDataCount].filename = fileName;
+  CreateShaderResourceView(DX3D.getDevice(), image.GetImages(), image.GetImageCount(), metadata, &textureData.at(textureDataCount).srv);
+  textureData.at(textureDataCount).width = (int)metadata.width;
+  textureData.at(textureDataCount).height = (int)metadata.height;
+  textureData.at(textureDataCount).filename = fileName;
 
-  if (!textureData[textureDataCount].srv) {
+  if (!textureData.at(textureDataCount).srv) {
     return -1;
   }
 
@@ -50,5 +50,5 @@ ID3D11ShaderResourceView* Texture::getTexture(int texID) {
   if (texID < 0 || texID >= textureDataCount) {
     return NULL;
   }
-  return textureData[texID].srv;
+  return textureData.at(texID).srv;
 }

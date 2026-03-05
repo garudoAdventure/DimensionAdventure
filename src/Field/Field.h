@@ -6,6 +6,7 @@
 #include "./Common/MathStruct.h"
 #include "./Common/Color.h"
 #include "./Utils/MathTool.h"
+#include <array>
 
 class Field {
   public:
@@ -22,7 +23,7 @@ class Field {
 
 	protected:
 		const char* filePath;
-		Layer* _layer[LAYER_NUM];
+		std::array<Layer*, LAYER_NUM> _layer;
 };
 
 class Field00 : public Field {

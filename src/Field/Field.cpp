@@ -7,26 +7,26 @@
 #include "./Utils/CSVParser.h"
 
 Field::Field(const char* file) : filePath(file) {
-	_layer[0] = new Layer();
-	_layer[1] = new Layer();
-	_layer[2] = new Layer();
-	_layer[3] = new Layer();
+	_layer.at(0) = new Layer();
+	_layer.at(1) = new Layer();
+	_layer.at(2) = new Layer();
+	_layer.at(3) = new Layer();
 
 	// Air wall
 	for (int i = 0; i < LAYER_NUM; i++) {
-		_layer[i]->addGameObj(new Wall(
+		_layer.at(i)->addGameObj(new Wall(
 			MathTool::getCoordPos({ 19.5f, 10.0f, 11.0f }),
 			{ 40.0f * 3, 20.0f * 3, 1.0f * 3 }
 		));
-		_layer[i]->addGameObj(new Wall(
+		_layer.at(i)->addGameObj(new Wall(
 			MathTool::getCoordPos({ 19.5f, 10.0f, -1.0f }),
 			{ 40.0f * 3, 20.0f * 3, 1.0f * 3 }
 		));
-		_layer[i]->addGameObj(new Wall(
+		_layer.at(i)->addGameObj(new Wall(
 			MathTool::getCoordPos({ -1.0f, 10.0f, 5.0f }),
 			{ 1.0f * 3, 20.0f * 3, 11.0f * 3 }
 		));
-		_layer[i]->addGameObj(new Wall(
+		_layer.at(i)->addGameObj(new Wall(
 			MathTool::getCoordPos({ 40.0f, 10.0f, 5.0f }),
 			{ 1.0f * 3, 20.0f * 3, 11.0f * 3 }
 		));
@@ -48,8 +48,8 @@ void Field::load() {
 			case 1:
 			case 2:
 			case 3:
-				_layer[layerIdx]->addGameObj(
-					new Block(pos, block.scale, Color::layerColor[layerIdx], MODEL.loadModel("./assets/model/block.fbx"))
+				_layer.at(layerIdx)->addGameObj(
+					new Block(pos, block.scale, Color::layerColor.at(layerIdx), MODEL.loadModel("./assets/model/block.fbx"))
 				);
 				break;
 		}
@@ -57,24 +57,24 @@ void Field::load() {
 }
 
 void Field::update(int currentLayer) {
-	_layer[currentLayer]->update();
+	_layer.at(currentLayer)->update();
 }
 
 void Field::draw(int currentLayer) {
-	_layer[currentLayer]->draw();
+	_layer.at(currentLayer)->draw();
 }
 
 void Field::drawBillboard(int currentLayer) {
-	_layer[currentLayer]->drawBillboard();
+	_layer.at(currentLayer)->drawBillboard();
 }
 
 void Field::collisionCheck(bool is2D) {
-	_layer[PLAYER.getCurrentLayer()]->collisionCheck(is2D);
+	_layer.at(PLAYER.getCurrentLayer())->collisionCheck(is2D);
 }
 
 Field::~Field() {
-	delete _layer[0];
-	delete _layer[1];
-	delete _layer[2];
-	delete _layer[3];
+	delete _layer.at(0);
+	delete _layer.at(1);
+	delete _layer.at(2);
+	delete _layer.at(3);
 }

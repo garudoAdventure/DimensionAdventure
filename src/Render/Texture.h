@@ -1,8 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include "DirectXTex.h"
 #include "./DirectX/DirectX.h"
 #include <string>
+#include <array>
 
 struct TextureData {
   std::string filename;
@@ -13,12 +14,14 @@ struct TextureData {
 
 class Texture {
   public:
+    static constexpr int MAX_TEX_NUM = 256;
+
     int loadTexture(const std::string& fileName);
     void setTexture(ID3D11ShaderResourceView* tex);
     ID3D11ShaderResourceView* getTexture(int texID);
 
   private:
-    TextureData textureData[256];
+    std::array<TextureData, MAX_TEX_NUM> textureData;
     int textureDataCount = 0;
 
   private:
