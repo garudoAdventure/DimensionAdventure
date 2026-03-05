@@ -14,6 +14,7 @@ class Sprite {
 
   private:
 		ID3D11Buffer* _vertexBuffer;
+		ID3D11Buffer* _indexBuffer;
 		void draw();
 
   public:

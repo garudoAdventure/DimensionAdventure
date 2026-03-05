@@ -6,16 +6,34 @@
 #include "./DirectX/DirectX.h"
 
 Sprite::Sprite() {
-  D3D11_BUFFER_DESC vbDesc = {};
-  vbDesc.Usage = D3D11_USAGE_DEFAULT;
-  vbDesc.ByteWidth = sizeof(Vertex) * 4;
-  vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-  vbDesc.CPUAccessFlags = 0;
-  DX3D.getDevice()->CreateBuffer(&vbDesc, NULL, &_vertexBuffer);
+  {
+    D3D11_BUFFER_DESC desc = {};
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.ByteWidth = sizeof(Vertex) * 4;
+    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    desc.CPUAccessFlags = 0;
+    DX3D.getDevice()->CreateBuffer(&desc, NULL, &_vertexBuffer);
+  }
+  {
+    D3D11_BUFFER_DESC desc = {};
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.ByteWidth = sizeof(WORD) * 6;
+    desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    desc.CPUAccessFlags = 0;
+    DX3D.getDevice()->CreateBuffer(&desc, NULL, &_indexBuffer);
+
+    std::array<WORD, 6> indexData = { 0, 1, 2, 2, 1, 3 };
+    D3D11_SUBRESOURCE_DATA data = {};
+    data.pSysMem = &indexData.at(0);
+    data.SysMemPitch = 0;
+    data.SysMemSlicePitch = 0;
+    DX3D.getDevice()->CreateBuffer(&desc, &data, &_indexBuffer);
+  }
 }
 
 Sprite::~Sprite() {
   SAFE_RELEASE(_vertexBuffer);
+  SAFE_RELEASE(_indexBuffer);
 }
 
 void Sprite::drawSprite2D(Float2 pos, Float2 size, Float4 color) {
@@ -276,6 +294,7 @@ void Sprite::draw() {
   UINT stride = sizeof(Vertex);
   UINT offset = 0;
   DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-  DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-  DX3D.getDeviceContext()->Draw(4, 0);
+  DX3D.getDeviceContext()->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+  DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+  DX3D.getDeviceContext()->DrawIndexed(6, 0, 0);
 }

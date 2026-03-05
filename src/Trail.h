@@ -12,13 +12,40 @@ public:
 	static constexpr int TRAIL_LEN = 5;
 
 	Trail(Float3 initPos) {
-		D3D11_BUFFER_DESC desc = {};
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.ByteWidth = sizeof(Vertex) * (TRAIL_LEN * 2 - 2);
-		desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		desc.CPUAccessFlags = 0;
-		DX3D.getDevice()->CreateBuffer(&desc, NULL, &vertexBuffer);
+		{
+			D3D11_BUFFER_DESC desc = {};
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.ByteWidth = sizeof(Vertex) * (TRAIL_LEN * 2 - 2);
+			desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			desc.CPUAccessFlags = 0;
+			DX3D.getDevice()->CreateBuffer(&desc, NULL, &vertexBuffer);
+		}
+		{
+			D3D11_BUFFER_DESC desc = {};
+			desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+			desc.ByteWidth = sizeof(WORD) * (TRAIL_LEN - 2) * 6;
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.CPUAccessFlags = 0;
+			desc.MiscFlags = 0;
+			desc.StructureByteStride = 0;
 
+			std::array<WORD, (TRAIL_LEN - 2) * 6> indexData;
+			for (int i = 0; i < TRAIL_LEN - 2; i++) {
+				indexData.at(i * 6 + 0) = i * 2 + 0;
+				indexData.at(i * 6 + 1) = i * 2 + 1;
+				indexData.at(i * 6 + 2) = i * 2 + 2;
+				indexData.at(i * 6 + 3) = i * 2 + 2;
+				indexData.at(i * 6 + 4) = i * 2 + 1;
+				indexData.at(i * 6 + 5) = i * 2 + 3;
+			}
+
+			D3D11_SUBRESOURCE_DATA data = {};
+			data.pSysMem = &indexData.at(0);
+			data.SysMemPitch = 0;
+			data.SysMemSlicePitch = 0;
+			DX3D.getDevice()->CreateBuffer(&desc, &data, &indexBuffer);
+		}
+		
 		tex = TEXTURE.loadTexture("./assets/rainbow.png");
 
 		for (int i = 0; i < TRAIL_LEN; i++) {
@@ -28,6 +55,7 @@ public:
 
 	~Trail() {
 		SAFE_RELEASE(vertexBuffer);
+		SAFE_RELEASE(indexBuffer);
 	}
 
 	void update() {
@@ -86,7 +114,8 @@ public:
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 		DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-		DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		DX3D.getDeviceContext()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+		DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Light light;
 		light.enable = false;
@@ -105,7 +134,7 @@ public:
 
 		DX3D.setDepthEnable(false);
 
-		DX3D.getDeviceContext()->Draw(TRAIL_LEN * 2 - 2, 0);
+		DX3D.getDeviceContext()->DrawIndexed((TRAIL_LEN - 2) * 6, 0, 0);
 	}
 
 	void setPos(Float3 pos) {
@@ -125,5 +154,6 @@ public:
 		unsigned int tex;
 		std::array<XMFLOAT3, TRAIL_LEN> trailPos;
 		ID3D11Buffer* vertexBuffer;
+		ID3D11Buffer* indexBuffer;
 		int frame = 0;
 };
