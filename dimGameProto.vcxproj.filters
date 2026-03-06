@@ -394,6 +394,12 @@
     <FxCompile Include="shader\luminancePS.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
+    <FxCompile Include="shader\instanceVS.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\modelVS.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

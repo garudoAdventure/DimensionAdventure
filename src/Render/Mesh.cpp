@@ -1,8 +1,10 @@
-﻿#include "Mesh.h"
+#include "Mesh.h"
 #include "Shader.h"
 
 Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
 	_vertexData.reserve(aiMesh->mNumVertices);
+	_boneData.reserve(aiMesh->mNumVertices);
+	
 	aiMaterial* aiMaterial = aiMaterials[aiMesh->mMaterialIndex];
 	aiColor4D diffuseColor;
 	aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor);
@@ -19,11 +21,10 @@ Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
 			vertex.texCoord.x = aiMesh->mTextureCoords[0][i].x;
 			vertex.texCoord.y = aiMesh->mTextureCoords[0][i].y;
 		}
-		for (int j = 0; j < 4; j++) {
-			vertex.boneIdx[j] = 0;
-			vertex.boneWeight[j] = 0.0f;
-		}
 		_vertexData.emplace_back(vertex);
+		
+		Bone bone;
+		_boneData.emplace_back(bone);
 
 		if (vertex.postion.x > _maxVertex.x) {
 			_maxVertex.x = vertex.postion.x;
@@ -63,12 +64,12 @@ Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
 			float boneWeight = vertexWeight.mWeight;
 
 			int idx = 0;
-			while (idx < 4 && _vertexData.at(vertexID).boneWeight[idx] != 0.0f) {
+			while (idx < 4 && _boneData.at(vertexID).boneWeight[idx] != 0.0f) {
 				idx++;
 			}
 			if (idx < 4) {
-				_vertexData.at(vertexID).boneIdx[idx] = boneID;
-				_vertexData.at(vertexID).boneWeight[idx] = boneWeight;
+				_boneData.at(vertexID).boneIdx[idx] = boneID;
+				_boneData.at(vertexID).boneWeight[idx] = boneWeight;
 			}
 		}
 	}
@@ -99,6 +100,22 @@ Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
 
 	{
 		D3D11_BUFFER_DESC desc = {};
+		desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		desc.ByteWidth = sizeof(Bone) * _vertexData.size();
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.MiscFlags = 0;
+		desc.StructureByteStride = 0;
+		desc.CPUAccessFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA data = {};
+		data.pSysMem = &_boneData.at(0);
+		data.SysMemPitch = 0;
+		data.SysMemSlicePitch = 0;
+		DX3D.getDevice()->CreateBuffer(&desc, &data, &_boneVtxBuffer);
+	}
+
+	{
+		D3D11_BUFFER_DESC desc = {};
 		desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		desc.ByteWidth = sizeof(WORD) * _indexData.size();
 		desc.Usage = D3D11_USAGE_DEFAULT;
@@ -122,13 +139,13 @@ Mesh::Mesh(aiMesh* aiMesh, aiMaterial** aiMaterials) {
 		desc.MiscFlags = 0;
 		desc.StructureByteStride = 0;
 
-		DX3D.getDevice()->CreateBuffer(&desc, NULL, &_boneBuffer);
+		DX3D.getDevice()->CreateBuffer(&desc, NULL, &_boneConstBuffer);
 	}
 }
 
 void Mesh::update() {
 	if (_boneTransform.size() > 0) {
-		DX3D.getDeviceContext()->UpdateSubresource(_boneBuffer, 0, NULL, &_boneTransform[0], 0, 0);
+		DX3D.getDeviceContext()->UpdateSubresource(_boneConstBuffer, 0, NULL, &_boneTransform[0], 0, 0);
 	}
 	DX3D.getDeviceContext()->UpdateSubresource(_vertexBuffer, 0, NULL, &_vertexData[0], 0, 0);
 }
@@ -168,14 +185,22 @@ void Mesh::draw(Float3 pos, Float3 radian, Float3 scale) {
 
 	SHADER.setWorld(world);
 	SHADER.setMatrix();
-
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
+	SHADER.setVS(VS::MODEL);
+	{
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		DX3D.getDeviceContext()->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
+	}
+	{
+		UINT stride = sizeof(Bone);
+		UINT offset = 0;
+		DX3D.getDeviceContext()->IASetVertexBuffers(1, 1, &_boneVtxBuffer, &stride, &offset);
+	}
 	DX3D.getDeviceContext()->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-	DX3D.getDeviceContext()->VSSetConstantBuffers(1, 1, &_boneBuffer);
+	DX3D.getDeviceContext()->VSSetConstantBuffers(1, 1, &_boneConstBuffer);
 	DX3D.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	DX3D.getDeviceContext()->DrawIndexed(_indexData.size(), 0, 0);
+	SHADER.setVS(VS::GENERAL);
 }
 
 void Mesh::updateColor(Float4 color) {

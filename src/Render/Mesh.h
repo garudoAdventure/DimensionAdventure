@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <assimp/scene.h>
 #include <d3d11.h>
@@ -25,9 +25,11 @@ class Mesh {
 
   private:
 		ID3D11Buffer* _vertexBuffer = nullptr;
+		ID3D11Buffer* _boneVtxBuffer = nullptr;
 		ID3D11Buffer* _indexBuffer = nullptr;
-		ID3D11Buffer* _boneBuffer = nullptr;
+		ID3D11Buffer* _boneConstBuffer = nullptr;
 		std::vector<Vertex> _vertexData;
+		std::vector<Bone> _boneData;
 		std::vector<WORD> _indexData;
 		std::vector<aiMatrix4x4> _boneOffset;
 		std::vector<XMFLOAT4X4> _boneTransform;

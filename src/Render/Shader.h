@@ -8,6 +8,8 @@
 
 enum class VS {
 	GENERAL,
+	MODEL,
+	INSTANCE
 };
 
 enum class PS {
@@ -36,7 +38,7 @@ class Shader {
 		void setView(Float3 e, Float3 f);
 		void set2DMatrix();
 		void setMatrix();
-		void setMatrix(Transpose& mat);
+		void setMatrix(Transform& mat);
 		void setProjection(XMMATRIX projMatrix);
 		void setLight(const Light light);
 		XMMATRIX getOrthoMatrix();
@@ -47,6 +49,8 @@ class Shader {
 		ID3D11Device* _device = nullptr;
 		ID3D11DeviceContext* _deviceContext = nullptr;
 		ID3D11VertexShader* _vertexShader = nullptr;
+		ID3D11VertexShader* _modelVS = nullptr;
+		ID3D11VertexShader* _instanceVS = nullptr;
 		ID3D11PixelShader* _pixelShader = nullptr;
 		ID3D11PixelShader* _noTexShader = nullptr;
 		ID3D11PixelShader* _luminanceShader = nullptr;
@@ -56,6 +60,8 @@ class Shader {
 		ID3D11PixelShader* _noiseShader = nullptr;
 		ID3D11PixelShader* _spiralShader = nullptr;
 		ID3D11InputLayout* _inputLayout = nullptr;
+		ID3D11InputLayout* _modelInputLayout = nullptr;
+		ID3D11InputLayout* _instanceInputLayout = nullptr;
 		ID3D11Buffer* _matrixBuffer = nullptr;
 		ID3D11Buffer* _lightBuffer = nullptr;
 		ID3D11SamplerState* _samplerWrapState = nullptr;

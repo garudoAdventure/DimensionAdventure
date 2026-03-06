@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Camera.h"
 #include "./DirectX/DirectX.h"
@@ -126,7 +126,7 @@ public:
 		XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 		XMMATRIX view = XMMatrixLookAtLH(eye, focus, up);
 
-		Transpose matrix;
+		Transform matrix;
 		matrix.world = XMMatrixIdentity();
 		matrix.view = view;
 		matrix.projection = SHADER.getPerspectiveMatrix();

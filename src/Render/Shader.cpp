@@ -1,4 +1,4 @@
-ï»¿#include "Shader.h"
+#include "Shader.h"
 #include "./DirectX/Directx.h"
 #include <fstream>
 
@@ -6,35 +6,86 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   _device = device;
   _deviceContext = deviceContext;
 
-  std::ifstream ifs_vs("vertexShader.cso", std::ios::binary);
-  ifs_vs.seekg(0, std::ios::end); // ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’æœ«å°¾ã«ç§»å‹•
-  std::streamsize filesize = ifs_vs.tellg(); // ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã®ä½ç½®ã‚’å–å¾—ï¼ˆã¤ã¾ã‚Šãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºï¼‰
-  ifs_vs.seekg(0, std::ios::beg); // ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’å…ˆé ­ã«æˆ»ã™
+  {
+    std::ifstream ifs_vs("vertexShader.cso", std::ios::binary);
+    ifs_vs.seekg(0, std::ios::end); // ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ð––”ö‚ÉˆÚ“®
+    std::streamsize filesize = ifs_vs.tellg(); // ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ÌˆÊ’u‚ðŽæ“¾i‚Â‚Ü‚èƒtƒ@ƒCƒ‹ƒTƒCƒYj
+    ifs_vs.seekg(0, std::ios::beg); // ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ðæ“ª‚É–ß‚·
 
-  // ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãŸã‚ã®ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
-  unsigned char* vsbinary_pointer = new unsigned char[filesize];
-  ifs_vs.read((char*)vsbinary_pointer, filesize); // ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
-  ifs_vs.close(); // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹
+    // ƒoƒCƒiƒŠƒf[ƒ^‚ðŠi”[‚·‚é‚½‚ß‚Ìƒoƒbƒtƒ@‚ðŠm•Û
+    unsigned char* vsbinary_pointer = new unsigned char[filesize];
+    ifs_vs.read((char*)vsbinary_pointer, filesize); // ƒoƒCƒiƒŠƒf[ƒ^‚ð“Ç‚Ýž‚Þ
+    ifs_vs.close(); // ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
 
-  _device->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &_vertexShader);
+    _device->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &_vertexShader);
 
-  D3D11_INPUT_ELEMENT_DESC layout[] = {
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    { "BONE_IDX", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    { "BONE_WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-  };
-  _device->CreateInputLayout(&layout[0], 6, vsbinary_pointer, filesize, &_inputLayout);
-  _deviceContext->IASetInputLayout(_inputLayout);
+    D3D11_INPUT_ELEMENT_DESC layout[] = {
+      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+      { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+    _device->CreateInputLayout(&layout[0], 4, vsbinary_pointer, filesize, &_inputLayout);
+    
+    delete[] vsbinary_pointer; // ƒoƒCƒiƒŠƒf[ƒ^‚Ìƒoƒbƒtƒ@‚ð‰ð•ú
+  }
+  {
+    std::ifstream ifs_vs("modelVS.cso", std::ios::binary);
+    ifs_vs.seekg(0, std::ios::end);
+    std::streamsize filesize = ifs_vs.tellg();
+    ifs_vs.seekg(0, std::ios::beg);
 
-  delete[] vsbinary_pointer; // ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ã®ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    unsigned char* vsbinary_pointer = new unsigned char[filesize];
+    ifs_vs.read((char*)vsbinary_pointer, filesize);
+    ifs_vs.close();
 
+    _device->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &_modelVS);
+
+    D3D11_INPUT_ELEMENT_DESC layout[] = {
+      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+      { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      
+      { "BONE_IDX", 0, DXGI_FORMAT_R32G32B32A32_UINT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      { "BONE_WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+    _device->CreateInputLayout(&layout[0], 6, vsbinary_pointer, filesize, &_modelInputLayout);
+
+    delete[] vsbinary_pointer;
+  }
+  {
+    std::ifstream ifs_vs("instanceVS.cso", std::ios::binary);
+    ifs_vs.seekg(0, std::ios::end);
+    std::streamsize filesize = ifs_vs.tellg();
+    ifs_vs.seekg(0, std::ios::beg);
+
+    unsigned char* vsbinary_pointer = new unsigned char[filesize];
+    ifs_vs.read((char*)vsbinary_pointer, filesize);
+    ifs_vs.close();
+
+    _device->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &_instanceVS);
+
+    D3D11_INPUT_ELEMENT_DESC layout[] = {
+      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+      { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+
+      { "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+      { "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+      { "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+      { "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+      { "INS_COL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+    };
+    _device->CreateInputLayout(&layout[0], 9, vsbinary_pointer, filesize, &_instanceInputLayout);
+
+    delete[] vsbinary_pointer;
+  }
   {
     std::ifstream ifs_ps("pixelShader.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
-    filesize = ifs_ps.tellg();
+    std::streamsize filesize = ifs_ps.tellg();
     ifs_ps.seekg(0, std::ios::beg);
     unsigned char* psbinary_pointer = new unsigned char[filesize];
     ifs_ps.read((char*)psbinary_pointer, filesize);
@@ -46,7 +97,7 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   {
     std::ifstream ifs_ps("noTexPS.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
-    filesize = ifs_ps.tellg();
+    std::streamsize filesize = ifs_ps.tellg();
     ifs_ps.seekg(0, std::ios::beg);
     unsigned char* psbinary_pointer = new unsigned char[filesize];
     ifs_ps.read((char*)psbinary_pointer, filesize);
@@ -58,7 +109,7 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   {
     std::ifstream ifs_ps("luminancePS.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
-    filesize = ifs_ps.tellg();
+    std::streamsize filesize = ifs_ps.tellg();
     ifs_ps.seekg(0, std::ios::beg);
     unsigned char* psbinary_pointer = new unsigned char[filesize];
     ifs_ps.read((char*)psbinary_pointer, filesize);
@@ -70,7 +121,7 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   {
     std::ifstream ifs_ps("blurPS.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
-    filesize = ifs_ps.tellg();
+    std::streamsize filesize = ifs_ps.tellg();
     ifs_ps.seekg(0, std::ios::beg);
     unsigned char* psbinary_pointer = new unsigned char[filesize];
     ifs_ps.read((char*)psbinary_pointer, filesize);
@@ -82,7 +133,7 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   {
     std::ifstream ifs_ps("bloomPS.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
-    filesize = ifs_ps.tellg();
+    std::streamsize filesize = ifs_ps.tellg();
     ifs_ps.seekg(0, std::ios::beg);
     unsigned char* psbinary_pointer = new unsigned char[filesize];
     ifs_ps.read((char*)psbinary_pointer, filesize);
@@ -94,7 +145,7 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   {
     std::ifstream ifs_ps("glitchPS.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
-    filesize = ifs_ps.tellg();
+    std::streamsize filesize = ifs_ps.tellg();
     ifs_ps.seekg(0, std::ios::beg);
     unsigned char* psbinary_pointer = new unsigned char[filesize];
     ifs_ps.read((char*)psbinary_pointer, filesize);
@@ -106,7 +157,7 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   {
     std::ifstream ifs_ps("noisePS.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
-    filesize = ifs_ps.tellg();
+    std::streamsize filesize = ifs_ps.tellg();
     ifs_ps.seekg(0, std::ios::beg);
     unsigned char* psbinary_pointer = new unsigned char[filesize];
     ifs_ps.read((char*)psbinary_pointer, filesize);
@@ -118,7 +169,7 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   {
     std::ifstream ifs_ps("sprialPS.cso", std::ios::binary);
     ifs_ps.seekg(0, std::ios::end);
-    filesize = ifs_ps.tellg();
+    std::streamsize filesize = ifs_ps.tellg();
     ifs_ps.seekg(0, std::ios::beg);
     unsigned char* psbinary_pointer = new unsigned char[filesize];
     ifs_ps.read((char*)psbinary_pointer, filesize);
@@ -129,12 +180,13 @@ Shader::Shader(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
   }
   
   _deviceContext->VSSetShader(_vertexShader, NULL, 0);
+  _deviceContext->IASetInputLayout(_inputLayout);
   _deviceContext->PSSetShader(_pixelShader, NULL, 0);
 
   {
     D3D11_BUFFER_DESC desc;
     desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.ByteWidth = sizeof(Transpose);
+    desc.ByteWidth = sizeof(Transform);
     desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = 0;
@@ -218,9 +270,20 @@ void Shader::begin() {
 
 void Shader::setVS(VS vs) {
   switch (vs) {
-  case VS::GENERAL:
-    _deviceContext->VSSetShader(_vertexShader, NULL, 0);
-    break;
+    case VS::GENERAL:
+      _deviceContext->IASetInputLayout(_inputLayout);
+      _deviceContext->VSSetShader(_vertexShader, NULL, 0);
+      break;
+
+    case VS::MODEL:
+      _deviceContext->IASetInputLayout(_modelInputLayout);
+      _deviceContext->VSSetShader(_modelVS, NULL, 0);
+      break;
+
+    case VS::INSTANCE:
+      _deviceContext->IASetInputLayout(_instanceInputLayout);
+      _deviceContext->VSSetShader(_instanceVS, NULL, 0);
+      break;
   }
 }
 
@@ -277,7 +340,7 @@ void Shader::setView(Float3 e, Float3 f) {
 }
 
 void Shader::set2DMatrix() {
-  Transpose mat;
+  Transform mat;
   mat.world = XMMatrixIdentity();
   mat.view = XMMatrixIdentity();
   mat.projection = getOrthoMatrix();
@@ -292,7 +355,7 @@ void Shader::setMatrix() {
   _deviceContext->UpdateSubresource(_matrixBuffer, 0, nullptr, &transpose, 0, 0);
 }
 
-void Shader::setMatrix(Transpose& mat) {
+void Shader::setMatrix(Transform& mat) {
   XMFLOAT4X4 transpose[3];
   XMStoreFloat4x4(&transpose[0], XMMatrixTranspose(mat.world));
   XMStoreFloat4x4(&transpose[1], XMMatrixTranspose(mat.view));

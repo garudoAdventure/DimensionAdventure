@@ -250,11 +250,19 @@ struct Vertex {
   XMFLOAT4 color;
   XMFLOAT3 normal;
   XMFLOAT2 texCoord;
+};
+
+struct Bone {
   INT boneIdx[4] = { 0, 0, 0, 0 };
   FLOAT boneWeight[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 };
 
-struct Transpose {
+struct Instance {
+  XMMATRIX world;
+  XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+};
+
+struct Transform {
   XMMATRIX world;
   XMMATRIX view;
   XMMATRIX projection;
