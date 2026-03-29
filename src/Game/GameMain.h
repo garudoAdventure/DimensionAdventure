@@ -10,6 +10,7 @@
 #include "./GameEvent/IGameEvent.h"
 #include "./Game/IGameEventHandler.h"
 #include "./PostProcess/Bloom.h"
+#include "./PostProcess/ColorGrading.h"
 #include <vector>
 
 class GameMain : public GameState, public IGameEventHandler {
@@ -45,6 +46,8 @@ class GameMain : public GameState, public IGameEventHandler {
 		LayerSwitcher* layerSwitcher;
 		RenderTexture* offscreenTex;
 		Bloom* bloomWorld;
+		RenderTexture* colorGradingTex;
+		ColorGrading* colorGrading;
 		CheckPoint currentCheckpoint = CheckPoint::JUMP;
 		std::vector<IGameEvent*> gameEventQueue;
 		Float3 savePointPos{ 0.0f, 0.0f, 0.0f };

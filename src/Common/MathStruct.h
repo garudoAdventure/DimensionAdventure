@@ -278,3 +278,10 @@ struct PixelTime {
   int time = 0;
   Float3 dummy;
 };
+
+struct ColorSetting {
+  XMFLOAT3 whiteBalance = { 1.0f, 1.0f, 1.0f };
+  float saturation = 1.0f;
+  float contrast = 1.0f;
+  XMFLOAT3 dummy;
+};

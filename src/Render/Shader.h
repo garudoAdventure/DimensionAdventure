@@ -20,7 +20,8 @@ enum class PS {
 	BLOOM,
 	GLITCH,
 	NOISE,
-	SPIRAL
+	SPIRAL,
+	COLOR_GRADING
 };
 
 enum class SamplerState {
@@ -59,6 +60,7 @@ class Shader {
 		ID3D11PixelShader* _glitchShader = nullptr;
 		ID3D11PixelShader* _noiseShader = nullptr;
 		ID3D11PixelShader* _spiralShader = nullptr;
+		ID3D11PixelShader* _colorGradingShader = nullptr;
 		ID3D11InputLayout* _inputLayout = nullptr;
 		ID3D11InputLayout* _modelInputLayout = nullptr;
 		ID3D11InputLayout* _instanceInputLayout = nullptr;

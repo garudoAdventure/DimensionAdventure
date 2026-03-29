@@ -19,6 +19,8 @@ GameMain::GameMain() {
   layerSwitcher = new LayerSwitcher(this);
   offscreenTex = new RenderTexture(1280, 720);
   bloomWorld = new Bloom(offscreenTex);
+  colorGradingTex = new RenderTexture(1280, 720);
+  colorGrading = new ColorGrading(colorGradingTex);
   mazeBg = new MazeBg();
   collectedItemUI = new CollectedItemUI();
 
@@ -167,12 +169,7 @@ int GameMain::getBgmId() {
 }
 
 void GameMain::drawGameScene(int layerIdx) {
-  mazeBg->draw(Color::layerColor.at(layerIdx));
-  currentField->draw(layerIdx);
-  bloomWorld->drawBloom(3);
-
-  currentField->drawBillboard(layerIdx);
-  PLAYER.draw();
+  colorGrading->draw(layerIdx);
 }
 
 void GameMain::drawOffscreen(int layerIdx) {
@@ -182,4 +179,13 @@ void GameMain::drawOffscreen(int layerIdx) {
   PLAYER.getSpirit()->draw();
   bloomWorld->setClipLuminance(true);
   bloomWorld->update();
+
+  colorGradingTex->setTargetView();
+  colorGradingTex->clear();
+  mazeBg->draw(Color::layerColor.at(layerIdx));
+  currentField->draw(layerIdx);
+  bloomWorld->drawBloom(3);
+
+  currentField->drawBillboard(layerIdx);
+  PLAYER.draw();
 }
